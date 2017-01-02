@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <script src="/templates/dev_rm_manage/js/angular.min.js"></script>
+    <script src="/templates/dev_rm_manage/js/export.js"></script>
+</head>
+
+<body ng-app="app">
+    <div id="content">
+    <div ng-controller="RMController" id="RMController">     
+        <img ng-show="working == true" src="/templates/dev_rm_manage/images/rm_bridge_loader.gif" style="float: right;"/>
+        <div ng-show="error_message != undefined" style="color: red; float: right">{{error_message}}</div>
+        <h3>Шаг 1: Укажите адрес RM-brige</h3>
+        <p>Введите ip-адрес, указанный в приложении <i>Android RM Bridge</i> и нажмите кнопку <i><b>Экспорт</b></i>.</p>
+		<form class="form-inline">
+			<div class="form-group">		
+				<div class="col-md-6">
+				<div class="input-group">
+					<div class="input-group-addon">http://</div>
+					<input type="text" class="form-control" ng-model="bridge_ip" /> 
+					<div class="input-group-addon">:</div>
+					<input type="text" class="form-control" ng-model="bridge_port" size="3"/>
+				</div>
+				</div>					
+				<button class="btn btn-default" ng-click="setBridgeHost();loadCodes()">Экспорт</button>
+			</div>
+		</form>		
+        <p><hr/></p>
+        <h3>Шаг 2: Экспортированные коды</h3>
+        <p>
+            Экспортированная строка JSON может быть импортированна в rm-brige на <a href="?view_mode=import">странице импорта</a>.
+        </p>
+        <p>
+            <textarea class="form-control" style="width: 90%" rows="20">{{ codes_json }}</textarea>
+        </p>
+    </div>
+    </div>
+    <script>
+        init();
+    </script>
+    
+</body>
+
+</html>

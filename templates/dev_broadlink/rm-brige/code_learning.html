@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="/templates/dev_rm_manage/js/angular.min.js"></script>
+    <script src="/templates/dev_rm_manage/js/learn.js"></script>
+</head>
+
+<body ng-app="app">
+    <div id="content">
+    <div ng-controller="RMController" id="RMController">
+        <img ng-show="working == true" src="/templates/dev_rm_manage/images/rm_bridge_loader.gif" style="float: right;"/>
+        <div ng-show="error_message != undefined" style="color: red; float: right">{{error_message}}</div>
+        <h3>Шаг 1: Укажите адрес RM-brige</h3>
+        <p>Введите ip-адрес, указанный в приложении <i>Android RM Bridge</i> и нажмите кнопку <i><b>Проверить устройства</b></i>.</p>
+		<form class="form-inline">
+			<div class="form-group">
+				<div class="col-md-6">
+				<div class="input-group">
+					<div class="input-group-addon" >http://</div>
+					<input type="text" class="form-control" ng-model="bridge_ip" />
+					<div class="input-group-addon">:</div>
+					<input type="text" class="form-control" ng-model="bridge_port" size="3"/>
+				</div>
+				</div>
+				<button class="btn btn-default" ng-click="setBridgeHost();reLoadDevices()">Проверить устройства</button>
+			 </div>
+		</form>
+        <p><hr/></p>
+        <h3>Шаг 2: Выберите RM BroadLink устройство</h3>
+        <p>Выберите устройство для записи кода.</p>
+        <p ng-show="device != undefined">
+        Выбранное: {{ device.name }} (<small>{{ device.mac }}</small>)
+        </p>
+        <div>
+            Устройство:
+            <select class="btn btn-default" data-ng-model="device" data-ng-options="dev.name for dev in devices.list">
+            </select>
+        </div>
+        <p><hr/></p>
+        <h3>Шаг 3: Обучите коду</h3>
+		    <div ng-show="device.type == '10026'">
+                Если обучаете RF-кодам, <b>RM Pro+</b> устройства должны просканировать частоту перед обучением.<br>
+                Нажмите <i><b>Сканирование частоты</b></i> и затем продолжительно нажмите кнопку на пульте. Около 5 секунд.<br>
+                Во время этого процесса LED-индикатор должен гореть (он так же должен остаться включеным после сканирования).<br>
+                <p>
+                <button class="btn btn-primary" ng-click="freqScan()">Сканирование частоты</button>
+                <!-- <button class="button" ng-click="freqScanCancel()">Cancel Scan</button> -->
+                </p>
+			</div>
+        <p>Нажмите кнопку <i><b>Обучить</b></i> и воспроизведите сигнал с пульта.
+            <br/>Чтобы создать ссылку URL, впишите <i>Название</i>.<br/>
+            <br/>После обучения коду вы можете его протестировать на следующем шаге.
+            <br/>Примечание: Период режима обучения равен 5 секунд.
+            <p>
+                <form class="form-inline">
+					<div class="form-group">
+						<label>Название:</label> 
+					</div>
+					<div class="form-group">
+						<input class="form-control" ng-model="code_name" />
+					</div>
+					<div class="form-group">
+						<small>* не обязательно</small>
+					</div>	
+				</form>
+            </p>
+        </p>
+            <button class="btn btn-primary" ng-click="learnCode()">Обучить</button>
+        <p><hr/></p>
+        <div ng-show="code != undefined">
+        <h3>Шаг 4: Проверьте результат</h3>
+            <p>Проверьте результат нажав на кнопку <i><b>Проверить код</b></i>.
+            <br/>
+                Если код рабочий, вы можете скопировать его для дальнейшего использования.
+            <br/>
+                Для обучения другому коду нажмите кнопку <i><b>Обучить</b></i> в <i>Шаг 3</i> снова.
+            </p>
+
+            <a class="btn btn-default" ng-href="{{code_test}}" target="test_out">Проверить код</a>
+			<div style="margin-top: 10px;">
+            <p ng-show="shortcut_url != undefined">Ссылка URL:<br/><input class="form-control" ng-model="shortcut_url" style="width: 50%"/></p>
+			<p>Обычная команда:<br/><input class="form-control" ng-model="command_plain" style="width: 90%"/></p>
+            <p>Команда URL:<br/><input class="form-control" ng-model="command_url" style="width: 90%"/></p>
+			</div>
+        </div>
+    </div>
+    </div>
+    <iframe name="test_out" style="display: none"></iframe>
+
+    <script>
+        init();
+    </script>
+
+</body>
+
+</html>

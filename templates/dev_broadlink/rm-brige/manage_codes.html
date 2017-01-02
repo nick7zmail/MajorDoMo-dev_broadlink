@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="/templates/dev_rm_manage/js/angular.min.js"></script>
+    <script src="/templates/dev_rm_manage/js/manage.js"></script>
+</head>
+
+<body ng-app="app">
+    <div id="content">
+    <div ng-controller="RMController" id="RMController">
+
+        <img ng-show="working == true" src="/templates/dev_rm_manage/images/rm_bridge_loader.gif" style="float: right;"/>
+        <div ng-show="error_message != undefined" style="color: red; float: right">{{error_message}}</div>
+        <h3>Шаг 1: Укажите адрес RM-brige</h3>
+        <p>Введите ip-адрес, указанный в приложении <i>Android RM Bridge</i> и нажмите кнопку <i><b>Считать коды</b></i>.</p>
+        <form class="form-inline">
+			<div class="form-group">		
+				<div class="col-md-6">
+				<div class="input-group">
+					<div class="input-group-addon">http://</div>
+					<input type="text" class="form-control" ng-model="bridge_ip" />
+					<div class="input-group-addon" >:</div>
+					<input type="text" class="form-control" ng-model="bridge_port" size="3"/>
+				</div>
+				</div>
+				<button class="btn btn-default" ng-click="setBridgeHost();loadCodes()">Считать коды</button>
+			</div>
+		</form>
+        <p><hr/></p>
+        <h3>Шаг 2: Просмотр кодов</h3>
+        <p>
+        <table class="table table-striped">
+        <thead>
+        <tr>
+            <th style="min-width: 80px;">Имя</th>
+            <th style="min-width: 80px;">MAC Адрес</th>
+            <th style="min-width: 80px;">URL</th>
+            <th style="width: 90px;">Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="code in codes">
+            <td>{{ code.name }}</td>
+            <td><small>{{ code.mac }}</small></td>
+            <td><a href="{{ code.url }}" target="code_{{ code.name }}"><small>{{ code.url }}</small></a></td>
+            <td><a ng-click="sendCode(code.name)" title="Запустить" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-flash"></i></a>
+            <a ng-click="deleteCode(code.name)" title="Удалить" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-remove"></i></a></td>
+        </tr>
+        </tbody>
+    </table>
+        </p>
+        <button class="btn btn-primary" ng-click="deleteCode('*')">Удалить все коды</button>
+        </div>
+
+    <script>
+        init();
+    </script>
+
+</body>
+
+</html>
