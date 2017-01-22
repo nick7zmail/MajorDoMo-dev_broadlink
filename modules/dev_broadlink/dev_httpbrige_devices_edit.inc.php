@@ -8,9 +8,31 @@
   $table_name='dev_httpbrige_devices';
   $rec=SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
   if ($this->mode=='learn') {
-   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=study';
-   getUrl($api_command);
-   $out['MESSAGE']='Режим обучения';
+	if ($this->config['API_URL']=='httpbrige') {
+	   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=study';
+	   getUrl($api_command);
+	   $out['MESSAGE']='Режим обучения';
+	} else {
+			require(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$json = array();
+			$json['code'] = -1;
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm->Auth();
+			$rm->Enter_learning();
+			$out['MESSAGE']='Режим обучения';
+			sleep(10);
+			$json['hex'] = $rm->Check_data();
+			$json['code'] = 1;
+			$json['hex_number'] = '';
+				foreach ($json['hex'] as $value) {
+					$json['hex_number'] .= sprintf("%02x", $value);
+				}
+				if(count($json['hex']) > 0){
+				$prop=array('TITLE'=>'new_command','VALUE'=>$json['hex_number'],'DEVICE_ID'=>$rec['ID'],);
+				$new_id=SQLInsert('dev_broadlink_commands',$prop);
+				}
+			$out['MESSAGE']='Команда записана';
+	}
   }
   if ($this->mode=='save_code') {
    //$api_command=$this->config['API_URL'].'/?devMAC='. $rec['MAC'].'&action=save&name='.$this->code_name;
@@ -35,6 +57,8 @@
   }
   if ($this->mode=='update') {
    $ok=1;
+   
+   if ($this->tab=='') {
   //updating 'LANG_TITLE' (varchar, required)
    //updating 'TYPE' (varchar)
    global $type;
@@ -45,6 +69,12 @@
     $out['ERR_TITLE']=1;
     $ok=0;
    }
+  //updating 'IP' (varchar)
+   global $ip;
+   $rec['IP']=$ip;
+  //updating 'DEVTYPE' (varchar)
+   global $devtype;
+   $rec['DEVTYPE']=$devtype;
   //updating 'MAC' (varchar)
    global $mac;
    $rec['MAC']=$mac;
@@ -62,6 +92,8 @@
    global $updated_minutes;
    global $updated_hours;
    $rec['UPDATED']=toDBDate($updated_date)." $updated_hours:$updated_minutes:00";
+   }
+   
   //UPDATING RECORD
    if ($ok) {
     if ($rec['ID']) {
@@ -83,6 +115,8 @@
     $out['ERR']=1;
    }
   }
+  // step: default
+  if ($this->tab=='') {
   if ($rec['UPDATED']!='') {
    $tmp=explode(' ', $rec['UPDATED']);
    $out['UPDATED_DATE']=fromDBDate($tmp[0]);
@@ -108,6 +142,50 @@
     $out['UPDATED_HOURS'][]=array('TITLE'=>$title);
    }
   }
+  }
+  
+    if ($this->tab=='data') {
+		$this->getConfig();
+   $new_id=0;
+   if ($this->mode=='update') {
+    global $title_new;
+	if ($title_new) {
+	 $prop=array('TITLE'=>$title_new,'DEVICE_ID'=>$rec['ID']);
+	 $new_id=SQLInsert('dev_broadlink_commands',$prop);
+	}
+   }
+   global $delete_id;
+   if ($delete_id) {
+    SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
+   }
+   $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
+   $total=count($properties);
+   for($i=0;$i<$total;$i++) {
+    if ($properties[$i]['ID']==$new_id) continue;
+    if ($this->mode=='update') {
+      global ${'title'.$properties[$i]['ID']};
+      $properties[$i]['TITLE']=trim(${'title'.$properties[$i]['ID']});
+      global ${'value'.$properties[$i]['ID']};
+      $properties[$i]['VALUE']=trim(${'value'.$properties[$i]['ID']});
+      global ${'linked_object'.$properties[$i]['ID']};
+      $properties[$i]['LINKED_OBJECT']=trim(${'linked_object'.$properties[$i]['ID']});
+      global ${'linked_property'.$properties[$i]['ID']};
+      $properties[$i]['LINKED_PROPERTY']=trim(${'linked_property'.$properties[$i]['ID']});
+      SQLUpdate('dev_broadlink_commands', $properties[$i]);
+      $old_linked_object=$properties[$i]['LINKED_OBJECT'];
+      $old_linked_property=$properties[$i]['LINKED_PROPERTY'];
+      if ($old_linked_object && $old_linked_object!=$properties[$i]['LINKED_OBJECT'] && $old_linked_property && $old_linked_property!=$properties[$i]['LINKED_PROPERTY']) {
+       removeLinkedProperty($old_linked_object, $old_linked_property, $this->name);
+      }
+      if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
+       addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
+      }
+     }
+	$properties[$i]['API_METHOD']=$this->config['API_METHOD'];
+   }
+   $out['PROPERTIES']=$properties;
+  }
+  
   if (is_array($rec)) {
    foreach($rec as $k=>$v) {
     if (!is_array($v)) {

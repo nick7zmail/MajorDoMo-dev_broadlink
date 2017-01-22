@@ -40,6 +40,9 @@ function saveParams($data=0) {
  if (IsSet($this->edit_mode)) {
   $p["edit_mode"]=$this->edit_mode;
  }
+ if (IsSet($this->data_source)) {
+  $p["data_source"]=$this->data_source;
+ }
  if (IsSet($this->tab)) {
   $p["tab"]=$this->tab;
  }
@@ -57,6 +60,7 @@ function getParams() {
   global $mode;
   global $view_mode;
   global $edit_mode;
+  global $data_source;
   global $tab;
   if (isset($id)) {
    $this->id=$id;
@@ -69,6 +73,9 @@ function getParams() {
   }
   if (isset($edit_mode)) {
    $this->edit_mode=$edit_mode;
+  }
+  if (isset($data_source)) {
+   $this->data_source=$data_source;
   }
   if (isset($tab)) {
    $this->tab=$tab;
@@ -99,6 +106,7 @@ function run() {
   $out['EDIT_MODE']=$this->edit_mode;
   $out['MODE']=$this->mode;
   $out['ACTION']=$this->action;
+  $out['DATA_SOURCE']=$this->data_source;
   $out['TAB']=$this->tab;
   $this->data=$out;
   $p=new parser(DIR_TEMPLATES.$this->name."/".$this->name.".html", $this->data, $this);
@@ -118,20 +126,14 @@ function admin(&$out) {
   $out['API_URL']='http://';
  }
  $out['API_TYPE']=$this->config['API'];
- $out['API_KEY']=$this->config['API_KEY'];
- $out['API_USERNAME']=$this->config['API_USERNAME'];
- $out['API_PASSWORD']=$this->config['API_PASSWORD'];
+ $out['API_METHOD']=$this->config['API_METHOD'];
  if ($this->view_mode=='update_settings') {
    global $api_type;
    $this->config['API']=$api_type;
    global $api_url;
    $this->config['API_URL']=$api_url;
-   global $api_key;
-   $this->config['API_KEY']=$api_key;
-   global $api_username;
-   $this->config['API_USERNAME']=$api_username;
-   global $api_password;
-   $this->config['API_PASSWORD']=$api_password;
+   global $api_method;
+   $this->config['API_METHOD']=$api_method;
    $this->saveConfig();
    $this->redirect("?");
  }
@@ -147,7 +149,18 @@ function admin(&$out) {
   }
   if ($this->view_mode=='delete_dev_httpbrige_devices') {
    $this->delete_dev_httpbrige_devices($this->id);
-   $this->redirect("?");
+   $this->redirect("?data_source=dev_httpbrige_devices");
+  }
+ }
+ if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
+  $out['SET_DATASOURCE']=1;
+ }
+ if ($this->data_source=='dev_broadlink_commands') {
+  if ($this->view_mode=='' || $this->view_mode=='search_dev_broadlink_commands') {
+   $this->search_dev_broadlink_commands($out);
+  }
+  if ($this->view_mode=='edit_dev_broadlink_commands') {
+   $this->edit_dev_broadlink_commands($out, $this->id);
   }
  }
 }
@@ -192,8 +205,25 @@ function usual(&$out) {
   }
   SQLExec("DELETE FROM dev_httpbrige_devices WHERE ID='".$rec['ID']."'");
  }
+/**
+* dev_broadlink_commands search
+*
+* @access public
+*/
+ function search_dev_broadlink_commands(&$out) {
+  require(DIR_MODULES.$this->name.'/dev_broadlink_commands_search.inc.php');
+ }
+/**
+* dev_broadlink_commands edit/add
+*
+* @access public
+*/
+ function edit_dev_broadlink_commands(&$out, $id) {
+  require(DIR_MODULES.$this->name.'/dev_broadlink_commands_edit.inc.php');
+ }
  function propertySetHandle($object, $property, $value) {
   $this->getConfig();
+  if ($this->config['API_URL']=='httpbrige') {
    $table='dev_httpbrige_devices';
    $properties=SQLSelect("SELECT * FROM $table WHERE LINKED_OBJECT LIKE '".DBSafe($object)."'");
    $total=count($properties);
@@ -222,6 +252,25 @@ function usual(&$out) {
 		}
     }
    }
+  } else {
+	$table='dev_broadlink_commands';
+	$properties=SQLSelect("SELECT * FROM $table WHERE LINKED_OBJECT LIKE '".DBSafe($object)."' AND LINKED_PROPERTY LIKE '".DBSafe($property)."'");
+	$total=count($properties);
+	if ($total) {
+    for($i=0;$i<$total;$i++) {
+     if ($value==1) {
+		 	require(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$id=$properties[$i]['DEVICE_ID'];
+			$data=$properties[$i]['VALUE'];
+			$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm->Auth();
+			$rm->Send_data($data);
+			sg($object.".".$property, 0);
+	 }
+    }
+   }
+  }
  }
  
 function processSubscription($event_name, $details='') {
@@ -231,66 +280,85 @@ function processSubscription($event_name, $details='') {
  }
  
  function check_params() {
+	$this->getConfig();
 	$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
- 	for ($i = 1; $i <= count($db_rec); $i++) {
-		$rec=$db_rec[$i-1];
-		$this->getConfig();
-		if ($rec['TYPE']=='rm') {
-			$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
+	if ($this->config['API_URL']=='httpbrige') {
+		for ($i = 1; $i <= count($db_rec); $i++) {
+			$rec=$db_rec[$i-1];
+			if ($rec['TYPE']=='rm') {
+					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
+					}
+			}
+			if ($rec['TYPE']=='rm3') {
+			}
+			if ($rec['TYPE']=='a1') {
+					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
+					if(isset($response) && $response!='') { 
+						$json = json_decode($response);	
+						sg($rec['LINKED_OBJECT'].'.temperature', (float)$json->{'temperature'});
+						sg($rec['LINKED_OBJECT'].'.humidity', (float)$json->{'humidity'});
+						sg($rec['LINKED_OBJECT'].'.noise', (int)$json->{'noisy'});
+						sg($rec['LINKED_OBJECT'].'.luminosity', (int)$json->{'light'});
+						sg($rec['LINKED_OBJECT'].'.air', (int)$json->{'air'});	
+					}
+			}
+			if ($rec['TYPE']=='sp2') {
+					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
+					}
+					$response ='';
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=power ', 0, $ctx);
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.power', $response);
+					}
+			}
+			if ($rec['TYPE']=='spmini') {
+					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
+					}
+			}
+			if ($rec['TYPE']=='sp3') {
+					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
+					}
+					$response ='';
+					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=lightstatus', 0, $ctx);
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.lightstatus', $response);
+					}
+			}
 			if(isset($response) && $response!='') {
-				sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
+				$rec['UPDATED']=date('Y-m-d H:i:s');
+				SQLUpdate('dev_httpbrige_devices', $rec);
 			}
 		}
-		if ($rec['TYPE']=='rm3') {
-		}
-		if ($rec['TYPE']=='a1') {
-			$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-			if(isset($response) && $response!='') { 
-				$json = json_decode($response);	
-				sg($rec['LINKED_OBJECT'].'.temperature', (float)$json->{'temperature'});
-				sg($rec['LINKED_OBJECT'].'.humidity', (float)$json->{'humidity'});
-				sg($rec['LINKED_OBJECT'].'.noise', (int)$json->{'noisy'});
-				sg($rec['LINKED_OBJECT'].'.luminosity', (int)$json->{'light'});
-				sg($rec['LINKED_OBJECT'].'.air', (int)$json->{'air'});	
+	} else {
+		for ($i = 1; $i <= count($db_rec); $i++) {
+			$rec=$db_rec[$i-1];
+			if ($rec['TYPE']=='rm') {
+					require(DIR_MODULES.$this->name.'/broadlink.class.php');
+					$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+					$rm->Auth();
+					$response = $rm->Check_temperature();
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
+					}
 			}
 		}
-		if ($rec['TYPE']=='sp2') {
-			$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
 			if(isset($response) && $response!='') {
-				sg($rec['LINKED_OBJECT'].'.status', (int)$response);
+				$rec['UPDATED']=date('Y-m-d H:i:s');
+				SQLUpdate('dev_httpbrige_devices', $rec);
 			}
-			$response ='';
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=power ', 0, $ctx);
-			if(isset($response) && $response!='') {
-				sg($rec['LINKED_OBJECT'].'.power', $response);
-			}
-		}
-		if ($rec['TYPE']=='spmini') {
-			$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-			if(isset($response) && $response!='') {
-				sg($rec['LINKED_OBJECT'].'.status', (int)$response);
-			}
-		}
-		if ($rec['TYPE']=='sp3') {
-			$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-			if(isset($response) && $response!='') {
-				sg($rec['LINKED_OBJECT'].'.status', (int)$response);
-			}
-			$response ='';
-			$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=lightstatus', 0, $ctx);
-			if(isset($response) && $response!='') {
-				sg($rec['LINKED_OBJECT'].'.lightstatus', $response);
-			}
-		}
-		if(isset($response) && $response!='') {
-			$rec['UPDATED']=date('Y-m-d H:i:s');
-			SQLUpdate('dev_httpbrige_devices', $rec);
-		}
 	}
  }
 /**
@@ -312,7 +380,9 @@ function processSubscription($event_name, $details='') {
 * @access public
 */
  function uninstall() {
+  unsubscribeFromEvent($this->name, 'HOURLY');
   SQLExec('DROP TABLE IF EXISTS dev_httpbrige_devices');
+  SQLExec('DROP TABLE IF EXISTS dev_broadlink_commands');
   parent::uninstall();
  }
 /**
@@ -330,11 +400,19 @@ dev_httpbrige_devices -
  dev_httpbrige_devices: ID int(10) unsigned NOT NULL auto_increment
  dev_httpbrige_devices: TYPE varchar(10) NOT NULL DEFAULT ''
  dev_httpbrige_devices: TITLE varchar(100) NOT NULL DEFAULT ''
+ dev_httpbrige_devices: DEVTYPE varchar(10) NOT NULL DEFAULT ''
+ dev_httpbrige_devices: IP varchar(20) NOT NULL DEFAULT ''
  dev_httpbrige_devices: MAC varchar(20) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_METHOD varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: UPDATED datetime
+ dev_broadlink_commands: ID int(10) unsigned NOT NULL auto_increment
+ dev_broadlink_commands: TITLE varchar(100) NOT NULL DEFAULT ''
+ dev_broadlink_commands: VALUE varchar(255) NOT NULL DEFAULT ''
+ dev_broadlink_commands: DEVICE_ID int(10) NOT NULL DEFAULT '0'
+ dev_broadlink_commands: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
+ dev_broadlink_commands: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
 EOD;
   parent::dbInstall($data);
  }

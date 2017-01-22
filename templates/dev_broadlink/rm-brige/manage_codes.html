@@ -2,15 +2,15 @@
 <html>
 
 <head>
-    <script src="/templates/dev_rm_manage/js/angular.min.js"></script>
-    <script src="/templates/dev_rm_manage/js/manage.js"></script>
+    <script src="/templates/dev_broadlink/rm-brige/js/angular.min.js"></script>
+    <script src="/templates/dev_broadlink/rm-brige/js/manage.js"></script>
 </head>
 
 <body ng-app="app">
     <div id="content">
     <div ng-controller="RMController" id="RMController">
 
-        <img ng-show="working == true" src="/templates/dev_rm_manage/images/rm_bridge_loader.gif" style="float: right;"/>
+        <img ng-show="working == true" src="/templates/dev_broadlink/rm-brige/images/rm_bridge_loader.gif" style="float: right;"/>
         <div ng-show="error_message != undefined" style="color: red; float: right">{{error_message}}</div>
         <h3>Шаг 1: Укажите адрес RM-brige</h3>
         <p>Введите ip-адрес, указанный в приложении <i>Android RM Bridge</i> и нажмите кнопку <i><b>Считать коды</b></i>.</p>

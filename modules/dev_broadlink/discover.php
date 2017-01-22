@@ -1,5 +1,5 @@
 <?
-include("include/broadlink.class.php");
+include("broadlink.class.php");
 
 header('Content-Type: application/json');
 
