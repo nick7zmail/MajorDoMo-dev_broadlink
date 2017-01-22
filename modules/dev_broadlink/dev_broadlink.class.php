@@ -343,7 +343,7 @@ function processSubscription($event_name, $details='') {
 			}
 		}
 	} else {
-		for ($i = 1; $i <= count($db_rec); $i++) {
+		/*for ($i = 1; $i <= count($db_rec); $i++) {
 			$rec=$db_rec[$i-1];
 			if ($rec['TYPE']=='rm') {
 					require(DIR_MODULES.$this->name.'/broadlink.class.php');
@@ -354,11 +354,11 @@ function processSubscription($event_name, $details='') {
 						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
 					}
 			}
-		}
 			if(isset($response) && $response!='') {
 				$rec['UPDATED']=date('Y-m-d H:i:s');
 				SQLUpdate('dev_httpbrige_devices', $rec);
 			}
+		}*/
 	}
  }
 /**
