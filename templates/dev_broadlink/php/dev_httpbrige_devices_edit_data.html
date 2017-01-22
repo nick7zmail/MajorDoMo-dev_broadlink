@@ -35,7 +35,7 @@
   <td valign="top"><input type="text" name="linked_property[#ID#]" id="linked_property[#ID#]" value="[#LINKED_PROPERTY#]"></td>
   [#endif#]
   [#if API_METHOD=="url"#]
-  <td valign="top">getURL(/modules/dev_broadlink/command.php?command=[#TITLE#]);</td>
+  <td valign="top">getURL('/modules/dev_broadlink/command.php?command=[#TITLE#]');</td>
   [#endif#]
   [#module name="linkedobject" object_field="linked_object<#PROPERTIES.ID#>" property_field="linked_property<#PROPERTIES.ID#>" method_field="linked_method<#PROPERTIES.ID#>" width="200"#]
   <td><a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&delete_id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>');" class="btn btn-default"><i class="glyphicon glyphicon-remove"></i></td>
