@@ -343,10 +343,10 @@ function processSubscription($event_name, $details='') {
 			}
 		}
 	} else {
-		/*for ($i = 1; $i <= count($db_rec); $i++) {
+		for ($i = 1; $i <= count($db_rec); $i++) {
 			$rec=$db_rec[$i-1];
 			if ($rec['TYPE']=='rm') {
-					require(DIR_MODULES.$this->name.'/broadlink.class.php');
+					include_once 'broadlink.class.php';
 					$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 					$rm->Auth();
 					$response = $rm->Check_temperature();
@@ -358,7 +358,7 @@ function processSubscription($event_name, $details='') {
 				$rec['UPDATED']=date('Y-m-d H:i:s');
 				SQLUpdate('dev_httpbrige_devices', $rec);
 			}
-		}*/
+		}
 	}
  }
 /**

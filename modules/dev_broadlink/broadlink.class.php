@@ -1,6 +1,4 @@
 <?
-date_default_timezone_set("Asia/Taipei");
-
 function aes128_cbc_encrypt($key, $data, $iv) {
   return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
 }
