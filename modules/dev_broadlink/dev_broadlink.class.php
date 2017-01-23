@@ -409,7 +409,7 @@ dev_httpbrige_devices -
  dev_httpbrige_devices: UPDATED datetime
  dev_broadlink_commands: ID int(10) unsigned NOT NULL auto_increment
  dev_broadlink_commands: TITLE varchar(100) NOT NULL DEFAULT ''
- dev_broadlink_commands: VALUE varchar(255) NOT NULL DEFAULT ''
+ dev_broadlink_commands: VALUE varchar(1024) NOT NULL DEFAULT ''
  dev_broadlink_commands: DEVICE_ID int(10) NOT NULL DEFAULT '0'
  dev_broadlink_commands: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  dev_broadlink_commands: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
