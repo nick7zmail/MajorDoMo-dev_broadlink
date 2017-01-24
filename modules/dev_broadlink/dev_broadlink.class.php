@@ -284,6 +284,7 @@ function processSubscription($event_name, $details='') {
 	$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
 	if ($this->config['API_URL']=='httpbrige') {
 		for ($i = 1; $i <= count($db_rec); $i++) {
+			$response ='';
 			$rec=$db_rec[$i-1];
 			if ($rec['TYPE']=='rm') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
@@ -312,7 +313,7 @@ function processSubscription($event_name, $details='') {
 					if(isset($response) && $response!='') {
 						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
 					}
-					$response ='';
+					
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=power ', 0, $ctx);
 					if(isset($response) && $response!='') {
 						sg($rec['LINKED_OBJECT'].'.power', $response);
@@ -331,7 +332,6 @@ function processSubscription($event_name, $details='') {
 					if(isset($response) && $response!='') {
 						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
 					}
-					$response ='';
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=lightstatus', 0, $ctx);
 					if(isset($response) && $response!='') {
 						sg($rec['LINKED_OBJECT'].'.lightstatus', $response);
@@ -343,15 +343,33 @@ function processSubscription($event_name, $details='') {
 			}
 		}
 	} else {
+		include_once 'broadlink.class.php';
 		for ($i = 1; $i <= count($db_rec); $i++) {
+			$response = '';
 			$rec=$db_rec[$i-1];
 			if ($rec['TYPE']=='rm') {
-					include_once 'broadlink.class.php';
 					$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 					$rm->Auth();
 					$response = $rm->Check_temperature();
 					if(isset($response) && $response!='') {
 						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
+					}
+			}
+			if ($rec['TYPE']=='rm3') {
+			}
+			if ($rec['TYPE']=='a1') {
+					$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+					$rm->Auth();
+					$response = $rm->Check_sensors();
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response['temperature']);
+						sg($rec['LINKED_OBJECT'].'.humidity', (float)$response['humidity']);
+						sg($rec['LINKED_OBJECT'].'.noise', (int)$response['noise']);
+						sg($rec['LINKED_OBJECT'].'.light', (int)$response['light']);
+						sg($rec['LINKED_OBJECT'].'.air_quality', (int)$response['air_quality']);	
+						sg($rec['LINKED_OBJECT'].'.light_word', $response['light_word']);
+						sg($rec['LINKED_OBJECT'].'.air_quality_word', $response['air_quality_word']);
+						sg($rec['LINKED_OBJECT'].'.noise_word', $response['noise_word']);
 					}
 			}
 			if(isset($response) && $response!='') {

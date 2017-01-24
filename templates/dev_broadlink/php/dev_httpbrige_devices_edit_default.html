@@ -21,9 +21,9 @@
  <div class="col-lg-4">
 	 <select class="form-control" name="type">
 	   <option value="rm"[#if TYPE=="rm"#] selected[#endif#]>RM(1,2,Pro)
-	   <!--<option value="rm3"[#if TYPE=="rm3"#] selected[#endif#]>RM 3
+	   <option value="rm3"[#if TYPE=="rm3"#] selected[#endif#]>RM 3
 	   <option value="a1"[#if TYPE=="a1"#] selected[#endif#]>A1 e-Air
-	   <option value="sp2"[#if TYPE=="sp2"#] selected[#endif#]>SP2
+	   <!--<option value="sp2"[#if TYPE=="sp2"#] selected[#endif#]>SP2
 	   <option value="spmini"[#if TYPE=="spmini"#] selected[#endif#]>SP mini
 	   <option value="sp3"[#if TYPE=="sp3"#] selected[#endif#]>SP3 (SP CC)-->
 	 </select>
@@ -43,6 +43,7 @@
  IP устройства:
  </label>
  <div class="col-lg-4"><input type="text" class="form-control" name="ip" value="[#IP#]" id="ip"></div>
+ <!--[#if IP!=""#]<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=check_ip" class="btn btn-default">Проверить устройство</a>[#endif#] -->
 </div>
 
 <!-- DEVTYPE (varchar) -->
@@ -70,6 +71,7 @@
  </div>
 </div>
 [#endif#]
+[#if TYPE!="rm3"#]
 <!-- LINKED_OBJECT (varchar) -->
 <div class="form-group">
  <label class="col-lg-3 control-label"[#if ERR_LINKED_OBJECT#] style="color:red;font-weight:bold"[#endif#]>
@@ -77,6 +79,7 @@
  </label>
  <div class="col-lg-4"><input type="text" class="form-control" name="linked_object" value="[#LINKED_OBJECT#]" id="linked_object"></div>
 </div>
+[#endif#]
 <!-- UPDATED (datetime) -->
 <div class="form-group">
  <label class="col-lg-3 control-label"[#if ERR_UPDATED#] style="color:red;font-weight:bold"[#endif#]>

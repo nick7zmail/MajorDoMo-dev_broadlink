@@ -55,6 +55,8 @@
    $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=&action=lightoff';
    getUrl($api_command);
   }
+  if ($this->mode=='check_ip') {
+  }
   if ($this->mode=='update') {
    $ok=1;
    
