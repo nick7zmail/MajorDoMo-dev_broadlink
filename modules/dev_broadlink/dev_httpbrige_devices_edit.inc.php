@@ -13,25 +13,25 @@
 	   getUrl($api_command);
 	   $out['MESSAGE']='Режим обучения';
 	} else {
-			require(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$json = array();
-			$json['code'] = -1;
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			$rm->Auth();
-			$rm->Enter_learning();
-			$out['MESSAGE']='Режим обучения';
-			sleep(10);
-			$json['hex'] = $rm->Check_data();
-			$json['code'] = 1;
-			$json['hex_number'] = '';
-				foreach ($json['hex'] as $value) {
-					$json['hex_number'] .= sprintf("%02x", $value);
-				}
-				if(count($json['hex']) > 0){
-				$prop=array('TITLE'=>'new_command','VALUE'=>$json['hex_number'],'DEVICE_ID'=>$rec['ID'],);
-				$new_id=SQLInsert('dev_broadlink_commands',$prop);
-				}
-			$out['MESSAGE']='Команда записана';
+		$out['MESSAGE']='Режим обучения';
+		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+		$json = array();
+		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+		$rm->Auth();
+		$rm->Enter_learning();
+		sleep(10);
+		$json['hex'] = $rm->Check_data();
+		$json['hex_number'] = '';
+		foreach ($json['hex'] as $value) {
+			$json['hex_number'] .= sprintf("%02x", $value);
+		}
+		if(count($json['hex']) > 0){
+			$prop=array('TITLE'=>'new_command','VALUE'=>$json['hex_number'],'DEVICE_ID'=>$rec['ID'],);
+			$new_id=SQLInsert('dev_broadlink_commands',$prop);
+			$out['OK']=1;
+		} else {
+			$out['MESSAGE']='Команда не сохранена';
+		}
 	}
   }
   if ($this->mode=='save_code') {
