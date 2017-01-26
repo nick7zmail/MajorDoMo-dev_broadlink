@@ -259,7 +259,7 @@ function usual(&$out) {
 	if ($total) {
     for($i=0;$i<$total;$i++) {
      if ($value==1) {
-		 	require(DIR_MODULES.$this->name.'/broadlink.class.php');
+		 	include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 			$id=$properties[$i]['DEVICE_ID'];
 			$data=$properties[$i]['VALUE'];
 			$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
@@ -343,7 +343,7 @@ function processSubscription($event_name, $details='') {
 			}
 		}
 	} else {
-		include_once 'broadlink.class.php';
+		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 		for ($i = 1; $i <= count($db_rec); $i++) {
 			$response = '';
 			$rec=$db_rec[$i-1];
