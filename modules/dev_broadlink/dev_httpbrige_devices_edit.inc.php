@@ -40,12 +40,26 @@
    $out['MESSAGE']='Сохранение команд пока не работает. Для сохранения последней команды используйте ссылку '.$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=save&name='.'<имя команды>';
   }
   if ($this->mode=='sp_on') {
-   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=on';
-   getUrl($api_command);
+	  if ($this->config['API_URL']=='httpbrige') {
+		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=on';
+		   getUrl($api_command);
+	  } else {
+		    include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(1);			  
+	  }
   }
   if ($this->mode=='sp_off') {
-   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=off';
-   getUrl($api_command);
+	  if ($this->config['API_URL']=='httpbrige') {
+		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=off';
+		   getUrl($api_command);
+      } else {
+		    include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(0);			  
+	  }
   }
   if ($this->mode=='sp_light_on') {
    $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=&action=lighton';
@@ -107,7 +121,7 @@
 			 sg($rec['LINKED_OBJECT'].'.'.'status', '');
 			 addLinkedProperty($rec['LINKED_OBJECT'], 'status', $this->name);
 		}
-		if ($rec['TYPE'] == 'sp3') {
+		if ($rec['TYPE'] == 'sp3' && $this->config['API_URL']=='httpbrige') {
 			 sg($rec['LINKED_OBJECT'].'.'.'lightstatus', '');
 			 addLinkedProperty($rec['LINKED_OBJECT'], 'lightstatus', $this->name);
 		}

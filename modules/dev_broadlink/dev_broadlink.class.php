@@ -270,6 +270,26 @@ function usual(&$out) {
 	 }
     }
    }
+   $table2='dev_httpbrige_devices';
+   $properties2=SQLSelect("SELECT * FROM $table2 WHERE LINKED_OBJECT LIKE '".DBSafe($object)."'");
+   $total2=count($properties2);
+   if ($total) {
+	for($i=0;$i<$total;$i++) {
+	  if ($properties[$i]['TYPE'] == 'sp2' || $properties[$i]['TYPE'] == 'spmini' || $properties[$i]['TYPE'] == 'sp3') {	
+		if ($value==1) {
+			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$rm = Broadlink::CreateDevice($properties[$i]['IP'], $properties[$i]['MAC'], 80, $properties[$i]['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(1);
+		} else {
+			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$rm = Broadlink::CreateDevice($properties[$i]['IP'], $properties[$i]['MAC'], 80, $properties[$i]['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(0);			
+		}
+	  }
+	}
+   }
   }
  }
  
@@ -370,6 +390,15 @@ function processSubscription($event_name, $details='') {
 						sg($rec['LINKED_OBJECT'].'.light_word', $response['light_word']);
 						sg($rec['LINKED_OBJECT'].'.air_quality_word', $response['air_quality_word']);
 						sg($rec['LINKED_OBJECT'].'.noise_word', $response['noise_word']);
+					}
+			}
+			if ($rec['TYPE']=='sp2') {
+				include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+				$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+				$rm->Auth();
+				$response = $rm->Check_Power();	
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.check', $response);
 					}
 			}
 			if(isset($response) && $response!='') {
