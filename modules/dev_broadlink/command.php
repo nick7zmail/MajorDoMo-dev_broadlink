@@ -1,5 +1,5 @@
 <?
-include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+include_once('broadlink.class.php');
 chdir(dirname(__FILE__) . '/../../');
 include_once("./config.php");
 include_once("./lib/loader.php");
