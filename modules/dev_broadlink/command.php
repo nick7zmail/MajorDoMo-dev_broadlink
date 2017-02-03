@@ -1,4 +1,4 @@
-<?
+<?php
 include_once('broadlink.class.php');
 chdir(dirname(__FILE__) . '/../../');
 include_once("./config.php");

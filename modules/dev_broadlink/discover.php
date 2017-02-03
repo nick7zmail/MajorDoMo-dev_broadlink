@@ -1,4 +1,4 @@
-<?
+<?php
 include("broadlink.class.php");
 
 header('Content-Type: application/json');
