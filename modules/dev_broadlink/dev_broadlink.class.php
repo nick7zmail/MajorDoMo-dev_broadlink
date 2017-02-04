@@ -273,17 +273,17 @@ function usual(&$out) {
    $table2='dev_httpbrige_devices';
    $properties2=SQLSelect("SELECT * FROM $table2 WHERE LINKED_OBJECT LIKE '".DBSafe($object)."'");
    $total2=count($properties2);
-   if ($total) {
-	for($i=0;$i<$total;$i++) {
-	  if ($properties[$i]['TYPE'] == 'sp2' || $properties[$i]['TYPE'] == 'spmini' || $properties[$i]['TYPE'] == 'sp3') {	
+   if ($total2) {
+	for($i=0;$i<$total2;$i++) {
+	  if ($properties2[$i]['TYPE'] == 'sp2' || $properties2[$i]['TYPE'] == 'spmini' || $properties2[$i]['TYPE'] == 'sp3') {	
 		if ($value==1) {
 			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$rm = Broadlink::CreateDevice($properties[$i]['IP'], $properties[$i]['MAC'], 80, $properties[$i]['DEVTYPE']);
+			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
 			$rm->Auth();
 			$rm->Set_Power(1);
 		} else {
 			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$rm = Broadlink::CreateDevice($properties[$i]['IP'], $properties[$i]['MAC'], 80, $properties[$i]['DEVTYPE']);
+			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
 			$rm->Auth();
 			$rm->Set_Power(0);			
 		}
