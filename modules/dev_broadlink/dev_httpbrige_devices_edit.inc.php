@@ -7,6 +7,7 @@
   }
   $table_name='dev_httpbrige_devices';
   $rec=SQLSelectOne("SELECT * FROM $table_name WHERE ID='$id'");
+  include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
   if ($this->mode=='learn') {
 	if ($this->config['API_URL']=='httpbrige') {
 	   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=study';
@@ -14,7 +15,6 @@
 	   $out['MESSAGE']='Режим обучения';
 	} else {
 		$out['MESSAGE']='Режим обучения';
-		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 		$json = array();
 		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 		$rm->Auth();
@@ -44,7 +44,6 @@
 		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=on';
 		   getUrl($api_command);
 	  } else {
-		    include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 			$rm->Auth();
 			$rm->Set_Power(1);			  
@@ -55,7 +54,6 @@
 		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=off';
 		   getUrl($api_command);
       } else {
-		    include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 			$rm->Auth();
 			$rm->Set_Power(0);			  
@@ -68,6 +66,16 @@
   if ($this->mode=='sp_light_off') {
    $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=&action=lightoff';
    getUrl($api_command);
+  }
+  if ($this->mode=='mp_on') {
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(1, 1);	
+  }
+  if ($this->mode=='mp_off') {
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(1, 1);	
   }
   if ($this->mode=='check_ip') {
   }
@@ -125,6 +133,16 @@
 			 sg($rec['LINKED_OBJECT'].'.'.'lightstatus', '');
 			 addLinkedProperty($rec['LINKED_OBJECT'], 'lightstatus', $this->name);
 		}
+		if ($rec['TYPE'] == 'mp1') {
+			 sg($rec['LINKED_OBJECT'].'.'.'status1', '');
+			 sg($rec['LINKED_OBJECT'].'.'.'status2', '');
+			 sg($rec['LINKED_OBJECT'].'.'.'status3', '');
+			 sg($rec['LINKED_OBJECT'].'.'.'status4', '');
+			 addLinkedProperty($rec['LINKED_OBJECT'], 'status1', $this->name);
+			 addLinkedProperty($rec['LINKED_OBJECT'], 'status2', $this->name);
+			 addLinkedProperty($rec['LINKED_OBJECT'], 'status3', $this->name);
+			 addLinkedProperty($rec['LINKED_OBJECT'], 'status4', $this->name);
+		}
     }
     $out['OK']=1;
    } else {
@@ -173,6 +191,13 @@
    global $delete_id;
    if ($delete_id) {
     SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
+   }
+   global $test_id;
+   if ($test_id) {
+	$data=SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE ID='$test_id'");
+	$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+	$rm->Auth();
+	$rm->Send_data($data['VALUE']);
    }
    $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
    $total=count($properties);

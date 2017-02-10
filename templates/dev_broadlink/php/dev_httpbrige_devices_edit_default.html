@@ -26,6 +26,7 @@
 	   <option value="sp2"[#if TYPE=="sp2"#] selected[#endif#]>SP2
 	   <option value="spmini"[#if TYPE=="spmini"#] selected[#endif#]>SP mini
 	   <option value="sp3"[#if TYPE=="sp3"#] selected[#endif#]>SP3 (SP CC)
+	   <option value="mp1"[#if TYPE=="mp1"#] selected[#endif#]>MP1
 	 </select>
  </div>
 </div>
@@ -79,6 +80,18 @@
  <div class="col-lg-4">
 	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=sp_on" class="btn btn-default">Включить</a>
 	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=sp_off" class="btn btn-default">Выключить</a>
+ </div>
+</div>
+[#endif#]
+[#endif#]
+[#if TYPE=="mp1"#]
+<div class="form-group">
+ <label class="col-lg-3 control-label">
+Управление розеткой №1 (тест):
+ </label>
+ <div class="col-lg-4">
+	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=mp_on" class="btn btn-default">Включить</a>
+	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=mp_off" class="btn btn-default">Выключить</a>
  </div>
 </div>
 [#endif#]

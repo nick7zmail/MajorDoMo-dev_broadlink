@@ -288,6 +288,19 @@ function usual(&$out) {
 			$rm->Set_Power(0);			
 		}
 	  }
+	  if ($properties2[$i]['TYPE'] == 'mp1') {	
+		if ($value==1) {
+			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(substr($property, -1), 1);			
+		} else {
+			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
+			$rm->Auth();
+			$rm->Set_Power(substr($property, -1), 0);			
+		}
+	  }
 	}
    }
   }
@@ -399,6 +412,18 @@ function processSubscription($event_name, $details='') {
 				$response = $rm->Check_Power();	
 					if(isset($response) && $response!='') {
 						sg($rec['LINKED_OBJECT'].'.check', $response);
+					}
+			}
+			if ($rec['TYPE']=='mp1') {
+				include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
+				$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+				$rm->Auth();
+				$response = $rm->Check_Power();	
+					if(isset($response) && $response!='') {
+						sg($rec['LINKED_OBJECT'].'.check1', $response[0]);
+						sg($rec['LINKED_OBJECT'].'.check2', $response[1]);
+						sg($rec['LINKED_OBJECT'].'.check3', $response[2]);
+						sg($rec['LINKED_OBJECT'].'.check4', $response[3]);
 					}
 			}
 			if(isset($response) && $response!='') {
