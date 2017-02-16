@@ -57,7 +57,7 @@ function saveParams($data=0) {
 */
 function getParams() {
   global $id;
-  global $name;
+ // global $name;
   global $mode;
   global $mac;
   global $host;
@@ -68,9 +68,7 @@ function getParams() {
   global $data_source;
   global $tab;
 
-  if (isset($name)) {
-   $this->name=$name;
-  }
+
    if (isset($title)) {
    $this->title=$title;
   }
@@ -130,7 +128,7 @@ function run() {
   $out['DATA_SOURCE']=$this->data_source;
   $out['TAB']=$this->tab;
   $this->data=$out;
-  $p=new parser(DIR_TEMPLATES.$this->name."/".$this->name.".html", $this->data, $this);
+  $p=new parser(DIR_TEMPLATES.$this->name."/".$this->name.".html", $this->data,scan,$this);
   $this->result=$p->result;
 }
 /**
@@ -168,9 +166,9 @@ function admin(&$out) {
   if ($this->view_mode=='edit_dev_httpbrige_devices') {
    $this->edit_dev_httpbrige_devices($out, $this->id);
   }
-  if ($this->view_mode=='scan_ssdp_devices') {
+  if ($this->view_mode=='broadlink_devices_scan') {
 //die("test die!!");
-         $this->scan_ssdp_devices($out);
+         $this->broadlink_devices_scan($out);
   }
   if ($this->view_mode=='delete_dev_httpbrige_devices') {
    $this->delete_dev_httpbrige_devices($this->id);
@@ -214,7 +212,7 @@ function usual(&$out) {
 *
 * @access public
 */
-  function scan_ssdp_devices(&$out) {
+  function broadlink_devices_scan(&$out) {
 	 // print ("in scan_ssdp_devices");
         require(DIR_MODULES.$this->name.'/broadlink_devices_scan.inc.php');
     }

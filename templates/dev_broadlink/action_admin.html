@@ -2,7 +2,7 @@
 <div>
   <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;">
     <#LANG_SETUP#>
-  </a> | <a class="btn btn-primary" href="?view_mode=scan_ssdp_devices">Scan</a>
+  </a> | <a class="btn btn-primary" href="?view_mode=broadlink_devices_scan">Scan</a>
 </div>
 <div style="display:none" id='api_settings'>
   &nbsp;
@@ -57,11 +57,11 @@
  [#if API_TYPE="php"#] 
  [#inc php/action_admin.html#]
 
-<!-- table ssdp_devices edit -->
-[#if VIEW_MODE="scan_ssdp_devices"#] 
+<!-- table broadlink_devices_scan edit -->
+[#if VIEW_MODE="broadlink_devices_scan"#] 
 [#inc broadlink_devices_scan.html#]
  [#endif VIEW_MODE#]
-<!-- / table ssdp_devices edit -->
+<!-- / table broadlink_devices_scan edit -->
 
 
 [#endif API_TYPE#]
