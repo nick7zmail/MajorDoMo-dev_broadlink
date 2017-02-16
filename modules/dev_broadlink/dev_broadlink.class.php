@@ -57,16 +57,37 @@ function saveParams($data=0) {
 */
 function getParams() {
   global $id;
+  global $name;
   global $mode;
+  global $mac;
+  global $host;
+  global $title;
+  global $devtype;  
   global $view_mode;
   global $edit_mode;
   global $data_source;
   global $tab;
+
+  if (isset($name)) {
+   $this->name=$name;
+  }
+   if (isset($title)) {
+   $this->title=$title;
+  }
   if (isset($id)) {
    $this->id=$id;
-  }
+  }  
   if (isset($mode)) {
    $this->mode=$mode;
+  }
+  if (isset($mac)) {
+   $this->mac=$mac;
+  }
+    if (isset($host)) {
+   $this->host=$host;
+  }
+  if (isset($devtype)) {
+   $this->devtype=$devtype;
   }
   if (isset($view_mode)) {
    $this->view_mode=$view_mode;
@@ -147,6 +168,10 @@ function admin(&$out) {
   if ($this->view_mode=='edit_dev_httpbrige_devices') {
    $this->edit_dev_httpbrige_devices($out, $this->id);
   }
+  if ($this->view_mode=='scan_ssdp_devices') {
+//die("test die!!");
+         $this->scan_ssdp_devices($out);
+  }
   if ($this->view_mode=='delete_dev_httpbrige_devices') {
    $this->delete_dev_httpbrige_devices($this->id);
    $this->redirect("?data_source=dev_httpbrige_devices");
@@ -182,6 +207,17 @@ function usual(&$out) {
  function search_dev_httpbrige_devices(&$out) {
   require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_search.inc.php');
  }
+
+
+/**
+* scan_ssdp_devices search
+*
+* @access public
+*/
+  function scan_ssdp_devices(&$out) {
+	 // print ("in scan_ssdp_devices");
+        require(DIR_MODULES.$this->name.'/broadlink_devices_scan.inc.php');
+    }
 /**
 * dev_httpbrige_devices edit/add
 *

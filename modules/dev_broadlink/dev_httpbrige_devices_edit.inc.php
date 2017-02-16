@@ -34,6 +34,40 @@
 		}
 	}
   }
+   if ($this->mode=='add_from_scan') {
+    global $type;
+   $rec['TYPE']=$type;
+   global $title;
+   $rec['TITLE']=$title;
+   if ($rec['TITLE']=='') {
+    $out['ERR_TITLE']=1;
+    $ok=0;
+   }
+  //updating 'IP' (varchar)
+   global $ip;
+   $rec['IP']=$ip;
+  //updating 'DEVTYPE' (varchar)
+   global $devtype;
+   $rec['DEVTYPE']=$devtype;
+  //updating 'MAC' (varchar)
+   global $mac;
+   $rec['MAC']=$mac;
+  //updating 'LANG_LINKED_OBJECT' (varchar)
+   global $linked_object;
+   $rec['LINKED_OBJECT']=$linked_object;
+  //updating 'LANG_LINKED_PROPERTY' (varchar)
+   global $linked_property;
+   $rec['LINKED_PROPERTY']=$linked_property;
+  //updating 'LANG_METHOD' (varchar)
+   global $linked_method;
+   $rec['LINKED_METHOD']=$linked_method;
+  //updating 'LANG_UPDATED' (datetime)
+   global $updated_date;
+   global $updated_minutes;
+   global $updated_hours;
+   $rec['UPDATED']=toDBDate($updated_date)." $updated_hours:$updated_minutes:00";
+
+   }
   if ($this->mode=='save_code') {
    //$api_command=$this->config['API_URL'].'/?devMAC='. $rec['MAC'].'&action=save&name='.$this->code_name;
    //getUrl($api_command);
@@ -83,6 +117,7 @@
    $ok=1;
    
    if ($this->tab=='') {
+     Print("Add new record");
   //updating 'LANG_TITLE' (varchar, required)
    //updating 'TYPE' (varchar)
    global $type;
