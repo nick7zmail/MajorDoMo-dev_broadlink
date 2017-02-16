@@ -2,6 +2,9 @@
 <!-- table zwave_devices search -->
 <div>
 <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>
+[#if API_TYPE="php"#]
+| <a class="btn btn-primary" href="?view_mode=broadlink_devices_scan">Scan</a>
+[#endif#]
 </div>
 <div style="display:none" id='api_settings'>
 &nbsp;
@@ -60,3 +63,9 @@
  [#if API_TYPE="php"#]
    [#inc php/action_admin.html#]
  [#endif API_TYPE#]
+
+ <!-- table broadlink_devices_scan edit -->
+[#if VIEW_MODE="broadlink_devices_scan"#]
+[#inc broadlink_devices_scan.html#]
+ [#endif VIEW_MODE#]
+<!-- / table broadlink_devices_scan edit -->

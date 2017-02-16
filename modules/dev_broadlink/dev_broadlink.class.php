@@ -57,16 +57,34 @@ function saveParams($data=0) {
 */
 function getParams() {
   global $id;
+
   global $mode;
+  global $mac;
+  global $host;
+  global $title;
+  global $devtype;
   global $view_mode;
   global $edit_mode;
   global $data_source;
   global $tab;
+
+   if (isset($title)) {
+   $this->title=$title;
+  }
   if (isset($id)) {
    $this->id=$id;
   }
   if (isset($mode)) {
    $this->mode=$mode;
+  }
+  if (isset($mac)) {
+   $this->mac=$mac;
+  }
+    if (isset($host)) {
+   $this->host=$host;
+  }
+  if (isset($devtype)) {
+   $this->devtype=$devtype;
   }
   if (isset($view_mode)) {
    $this->view_mode=$view_mode;
@@ -151,6 +169,11 @@ function admin(&$out) {
    $this->delete_dev_httpbrige_devices($this->id);
    $this->redirect("?data_source=dev_httpbrige_devices");
   }
+  if ($this->view_mode=='broadlink_devices_scan') {
+  //print("View - broadlink_devices_scan");
+         $this->broadlink_devices_scan($out);
+  }
+
  }
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
@@ -182,6 +205,16 @@ function usual(&$out) {
  function search_dev_httpbrige_devices(&$out) {
   require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_search.inc.php');
  }
+/**
+* broadlink_devices_scan search
+*
+* @access public
+*/
+  function broadlink_devices_scan(&$out) {
+    //print("in metod broadlink_devices_scan");
+        require(DIR_MODULES.$this->name.'/broadlink_devices_scan.inc.php');
+    }
+
 /**
 * dev_httpbrige_devices edit/add
 *

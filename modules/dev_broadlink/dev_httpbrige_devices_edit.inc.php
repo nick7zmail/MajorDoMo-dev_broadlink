@@ -34,6 +34,33 @@
 		}
 	}
   }
+    if ($this->mode=='add_from_scan') {
+    global $type;
+   $rec['TYPE']=$type;
+   global $title;
+   $rec['TITLE']=$title;
+   if ($rec['TITLE']=='') {
+    $out['ERR_TITLE']=1;
+    $ok=0;
+   }
+   global $ip;
+   $rec['IP']=$ip;
+   global $devtype;
+   $rec['DEVTYPE']=$devtype;
+   global $mac;
+   $rec['MAC']=$mac;
+   global $linked_object;
+   $rec['LINKED_OBJECT']=$linked_object;
+   global $linked_property;
+   $rec['LINKED_PROPERTY']=$linked_property;
+   global $linked_method;
+   $rec['LINKED_METHOD']=$linked_method;
+   global $updated_date;
+   global $updated_minutes;
+   global $updated_hours;
+   $rec['UPDATED']=toDBDate($updated_date)." $updated_hours:$updated_minutes:00";
+
+   }
   if ($this->mode=='save_code') {
    //$api_command=$this->config['API_URL'].'/?devMAC='. $rec['MAC'].'&action=save&name='.$this->code_name;
    //getUrl($api_command);
