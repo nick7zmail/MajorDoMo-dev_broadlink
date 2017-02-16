@@ -34,7 +34,7 @@
 		}
 	}
   }
-   if ($this->mode=='add_from_scan') {
+    if ($this->mode=='add_from_scan') {
     global $type;
    $rec['TYPE']=$type;
    global $title;
@@ -43,25 +43,18 @@
     $out['ERR_TITLE']=1;
     $ok=0;
    }
-  //updating 'IP' (varchar)
    global $ip;
    $rec['IP']=$ip;
-  //updating 'DEVTYPE' (varchar)
    global $devtype;
    $rec['DEVTYPE']=$devtype;
-  //updating 'MAC' (varchar)
    global $mac;
    $rec['MAC']=$mac;
-  //updating 'LANG_LINKED_OBJECT' (varchar)
    global $linked_object;
    $rec['LINKED_OBJECT']=$linked_object;
-  //updating 'LANG_LINKED_PROPERTY' (varchar)
    global $linked_property;
    $rec['LINKED_PROPERTY']=$linked_property;
-  //updating 'LANG_METHOD' (varchar)
    global $linked_method;
    $rec['LINKED_METHOD']=$linked_method;
-  //updating 'LANG_UPDATED' (datetime)
    global $updated_date;
    global $updated_minutes;
    global $updated_hours;
@@ -117,7 +110,6 @@
    $ok=1;
    
    if ($this->tab=='') {
-     Print("Add new record");
   //updating 'LANG_TITLE' (varchar, required)
    //updating 'TYPE' (varchar)
    global $type;

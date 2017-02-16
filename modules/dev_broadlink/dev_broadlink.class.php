@@ -57,24 +57,23 @@ function saveParams($data=0) {
 */
 function getParams() {
   global $id;
- // global $name;
+
   global $mode;
   global $mac;
   global $host;
   global $title;
-  global $devtype;  
+  global $devtype;
   global $view_mode;
   global $edit_mode;
   global $data_source;
   global $tab;
-
 
    if (isset($title)) {
    $this->title=$title;
   }
   if (isset($id)) {
    $this->id=$id;
-  }  
+  }
   if (isset($mode)) {
    $this->mode=$mode;
   }
@@ -128,7 +127,7 @@ function run() {
   $out['DATA_SOURCE']=$this->data_source;
   $out['TAB']=$this->tab;
   $this->data=$out;
-  $p=new parser(DIR_TEMPLATES.$this->name."/".$this->name.".html", $this->data,$this);
+  $p=new parser(DIR_TEMPLATES.$this->name."/".$this->name.".html", $this->data, $this);
   $this->result=$p->result;
 }
 /**
@@ -166,14 +165,15 @@ function admin(&$out) {
   if ($this->view_mode=='edit_dev_httpbrige_devices') {
    $this->edit_dev_httpbrige_devices($out, $this->id);
   }
-  if ($this->view_mode=='broadlink_devices_scan') {
-//die("test die!!");
-         $this->broadlink_devices_scan($out);
-  }
   if ($this->view_mode=='delete_dev_httpbrige_devices') {
    $this->delete_dev_httpbrige_devices($this->id);
    $this->redirect("?data_source=dev_httpbrige_devices");
   }
+  if ($this->view_mode=='broadlink_devices_scan') {
+  //print("View - broadlink_devices_scan");
+         $this->broadlink_devices_scan($out);
+  }
+
  }
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
@@ -205,17 +205,16 @@ function usual(&$out) {
  function search_dev_httpbrige_devices(&$out) {
   require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_search.inc.php');
  }
-
-
 /**
-* scan_ssdp_devices search
+* broadlink_devices_scan search
 *
 * @access public
 */
   function broadlink_devices_scan(&$out) {
-	 // print ("in scan_ssdp_devices");
+    //print("in metod broadlink_devices_scan");
         require(DIR_MODULES.$this->name.'/broadlink_devices_scan.inc.php');
     }
+
 /**
 * dev_httpbrige_devices edit/add
 *

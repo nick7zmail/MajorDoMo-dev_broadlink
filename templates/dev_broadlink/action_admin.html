@@ -1,67 +1,71 @@
+
 <!-- table zwave_devices search -->
 <div>
-  <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;">
-    <#LANG_SETUP#>
-  </a> | <a class="btn btn-primary" href="?view_mode=broadlink_devices_scan">Scan</a>
+<a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>
+[#if API_TYPE="php"#]
+| <a class="btn btn-primary" href="?view_mode=broadlink_devices_scan">Scan</a>
+[#endif#]
 </div>
 <div style="display:none" id='api_settings'>
-  &nbsp;
-  <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
-    <fieldset>
-      <div class="form-group">
-        <label class="control-label" [#if ERR_API_TYPE#] style="color:red;font-weight:bold" [#endif#]>
+&nbsp;
+<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+<fieldset>
+<div class="form-group">
+ <label class="control-label"[#if ERR_API_TYPE#] style="color:red;font-weight:bold"[#endif#]>
  API:
  </label>
-        <div class="controls">
-          <input type="radio" name="api_type" value="rm-brige" [#if API_TYPE="" || API_TYPE="rm-brige" #] checked[#endif#]>          RM-Bridge &nbsp;&nbsp;&nbsp;
-          <input type="radio" name="api_type" value="httpbrige" [#if API_TYPE="httpbrige" #] checked[#endif#]> BroadlinkHTTPBridge
-          &nbsp;&nbsp;&nbsp;
-          <input type="radio" name="api_type" value="php" [#if API_TYPE="php" #] checked[#endif#]> PHP (aka module-only)
-        </div>
-      </div>
-
-
-
-      [#if API_TYPE="httpbrige"#]
-      <div class="form-group">
-        <label class="control-label" [#if ERR_API_URL#] style="color:red;font-weight:bold" [#endif#]>
+ <div class="controls">
+ <input type="radio" name="api_type" value="rm-brige"[#if API_TYPE="" || API_TYPE="rm-brige"#] checked[#endif#]> RM-Bridge
+ &nbsp;&nbsp;&nbsp;
+ <input type="radio" name="api_type" value="httpbrige"[#if API_TYPE="httpbrige"#] checked[#endif#]> BroadlinkHTTPBridge
+ &nbsp;&nbsp;&nbsp;
+ <input type="radio" name="api_type" value="php"[#if API_TYPE="php"#] checked[#endif#]> PHP (aka module-only)
+ </div>
+</div>
+[#if API_TYPE="httpbrige"#]
+<div class="form-group">
+ <label class="control-label"[#if ERR_API_URL#] style="color:red;font-weight:bold"[#endif#]>
  API URL:
  (http://xxx.xxx.xxx.xxx:port)
  </label>
-        <div class="controls"><input type="text" name="api_url" value="[#API_URL#]" class="input"></div>
-      </div>
-      [#endif#] [#if API_TYPE="php"#]
-      <div class="form-group">
-        <label class="control-label" [#if ERR_API_TYPE#] style="color:red;font-weight:bold" [#endif#]>
+ <div class="controls"><input type="text" name="api_url" value="[#API_URL#]" class="input"></div>
+</div>
+[#endif#]
+[#if API_TYPE="php"#]
+<div class="form-group">
+ <label class="control-label"[#if ERR_API_TYPE#] style="color:red;font-weight:bold"[#endif#]>
  Метод активации команд:
  </label>
-        <div class="controls">
-          <input type="radio" name="api_method" value="obj" [#if API_METHOD="" || API_METHOD=="obj" #] checked[#endif#]>          Обьект.свойство &nbsp;&nbsp;&nbsp;
-          <input type="radio" name="api_method" value="url" [#if API_METHOD=="url" #] checked[#endif#]> Ссылка (getURL)
-        </div>
-      </div>
-      [#endif#]
-      <div class="form-actions">
-        <button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
-        <input type="hidden" name="view_mode" value="update_settings">
-        <input type="hidden" name="mode" value="update">
-      </div>
-    </fieldset>
-  </form>
-</div><br> [#if API_TYPE="rm-brige" || API_TYPE=""#] 
-[#inc rm-brige/action_admin.html#] 
-[#endif API_TYPE#]
- [#if API_TYPE="httpbrige"#]
-[#inc httpbrige/action_admin.html#]
- [#endif API_TYPE#] 
- [#if API_TYPE="php"#] 
- [#inc php/action_admin.html#]
+ <div class="controls">
+ <input type="radio" name="api_method" value="obj"[#if API_METHOD="" || API_METHOD=="obj"#] checked[#endif#]> Обьект.свойство
+ &nbsp;&nbsp;&nbsp;
+ <input type="radio" name="api_method" value="url"[#if API_METHOD=="url"#] checked[#endif#]> Ссылка (getURL)
+ </div>
+</div>
+[#endif#]
+<div class="form-actions">
+<button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
+<input type="hidden" name="view_mode" value="update_settings">
+<input type="hidden" name="mode" value="update">
+</div>
+</fieldset>
+</form>
+</div><br>
 
-<!-- table broadlink_devices_scan edit -->
-[#if VIEW_MODE="broadlink_devices_scan"#] 
+ [#if API_TYPE="rm-brige" || API_TYPE=""#]
+  [#inc rm-brige/action_admin.html#]
+ [#endif API_TYPE#]
+
+ [#if API_TYPE="httpbrige"#]
+   [#inc httpbrige/action_admin.html#]
+ [#endif API_TYPE#]
+
+ [#if API_TYPE="php"#]
+   [#inc php/action_admin.html#]
+ [#endif API_TYPE#]
+
+ <!-- table broadlink_devices_scan edit -->
+[#if VIEW_MODE="broadlink_devices_scan"#]
 [#inc broadlink_devices_scan.html#]
  [#endif VIEW_MODE#]
 <!-- / table broadlink_devices_scan edit -->
-
-
-[#endif API_TYPE#]
