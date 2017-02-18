@@ -24,6 +24,9 @@
   [#if API_METHOD=="url"#]
   <td>Ссылка URL</td>
   [#endif#]
+  [#if API_METHOD=="code"#]
+  <td>Код для использования</td>
+  [#endif#]
   <td>&nbsp;</td>
  </tr>
  [#begin PROPERTIES#]
@@ -35,7 +38,10 @@
   <td valign="top"><input type="text" name="linked_property[#ID#]" id="linked_property[#ID#]" value="[#LINKED_PROPERTY#]"></td>
   [#endif#]
   [#if API_METHOD=="url"#]
-  <td valign="top">getURL('/modules/dev_broadlink/command.php?command=[#TITLE#]');</td>
+  <td valign="top">getURL('localhost/modules/dev_broadlink/command.php?command=[#TITLE#]');</td>
+  [#endif#]
+  [#if API_METHOD=="code"#]
+  <td valign="top">include('modules/dev_broadlink/command.php');<br>brLinkCommand('[#TITLE#]');</td>
   [#endif#]
   [#module name="linkedobject" object_field="linked_object<#PROPERTIES.ID#>" property_field="linked_property<#PROPERTIES.ID#>" method_field="linked_method<#PROPERTIES.ID#>" width="200"#]
   <td><a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&test_id=[#ID#]" class="btn btn-default"><i class="glyphicon glyphicon-flash"></i>

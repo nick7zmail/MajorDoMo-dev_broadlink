@@ -1,10 +1,11 @@
 
 <!-- table zwave_devices search -->
 <div>
-<a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><#LANG_SETUP#></a>
-[#if API_TYPE="php"#]
-| <a class="btn btn-primary" href="?view_mode=broadlink_devices_scan">Scan</a>
-[#endif#]
+<a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>
+<div class="float-right">
+	<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#about">О модуле&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
+	</button>
+</div>
 </div>
 <div style="display:none" id='api_settings'>
 &nbsp;
@@ -40,6 +41,7 @@
  <input type="radio" name="api_method" value="obj"[#if API_METHOD="" || API_METHOD=="obj"#] checked[#endif#]> Обьект.свойство
  &nbsp;&nbsp;&nbsp;
  <input type="radio" name="api_method" value="url"[#if API_METHOD=="url"#] checked[#endif#]> Ссылка (getURL)
+ <input type="radio" name="api_method" value="code"[#if API_METHOD=="code"#] checked[#endif#]> Код
  </div>
 </div>
 [#endif#]
@@ -63,9 +65,8 @@
  [#if API_TYPE="php"#]
    [#inc php/action_admin.html#]
  [#endif API_TYPE#]
+ 
+ <div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
+[#inc about.html#]
+</div>
 
- <!-- table broadlink_devices_scan edit -->
-[#if VIEW_MODE="broadlink_devices_scan"#]
-[#inc broadlink_devices_scan.html#]
- [#endif VIEW_MODE#]
-<!-- / table broadlink_devices_scan edit -->
