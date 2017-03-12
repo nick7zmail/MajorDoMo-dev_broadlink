@@ -438,13 +438,13 @@ function processSubscription($event_name, $details='') {
 						sg($rec['LINKED_OBJECT'].'.noise_word', $response['noise_word']);
 					}
 			}
-			if ($rec['TYPE']=='sp2') {
+			if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
 				include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 				$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 				$rm->Auth();
 				$response = $rm->Check_Power();	
 					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.check', $response);
+						sg($rec['LINKED_OBJECT'].'.status', $response);
 					}
 			}
 			if ($rec['TYPE']=='mp1') {
@@ -453,10 +453,10 @@ function processSubscription($event_name, $details='') {
 				$rm->Auth();
 				$response = $rm->Check_Power();	
 					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.check1', $response[0]);
-						sg($rec['LINKED_OBJECT'].'.check2', $response[1]);
-						sg($rec['LINKED_OBJECT'].'.check3', $response[2]);
-						sg($rec['LINKED_OBJECT'].'.check4', $response[3]);
+						sg($rec['LINKED_OBJECT'].'.status1', $response[0]);
+						sg($rec['LINKED_OBJECT'].'.status2', $response[1]);
+						sg($rec['LINKED_OBJECT'].'.status3', $response[2]);
+						sg($rec['LINKED_OBJECT'].'.status4', $response[3]);
 					}
 			}
 			if(isset($response) && $response!='') {
