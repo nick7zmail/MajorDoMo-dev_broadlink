@@ -443,7 +443,7 @@ function processSubscription($event_name, $details='') {
 				$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 				$rm->Auth();
 				$response = $rm->Check_Power();	
-					if(isset($response) && $response!='') {
+					if(isset($response)) {
 						sg($rec['LINKED_OBJECT'].'.status', $response);
 					}
 			}
