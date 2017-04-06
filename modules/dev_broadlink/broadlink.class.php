@@ -828,12 +828,10 @@ class MP1 extends Broadlink{
         $data = array();
 
         if($state = $this->Check_Power_Raw()){
-
-            $data[0] = bool($state & 0x01);
-            $data[1] = bool($state & 0x02);
-            $data[2] = bool($state & 0x04);
-            $data[3] = bool($state & 0x08);
-
+			if ($state & 0x01) $data[0] = 1; else $data[0] = 0;
+			if ($state & 0x02) $data[1] = 1; else $data[1] = 0;
+			if ($state & 0x04) $data[2] = 1; else $data[2] = 0;
+			if ($state & 0x08) $data[3] = 1; else $data[3] = 0; 
         }
 
         return $data;
