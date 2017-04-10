@@ -32,7 +32,7 @@
 			$json['hex_number'] .= sprintf("%02x", $value);
 		}
 		if(count($json['hex']) > 0){
-			$prop=array('TITLE'=>'new_command','VALUE'=>$json['hex_number'],'DEVICE_ID'=>$rec['ID'],);
+			$prop=array('TITLE'=>($this->title_new ? $this->title_new : 'new_command'),'VALUE'=>$json['hex_number'],'DEVICE_ID'=>$rec['ID'],);
 			$new_id=SQLInsert('dev_broadlink_commands',$prop);
 			$out['OK']=1;
 		} else {

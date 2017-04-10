@@ -67,6 +67,7 @@ function getParams() {
   global $edit_mode;
   global $data_source;
   global $tab;
+  global $title_new;
 
    if (isset($title)) {
    $this->title=$title;
@@ -97,6 +98,9 @@ function getParams() {
   }
   if (isset($tab)) {
    $this->tab=$tab;
+  }
+  if (isset($title_new)) {
+   $this->title_new=$title_new;
   }
 }
 /**
