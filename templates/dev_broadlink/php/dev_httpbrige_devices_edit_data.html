@@ -49,8 +49,13 @@
  </tr>
  [#end PROPERTIES#]
  <tr>
-  <td colspan="20">
-   <#LANG_ADD#>: <input type="text" name="title_new" value="">
+  <td>
+   <#LANG_ADD#>: <input type="text" id="title_new" name="title_new" value="">
+  </td>
+  <td colspan="19">
+  <div class="col-lg-4">
+	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&tab=data&mode=learn" onclick="this.href+='&title_new='+document.getElementById('title_new').value" class="btn btn-default">Обучить коду</a>
+  </div>
   </td>
  </tr>
 </table> 
