@@ -18,8 +18,14 @@
 		$json = array();
 		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 		$rm->Auth();
+
 		$rm->Enter_learning();
-		sleep(10);
+		$i = 0;
+		do {
+			sleep(1);
+			$json['hex'] = $rm->Check_data();
+		} while((count($json[hex]) == 0) && ($i++ < 10));
+
 		$json['hex'] = $rm->Check_data();
 		$json['hex_number'] = '';
 		foreach ($json['hex'] as $value) {
