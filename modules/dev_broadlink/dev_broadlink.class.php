@@ -290,13 +290,13 @@ function usual(&$out) {
     }
    }
   } else {
+	include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 	$table='dev_broadlink_commands';
 	$properties=SQLSelect("SELECT * FROM $table WHERE LINKED_OBJECT LIKE '".DBSafe($object)."' AND LINKED_PROPERTY LIKE '".DBSafe($property)."'");
 	$total=count($properties);
 	if ($total) {
     for($i=0;$i<$total;$i++) {
      if ($value==1) {
-		 	include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 			$id=$properties[$i]['DEVICE_ID'];
 			$data=$properties[$i]['VALUE'];
 			$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
@@ -312,29 +312,19 @@ function usual(&$out) {
    $total2=count($properties2);
    if ($total2) {
 	for($i=0;$i<$total2;$i++) {
+		$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
+		$rm->Auth();
 	  if ($properties2[$i]['TYPE'] == 'sp2' || $properties2[$i]['TYPE'] == 'spmini' || $properties2[$i]['TYPE'] == 'sp3') {	
 		if ($value==1) {
-			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
-			$rm->Auth();
 			$rm->Set_Power(1);
 		} else {
-			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
-			$rm->Auth();
 			$rm->Set_Power(0);			
 		}
 	  }
 	  if ($properties2[$i]['TYPE'] == 'mp1') {	
 		if ($value==1) {
-			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
-			$rm->Auth();
 			$rm->Set_Power(substr($property, -1), 1);			
 		} else {
-			include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-			$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
-			$rm->Auth();
 			$rm->Set_Power(substr($property, -1), 0);			
 		}
 	  }
@@ -414,58 +404,53 @@ function processSubscription($event_name, $details='') {
 		}
 	} else {
 		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-		for ($i = 1; $i <= count($db_rec); $i++) {
+		foreach ($db_rec as $key => $rec) {
 			$response = '';
-			$rec=$db_rec[$i-1];
-			if ($rec['TYPE']=='rm') {
-					$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-					$rm->Auth();
-					$response = $rm->Check_temperature();
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
-					}
-			}
-			if ($rec['TYPE']=='rm3') {
-			}
-			if ($rec['TYPE']=='a1') {
-					$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-					$rm->Auth();
-					$response = $rm->Check_sensors();
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response['temperature']);
-						sg($rec['LINKED_OBJECT'].'.humidity', (float)$response['humidity']);
-						sg($rec['LINKED_OBJECT'].'.noise', (int)$response['noise']);
-						sg($rec['LINKED_OBJECT'].'.light', (int)$response['light']);
-						sg($rec['LINKED_OBJECT'].'.air_quality', (int)$response['air_quality']);	
-						sg($rec['LINKED_OBJECT'].'.light_word', $response['light_word']);
-						sg($rec['LINKED_OBJECT'].'.air_quality_word', $response['air_quality_word']);
-						sg($rec['LINKED_OBJECT'].'.noise_word', $response['noise_word']);
-					}
-			}
-			if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
-				include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-				$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+			if(!is_null($rm)) {
 				$rm->Auth();
-				$response = $rm->Check_Power();	
-					if(isset($response)) {
-						sg($rec['LINKED_OBJECT'].'.status', $response);
-					}
-			}
-			if ($rec['TYPE']=='mp1') {
-				include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-				$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-				$rm->Auth();
-				$response = $rm->Check_Power();	
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.status1', $response[0]);
-						sg($rec['LINKED_OBJECT'].'.status2', $response[1]);
-						sg($rec['LINKED_OBJECT'].'.status3', $response[2]);
-						sg($rec['LINKED_OBJECT'].'.status4', $response[3]);
-					}
-			}
-			if(isset($response) && $response!='') {
-				$rec['UPDATED']=date('Y-m-d H:i:s');
-				SQLUpdate('dev_httpbrige_devices', $rec);
+				if ($rec['TYPE']=='rm') {
+						$response = $rm->Check_temperature();
+						if(isset($response) && $response!='') {
+							sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
+						}
+				}
+				if ($rec['TYPE']=='rm3') {
+				}
+				if ($rec['TYPE']=='a1') {
+						$response = $rm->Check_sensors();
+						if(isset($response) && $response!='') {
+							sg($rec['LINKED_OBJECT'].'.temperature', (float)$response['temperature']);
+							sg($rec['LINKED_OBJECT'].'.humidity', (float)$response['humidity']);
+							sg($rec['LINKED_OBJECT'].'.noise', (int)$response['noise']);
+							sg($rec['LINKED_OBJECT'].'.light', (int)$response['light']);
+							sg($rec['LINKED_OBJECT'].'.air_quality', (int)$response['air_quality']);	
+							sg($rec['LINKED_OBJECT'].'.light_word', $response['light_word']);
+							sg($rec['LINKED_OBJECT'].'.air_quality_word', $response['air_quality_word']);
+							sg($rec['LINKED_OBJECT'].'.noise_word', $response['noise_word']);
+						}
+				}
+				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
+					$response = $rm->Check_Power();	
+						if(isset($response)) {
+							sg($rec['LINKED_OBJECT'].'.status', $response);
+						}
+				}
+				if ($rec['TYPE']=='mp1') {
+					$response = $rm->Check_Power();	
+						if(isset($response) && $response!='') {
+							sg($rec['LINKED_OBJECT'].'.status1', $response[0]);
+							sg($rec['LINKED_OBJECT'].'.status2', $response[1]);
+							sg($rec['LINKED_OBJECT'].'.status3', $response[2]);
+							sg($rec['LINKED_OBJECT'].'.status4', $response[3]);
+						}
+				}
+				if(isset($response) && $response!='') {
+					$rec['UPDATED']=date('Y-m-d H:i:s');
+					SQLUpdate('dev_httpbrige_devices', $rec);
+				}
+			} else {
+				DebMes('Device '.$rec['TITLE'].' is not available');
 			}
 		}
 	}
