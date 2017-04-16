@@ -159,6 +159,27 @@ function admin(&$out) {
    $this->saveConfig();
    $this->redirect("?");
  }
+ if ($this->mode=='save_api_rm') {
+	 $this->getConfig();
+	 $this->config['API']='rm-brige';
+	 $this->saveConfig();
+	 $this->redirect("?");
+ }
+ if ($this->mode=='save_api_hb') {
+	 $this->getConfig();
+	 $this->config['API']='httpbrige';
+	 $this->saveConfig();
+	 $this->redirect("?");
+ }
+ if ($this->mode=='save_api_php') {
+	 $this->getConfig();
+	 $this->config['API']='php';
+	 $this->saveConfig();
+	 $this->redirect("?");
+ }
+ 
+ 
+ 
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
  }
@@ -342,7 +363,7 @@ function processSubscription($event_name, $details='') {
  function check_params() {
 	$this->getConfig();
 	$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
-	if ($this->config['API_URL']=='httpbrige') {
+	if ($this->config['API']=='httpbrige') {
 		for ($i = 1; $i <= count($db_rec); $i++) {
 			$response ='';
 			$rec=$db_rec[$i-1];

@@ -1,5 +1,6 @@
 
 <!-- table zwave_devices search -->
+[#if API_TYPE!=""#]
 <div>
 <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>
 <div class="float-right">
@@ -53,8 +54,13 @@
 </fieldset>
 </form>
 </div><br>
+[#endif#]
 
- [#if API_TYPE="rm-brige" || API_TYPE=""#]
+ [#if API_TYPE=""#]
+  [#inc first_start.html#]
+ [#endif API_TYPE#]
+ 
+ [#if API_TYPE="rm-brige"#]
   [#inc rm-brige/action_admin.html#]
  [#endif API_TYPE#]
 
