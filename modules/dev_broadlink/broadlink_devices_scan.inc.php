@@ -33,12 +33,10 @@ $current .= "in if $res[0]['ID']\n";
     }
     $out['RESULT'] = $res;
 }
-//$out['RESULT'] = $res;
 
 
 function Scan()
 {
-//print("in scan");
 $result = array();
 $devices = Broadlink::Discover();
 
@@ -51,19 +49,9 @@ $devices = Broadlink::Discover();
 	$obj['HOST'] = $device->host();
 	$obj['MODEL'] = $device->model();
 
-	if($obj['MODEL'] == "RM2"){
-
-		$device->Auth();
-		$temperature = $device->Check_temperature();
-		$obj['TEMPERATURE'] = $temperature;
-	}
-	else if($obj['MODEL'] == "A1"){
-
-		$device->Auth();
-		$data = $device->Check_sensors();
-
-		$obj = array_merge($obj, $data);
-
+	if($obj['MODEL'] == "MP1" || $obj['MODEL'] == "SPmini"){
+		$hostarr=explode('.', $obj['HOST']);
+		$obj['HOST']=$hostarr[3].'.'.$hostarr[2].'.'.$hostarr[1].'.'.$hostarr[0];
 	}
 	array_push($result, $obj);
 }

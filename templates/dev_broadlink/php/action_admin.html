@@ -10,7 +10,6 @@
  [#if VIEW_MODE="edit_dev_httpbrige_devices"#]
    [#if ID!=""#]
    [#if TITLE!=""#]<h4>[#TITLE#]</h4>[#endif TITLE#]
-   [#if TYPE=="rm" || TYPE=="rm3"#]
 <ul class="nav nav-tabs">
   <li[#if TAB=""#] class="active"[#endif#]>
    <a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab="><#LANG_GENERAL#></a>
@@ -19,7 +18,6 @@
    <a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab=data">&#060#LANG_DATA#&#062</a>
   </li>
 </ul>
-[#endif TYPE#]
 &nbsp;<br/>
    [#endif ID#]
    [#if TAB=""#]

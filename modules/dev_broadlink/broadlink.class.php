@@ -612,52 +612,52 @@ class A1 extends Broadlink{
 
                 switch ($data['light']) {
                     case 0:
-                        $data['light_word'] = 'dark';
+                        $data['light_word'] = constant('LANG_BR_DARK');
                         break;
                     case 1:
-                        $data['light_word'] = 'dim';
+                        $data['light_word'] = constant('LANG_BR_DIM');
                         break;                        
                     case 2:
-                        $data['light_word'] = 'normal';
+                        $data['light_word'] = constant('LANG_BR_NORMAL');
                         break;
                     case 3:
-                        $data['light_word'] = 'bright';
+                        $data['light_word'] = constant('LANG_BR_BRIGHT');
                         break;
                     default:
-                        $data['light_word'] = 'unknown';
+                        $data['light_word'] = constant('LANG_BR_UNKNOWN');
                         break;
                 }
 
                 switch ($data['air_quality']) {
                     case 0:
-                        $data['air_quality_word'] = 'excellent';
+                        $data['air_quality_word'] = constant('LANG_BR_EXCELLENT');
                         break;
                     case 1:
-                        $data['air_quality_word'] = 'good';
+                        $data['air_quality_word'] = constant('LANG_BR_GOOD');
                         break;                        
                     case 2:
-                        $data['air_quality_word'] = 'normal';
+                        $data['air_quality_word'] = constant('LANG_BR_NORMAL');
                         break;
                     case 3:
-                        $data['air_quality_word'] = 'bad';
+                        $data['air_quality_word'] = constant('LANG_BR_BAD');
                         break;
                     default:
-                        $data['air_quality_word'] = 'unknown';
+                        $data['air_quality_word'] = constant('LANG_BR_UNKNOWN');
                         break;
                 }
 
                 switch ($data['noise']) {
                     case 0:
-                        $data['noise_word'] = 'quiet';
+                        $data['noise_word'] = constant('LANG_BR_QUIET');
                         break;
                     case 1:
-                        $data['noise_word'] = 'normal';
+                        $data['noise_word'] = constant('LANG_BR_NORMAL');
                         break;                        
                     case 2:
-                        $data['noise_word'] = 'noisy';
+                        $data['noise_word'] = constant('LANG_BR_NOISY');
                         break;
                     default:
-                        $data['noise_word'] = 'unknown';
+                        $data['noise_word'] = constant('LANG_BR_UNKNOWN');
                         break;
                 }
 
@@ -827,13 +827,12 @@ class MP1 extends Broadlink{
 
         $data = array();
 
-        if($state = $this->Check_Power_Raw()){
+        if(!is_null($state = $this->Check_Power_Raw())){
 			if ($state & 0x01) $data[0] = 1; else $data[0] = 0;
 			if ($state & 0x02) $data[1] = 1; else $data[1] = 0;
 			if ($state & 0x04) $data[2] = 1; else $data[2] = 0;
 			if ($state & 0x08) $data[3] = 1; else $data[3] = 0; 
         }
-
         return $data;
 
     }  

@@ -44,7 +44,6 @@
  IP устройства:
  </label>
  <div class="col-lg-4"><input type="text" class="form-control" name="ip" value="[#IP#]" id="ip"></div>
- <!--[#if IP!=""#]<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=check_ip" class="btn btn-default">Проверить устройство</a>[#endif#] -->
 </div>
 
 <!-- DEVTYPE (varchar) -->
@@ -72,38 +71,6 @@
  </div>
 </div>
 [#endif#]
-[#if TYPE=="sp2" || TYPE=="spmini" || TYPE=="sp3"#]
-<div class="form-group">
- <label class="col-lg-3 control-label">
-Управление розеткой (тест):
- </label>
- <div class="col-lg-4">
-	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=sp_on" class="btn btn-default">Включить</a>
-	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=sp_off" class="btn btn-default">Выключить</a>
- </div>
-</div>
-[#endif#]
-[#endif#]
-[#if TYPE=="mp1"#]
-<div class="form-group">
- <label class="col-lg-3 control-label">
-Управление розеткой №1 (тест):
- </label>
- <div class="col-lg-4">
-	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=mp_on" class="btn btn-default">Включить</a>
-	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=mp_off" class="btn btn-default">Выключить</a>
- </div>
-</div>
-[#endif#]
-[#if TYPE!="rm3"#]
-<!-- LINKED_OBJECT (varchar) -->
-<div class="form-group">
- <label class="col-lg-3 control-label"[#if ERR_LINKED_OBJECT#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_LINKED_OBJECT#>:
- </label>
- <div class="col-lg-4"><input type="text" class="form-control" name="linked_object" value="[#LINKED_OBJECT#]" id="linked_object"></div>
-</div>
-[#endif#]
 <!-- UPDATED (datetime) -->
 <div class="form-group">
  <label class="col-lg-3 control-label"[#if ERR_UPDATED#] style="color:red;font-weight:bold"[#endif#]>
@@ -128,7 +95,7 @@
 <input type="hidden" name="mode" value="update">
 <input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
 <input type="hidden" name="tab" value="<#TAB#>">
-        </div>
+</div>
 </div>
 </fieldset>
 </form>

@@ -76,21 +76,13 @@
 	  if ($this->config['API_URL']=='httpbrige') {
 		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=on';
 		   getUrl($api_command);
-	  } else {
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			$rm->Auth();
-			$rm->Set_Power(1);			  
 	  }
   }
   if ($this->mode=='sp_off') {
 	  if ($this->config['API_URL']=='httpbrige') {
 		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=off';
 		   getUrl($api_command);
-      } else {
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			$rm->Auth();
-			$rm->Set_Power(0);			  
-	  }
+      } 
   }
   if ($this->mode=='sp_light_on') {
    $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=&action=lighton';
@@ -100,18 +92,7 @@
    $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=&action=lightoff';
    getUrl($api_command);
   }
-  if ($this->mode=='mp_on') {
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			$rm->Auth();
-			$rm->Set_Power(1, 1);	
-  }
-  if ($this->mode=='mp_off') {
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			$rm->Auth();
-			$rm->Set_Power(1, 1);	
-  }
-  if ($this->mode=='check_ip') {
-  }
+
   if ($this->mode=='update') {
    $ok=1;
    
@@ -158,24 +139,16 @@
     } else {
      $new_rec=1;
      $rec['ID']=SQLInsert($table_name, $rec); // adding new record
+	 if ($this->config['API_URL']=='httpbrige') {
 		if ($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
 			 sg($rec['LINKED_OBJECT'].'.'.'status', '');
 			 addLinkedProperty($rec['LINKED_OBJECT'], 'status', $this->name);
 		}
-		if ($rec['TYPE'] == 'sp3' && $this->config['API_URL']=='httpbrige') {
+		if ($rec['TYPE'] == 'sp3') {
 			 sg($rec['LINKED_OBJECT'].'.'.'lightstatus', '');
 			 addLinkedProperty($rec['LINKED_OBJECT'], 'lightstatus', $this->name);
 		}
-		if ($rec['TYPE'] == 'mp1') {
-			 sg($rec['LINKED_OBJECT'].'.'.'status1', '');
-			 sg($rec['LINKED_OBJECT'].'.'.'status2', '');
-			 sg($rec['LINKED_OBJECT'].'.'.'status3', '');
-			 sg($rec['LINKED_OBJECT'].'.'.'status4', '');
-			 addLinkedProperty($rec['LINKED_OBJECT'], 'status1', $this->name);
-			 addLinkedProperty($rec['LINKED_OBJECT'], 'status2', $this->name);
-			 addLinkedProperty($rec['LINKED_OBJECT'], 'status3', $this->name);
-			 addLinkedProperty($rec['LINKED_OBJECT'], 'status4', $this->name);
-		}
+	 }
     }
     $out['OK']=1;
    } else {
@@ -230,7 +203,25 @@
 	$data=SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE ID='$test_id'");
 	$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 	$rm->Auth();
-	$rm->Send_data($data['VALUE']);
+	if($rec['TYPE']=='rm'||$rec['TYPE']=='rm3'){
+		$rm->Send_data($data['VALUE']);
+	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
+		if($data['VALUE']==1){
+			$data['VALUE']=0;
+		} else {
+			$data['VALUE']=1;		
+		}
+		SQLUpdate('dev_broadlink_commands', $data);	
+		$rm->Set_Power($data['VALUE']);
+	} elseif($rec['TYPE'] == 'mp1') {
+		if($data['VALUE']){
+			$data['VALUE']='0';
+		} else {
+			$data['VALUE']='1';
+		}
+		SQLUpdate('dev_broadlink_commands', $data);
+		$rm->Set_Power(substr($data['TITLE'], -1), $data['VALUE']);
+	}
    }
    $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
    $total=count($properties);

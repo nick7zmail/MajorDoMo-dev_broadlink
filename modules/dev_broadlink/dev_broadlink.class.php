@@ -177,7 +177,9 @@ function admin(&$out) {
 	 $this->saveConfig();
 	 $this->redirect("?");
  }
- 
+ if ($this->mode=='check_params') {
+	 $this->check_params();
+ }
  
  
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
@@ -317,39 +319,26 @@ function usual(&$out) {
 	$total=count($properties);
 	if ($total) {
     for($i=0;$i<$total;$i++) {
-     if ($value==1) {
-			$id=$properties[$i]['DEVICE_ID'];
-			$data=$properties[$i]['VALUE'];
-			$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			$rm->Auth();
-			$rm->Send_data($data);
-			sg($object.".".$property, 0);
-	 }
-    }
-   }
-   $table2='dev_httpbrige_devices';
-   $properties2=SQLSelect("SELECT * FROM $table2 WHERE LINKED_OBJECT LIKE '".DBSafe($object)."'");
-   $total2=count($properties2);
-   if ($total2) {
-	for($i=0;$i<$total2;$i++) {
-		$rm = Broadlink::CreateDevice($properties2[$i]['IP'], $properties2[$i]['MAC'], 80, $properties2[$i]['DEVTYPE']);
+		$id=$properties[$i]['DEVICE_ID'];
+		$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
+		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 		$rm->Auth();
-	  if ($properties2[$i]['TYPE'] == 'sp2' || $properties2[$i]['TYPE'] == 'spmini' || $properties2[$i]['TYPE'] == 'sp3') {	
-		if ($value==1) {
-			$rm->Set_Power(1);
-		} else {
-			$rm->Set_Power(0);			
-		}
-	  }
-	  if ($properties2[$i]['TYPE'] == 'mp1') {	
-		if ($value==1) {
-			$rm->Set_Power(substr($property, -1), 1);			
-		} else {
-			$rm->Set_Power(substr($property, -1), 0);			
-		}
-	  }
-	}
+		if ($rec['TYPE']=='rm' || $rec['TYPE']=='rm3') {
+			 if ($value==1) {
+					$data=$properties[$i]['VALUE'];
+					$rm->Send_data($data);
+					sg($object.".".$property, 0);
+			 }
+		} elseif ($rec['TYPE']=='sp2' || $rec['TYPE']=='spmini' || $rec['TYPE']=='sp3') {
+				$rm->Set_Power($value);
+				$properties[$i]['VALUE']=$value;
+				SQLUpdate('dev_broadlink_commands', $properties[$i]);
+		} elseif ($rec['TYPE']=='mp1') {
+				$rm->Set_Power(substr($properties[$i]['TITLE'], -1), $value);
+				$properties[$i]['VALUE']=$value;
+				SQLUpdate('dev_broadlink_commands', $properties[$i]);				
+		}	
+    }
    }
   }
  }
@@ -361,120 +350,7 @@ function processSubscription($event_name, $details='') {
  }
  
  function check_params() {
-	$this->getConfig();
-	$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
-	if ($this->config['API']=='httpbrige') {
-		for ($i = 1; $i <= count($db_rec); $i++) {
-			$response ='';
-			$rec=$db_rec[$i-1];
-			if ($rec['TYPE']=='rm') {
-					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
-					}
-			}
-			if ($rec['TYPE']=='rm3') {
-			}
-			if ($rec['TYPE']=='a1') {
-					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') { 
-						$json = json_decode($response);	
-						sg($rec['LINKED_OBJECT'].'.temperature', (float)$json->{'temperature'});
-						sg($rec['LINKED_OBJECT'].'.humidity', (float)$json->{'humidity'});
-						sg($rec['LINKED_OBJECT'].'.noise', (int)$json->{'noisy'});
-						sg($rec['LINKED_OBJECT'].'.luminosity', (int)$json->{'light'});
-						sg($rec['LINKED_OBJECT'].'.air', (int)$json->{'air'});	
-					}
-			}
-			if ($rec['TYPE']=='sp2') {
-					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
-					}
-					
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=power ', 0, $ctx);
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.power', $response);
-					}
-			}
-			if ($rec['TYPE']=='spmini') {
-					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
-					}
-			}
-			if ($rec['TYPE']=='sp3') {
-					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
-					}
-					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=lightstatus', 0, $ctx);
-					if(isset($response) && $response!='') {
-						sg($rec['LINKED_OBJECT'].'.lightstatus', $response);
-					}
-			}
-			if(isset($response) && $response!='') {
-				$rec['UPDATED']=date('Y-m-d H:i:s');
-				SQLUpdate('dev_httpbrige_devices', $rec);
-			}
-		}
-	} else {
-		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-		foreach ($db_rec as $key => $rec) {
-			$response = '';
-			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			if(!is_null($rm)) {
-				$rm->Auth();
-				if ($rec['TYPE']=='rm') {
-						$response = $rm->Check_temperature();
-						if(isset($response) && $response!='') {
-							sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
-						}
-				}
-				if ($rec['TYPE']=='rm3') {
-				}
-				if ($rec['TYPE']=='a1') {
-						$response = $rm->Check_sensors();
-						if(isset($response) && $response!='') {
-							sg($rec['LINKED_OBJECT'].'.temperature', (float)$response['temperature']);
-							sg($rec['LINKED_OBJECT'].'.humidity', (float)$response['humidity']);
-							sg($rec['LINKED_OBJECT'].'.noise', (int)$response['noise']);
-							sg($rec['LINKED_OBJECT'].'.light', (int)$response['light']);
-							sg($rec['LINKED_OBJECT'].'.air_quality', (int)$response['air_quality']);	
-							sg($rec['LINKED_OBJECT'].'.light_word', $response['light_word']);
-							sg($rec['LINKED_OBJECT'].'.air_quality_word', $response['air_quality_word']);
-							sg($rec['LINKED_OBJECT'].'.noise_word', $response['noise_word']);
-						}
-				}
-				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
-					$response = $rm->Check_Power();	
-						if(isset($response)) {
-							sg($rec['LINKED_OBJECT'].'.status', $response);
-						}
-				}
-				if ($rec['TYPE']=='mp1') {
-					$response = $rm->Check_Power();	
-						if(isset($response) && $response!='') {
-							sg($rec['LINKED_OBJECT'].'.status1', $response[0]);
-							sg($rec['LINKED_OBJECT'].'.status2', $response[1]);
-							sg($rec['LINKED_OBJECT'].'.status3', $response[2]);
-							sg($rec['LINKED_OBJECT'].'.status4', $response[3]);
-						}
-				}
-				if(isset($response) && $response!='') {
-					$rec['UPDATED']=date('Y-m-d H:i:s');
-					SQLUpdate('dev_httpbrige_devices', $rec);
-				}
-			} else {
-				DebMes('Device '.$rec['TITLE'].' is not available');
-			}
-		}
-	}
+	require(DIR_MODULES.$this->name.'/dev_broadlink_check.inc.php');
  }
 /**
 * Install
