@@ -70,10 +70,11 @@
 			if(!is_null($rm)) {
 				$rm->Auth();
 				$table='dev_broadlink_commands';
+				$id=$rec['ID'];
 				if ($rec['TYPE']=='rm') {
 						$response = $rm->Check_temperature();
 						if(isset($response) && $response!='') {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'temperature'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='temperature' AND DEVICE_ID='$id'");
 							$total=count($properties);
 							if ($total) {
 								$properties['VALUE']=(float)$response;
@@ -94,7 +95,7 @@
 				if ($rec['TYPE']=='a1') {
 						$response = $rm->Check_sensors();
 						if(isset($response) && $response!='') {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'temperature'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='temperature' AND DEVICE_ID='$id'");
 							$total=count($properties);
 							if ($total) {
 								$properties['VALUE']=(float)$response['temperature'];
@@ -108,7 +109,7 @@
 								$properties['TITLE']='temperature';
 								SQLInsert($table, $properties);								
 							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'humidity'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='humidity' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=(float)$response['humidity'];
@@ -122,7 +123,7 @@
 								$properties['TITLE']='humidity';
 								SQLInsert($table, $properties);								
 							}							
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'noise'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='noise' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=(int)$response['noise'];
@@ -136,7 +137,7 @@
 								$properties['TITLE']='noise';
 								SQLInsert($table, $properties);								
 							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'light'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='light' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=(int)$response['light'];
@@ -150,7 +151,7 @@
 								$properties['TITLE']='light';
 								SQLInsert($table, $properties);								
 							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'air_quality'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='air_quality' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=(int)$response['air_quality'];
@@ -164,7 +165,7 @@
 								$properties['TITLE']='air_quality';
 								SQLInsert($table, $properties);								
 							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'light_word'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='light_word' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=$response['light_word'];
@@ -178,7 +179,7 @@
 								$properties['TITLE']='light_word';
 								SQLInsert($table, $properties);								
 							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'noise_word'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='noise_word' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=$response['noise_word'];
@@ -192,7 +193,7 @@
 								$properties['TITLE']='noise_word';
 								SQLInsert($table, $properties);								
 							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'air_quality_word'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='air_quality_word' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=$response['air_quality_word'];
@@ -211,7 +212,7 @@
 				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
 					$response = $rm->Check_Power();	
 						if(isset($response)) {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'status'");
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
 								$properties['VALUE']=(int)$response;
@@ -231,7 +232,7 @@
 					$response = $rm->Check_Power();	
 						if(isset($response) && $response!='') {
 							for($i=0;$i<4;$i++) {
-								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE LIKE 'status".($i+1)."'");
+								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status".($i+1)."' AND DEVICE_ID='$id'");
 								$total=count($properties);
 								if ($total) {
 									$properties['VALUE']=(int)$response[$i];
