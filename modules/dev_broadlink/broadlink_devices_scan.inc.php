@@ -1,5 +1,5 @@
 <?php
-include("broadlink.class.php");
+include_once("broadlink.class.php");
 
 global $session;
 
