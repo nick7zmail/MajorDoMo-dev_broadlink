@@ -2,7 +2,7 @@
 	if (SETTINGS_SITE_LANGUAGE && file_exists(ROOT . 'languages/' . $this->name. '_' .SETTINGS_SITE_LANGUAGE . '.php')) {
 		include_once (ROOT . 'languages/' . $this->name. '_' .SETTINGS_SITE_LANGUAGE . '.php');
 	} else {
-		include_once (ROOT . 'languages/'. $this->name. '_' . 'default.php');
+		include_once (ROOT . 'languages/'. $this->name. '_default.php');
 	}
 	$this->getConfig();
 	$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");

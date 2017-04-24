@@ -197,7 +197,6 @@ function admin(&$out) {
    $this->redirect("?data_source=dev_httpbrige_devices");
   }
   if ($this->view_mode=='broadlink_devices_scan') {
-  //print("View - broadlink_devices_scan");
          $this->broadlink_devices_scan($out);
   }
 

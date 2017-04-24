@@ -38,6 +38,7 @@
 		} else {
 			$out['MESSAGE']='Команда не сохранена';
 		}
+		$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
 	}
   }
     if ($this->mode=='add_from_scan') {
@@ -222,6 +223,7 @@
 		SQLUpdate('dev_broadlink_commands', $data);
 		$rm->Set_Power(substr($data['TITLE'], -1), $data['VALUE']);
 	}
+	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
    }
    $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
    $total=count($properties);
