@@ -546,7 +546,7 @@ class SP2 extends Broadlink{
 
         $packet = self::bytearray(16);
         $packet[0] = 0x02;
-        $packet[4] = $state ? 1 : 0;
+        $packet[4] = (int)$state;
 
         $this->send_packet(0x6a, $packet);
     }
@@ -566,7 +566,9 @@ class SP2 extends Broadlink{
             if(count($enc_payload) > 0){
 
                 $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-                return $payload[0x4] ? true : false;    
+				if ($payload[0x4] & 0x01) $data['power_state'] = 1; else $data['power_state'] = 0;
+				if ($payload[0x4] & 0x02) $data['light_state'] = 1; else $data['light_state'] = 0;	//for sp3		
+				return $data;
             }
 
         }
@@ -603,7 +605,7 @@ class A1 extends Broadlink{
             if(count($enc_payload) > 0){
 
                 $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-                
+
                 $data['temperature'] = ($payload[0x4] * 10 + $payload[0x5]) / 10.0;
                 $data['humidity'] = ($payload[0x6] * 10 + $payload[0x7]) / 10.0;
                 $data['light'] = $payload[0x8];

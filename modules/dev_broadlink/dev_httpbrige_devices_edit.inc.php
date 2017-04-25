@@ -206,7 +206,7 @@
 	$rm->Auth();
 	if($rec['TYPE']=='rm'||$rec['TYPE']=='rm3'){
 		$rm->Send_data($data['VALUE']);
-	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
+	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini') {
 		if($data['VALUE']==1){
 			$data['VALUE']=0;
 		} else {
@@ -214,7 +214,17 @@
 		}
 		SQLUpdate('dev_broadlink_commands', $data);	
 		$rm->Set_Power($data['VALUE']);
-	} elseif($rec['TYPE'] == 'mp1') {
+	} elseif($rec['TYPE'] == 'sp3') {
+		if($data['VALUE']==1){
+			$data['VALUE']=0;
+		} else {
+			$data['VALUE']=1;		
+		}
+		SQLUpdate('dev_broadlink_commands', $data);
+		$powerstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='status' AND DEVICE_ID='".$rec['ID']."'");
+		$lstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='lightstatus' AND DEVICE_ID='".$rec['ID']."'");
+		$rm->Set_Power($powerstat['VALUE']+$lstat['VALUE']*2);
+	}elseif($rec['TYPE'] == 'mp1') {
 		if($data['VALUE']){
 			$data['VALUE']='0';
 		} else {

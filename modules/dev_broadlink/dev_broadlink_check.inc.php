@@ -216,22 +216,39 @@
 				}
 				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
 					$response = $rm->Check_Power();	
-						if(isset($response)) {
+						if(isset($response) && $response!='') {
 							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
 							$total=count($properties);						
 							if ($total) {
-								$properties['VALUE']=(int)$response;
+								$properties['VALUE']=(int)$response['power_state'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
 									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response);
 								}
 							} else {
-								$properties['VALUE']=(int)$response;
+								$properties['VALUE']=(int)$response['power_state'];
 								$properties['DEVICE_ID']=$rec['ID'];
 								$properties['TITLE']='status';
 								SQLInsert($table, $properties);								
 							}
+							if ($rec['TYPE'] == 'sp3') {
+								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='lightstatus' AND DEVICE_ID='$id'");
+								$total=count($properties);
+								if ($total) {
+									$properties['VALUE']=(int)$response['light_state'];
+									SQLUpdate($table, $properties);
+									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response);
+									}
+								} else {
+									$properties['VALUE']=(int)$response['light_state'];
+									$properties['DEVICE_ID']=$rec['ID'];
+									$properties['TITLE']='lightstatus';
+									SQLInsert($table, $properties);								
+								}
 						}
+						}
+						
 				}
 				if ($rec['TYPE']=='mp1') {
 					$response = $rm->Check_Power();	
