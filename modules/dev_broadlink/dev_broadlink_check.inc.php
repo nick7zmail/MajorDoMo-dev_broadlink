@@ -223,7 +223,7 @@
 								$properties['VALUE']=(int)$response['power_state'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['power_state']);
 								}
 							} else {
 								$properties['VALUE']=(int)$response['power_state'];
@@ -238,7 +238,7 @@
 									$properties['VALUE']=(int)$response['light_state'];
 									SQLUpdate($table, $properties);
 									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response);
+										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['light_state']);
 									}
 								} else {
 									$properties['VALUE']=(int)$response['light_state'];
