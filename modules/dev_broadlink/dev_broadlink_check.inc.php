@@ -85,7 +85,7 @@
 								$properties['VALUE']=(float)$response;
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (float)$response);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(float)$response;
@@ -106,7 +106,7 @@
 								$properties['VALUE']=(float)$response['temperature'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (float)$response['temperature']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(float)$response['temperature'];
@@ -120,7 +120,7 @@
 								$properties['VALUE']=(float)$response['humidity'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (float)$response['humidity']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(float)$response['humidity'];
@@ -134,7 +134,7 @@
 								$properties['VALUE']=(int)$response['noise'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['noise']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(int)$response['noise'];
@@ -148,7 +148,7 @@
 								$properties['VALUE']=(int)$response['light'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['light']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(int)$response['light'];
@@ -162,7 +162,7 @@
 								$properties['VALUE']=(int)$response['air_quality'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['air_quality']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(int)$response['air_quality'];
@@ -176,7 +176,7 @@
 								$properties['VALUE']=$response['light_word'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['light_word']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=$response['light_word'];
@@ -190,7 +190,7 @@
 								$properties['VALUE']=$response['noise_word'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['noise_word']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=$response['noise_word'];
@@ -223,7 +223,7 @@
 								$properties['VALUE']=(int)$response['power_state'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['power_state']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 								}
 							} else {
 								$properties['VALUE']=(int)$response['power_state'];
@@ -238,7 +238,7 @@
 									$properties['VALUE']=(int)$response['light_state'];
 									SQLUpdate($table, $properties);
 									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response['light_state']);
+										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 									}
 								} else {
 									$properties['VALUE']=(int)$response['light_state'];
@@ -246,7 +246,7 @@
 									$properties['TITLE']='lightstatus';
 									SQLInsert($table, $properties);								
 								}
-						}
+							}
 						}
 						
 				}
@@ -260,7 +260,7 @@
 									$properties['VALUE']=(int)$response[$i];
 									SQLUpdate($table, $properties);
 									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], (int)$response[$i]);
+										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 									}
 								} else {
 									$properties['VALUE']=(int)$response[$i];
