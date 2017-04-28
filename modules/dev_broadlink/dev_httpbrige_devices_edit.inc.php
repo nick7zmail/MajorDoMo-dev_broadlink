@@ -185,7 +185,7 @@
   }
   }
   
-    if ($this->tab=='data') {
+    if ($this->tab=='data'||$this->tab=='data_usage') {
 		$this->getConfig();
    $new_id=0;
    if ($this->mode=='update') {

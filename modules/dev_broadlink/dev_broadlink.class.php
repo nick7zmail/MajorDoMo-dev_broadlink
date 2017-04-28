@@ -148,14 +148,11 @@ function admin(&$out) {
   $out['API_URL']='http://';
  }
  $out['API_TYPE']=$this->config['API'];
- $out['API_METHOD']=$this->config['API_METHOD'];
  if ($this->view_mode=='update_settings') {
    global $api_type;
    $this->config['API']=$api_type;
    global $api_url;
    $this->config['API_URL']=$api_url;
-   global $api_method;
-   $this->config['API_METHOD']=$api_method;
    $this->saveConfig();
    $this->redirect("?");
  }
