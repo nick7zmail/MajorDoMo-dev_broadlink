@@ -224,7 +224,7 @@
 		$powerstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='status' AND DEVICE_ID='".$rec['ID']."'");
 		$lstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='lightstatus' AND DEVICE_ID='".$rec['ID']."'");
 		$rm->Set_Power($powerstat['VALUE']+$lstat['VALUE']*2);
-	}elseif($rec['TYPE'] == 'mp1') {
+	} elseif($rec['TYPE'] == 'mp1') {
 		if($data['VALUE']){
 			$data['VALUE']='0';
 		} else {
@@ -254,11 +254,21 @@
       if ($old_linked_object && $old_linked_object!=$properties[$i]['LINKED_OBJECT'] && $old_linked_property && $old_linked_property!=$properties[$i]['LINKED_PROPERTY']) {
        removeLinkedProperty($old_linked_object, $old_linked_property, $this->name);
       }
-      if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
-       addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
-      }
      }
-	$properties[$i]['API_METHOD']=$this->config['API_METHOD'];
+	if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
+       addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
+    }
+	if ($properties[$i]['TITLE']=='temperature') {
+		$properties[$i]['SDEVICE_TYPE']='sensor_temp';
+	} elseif ($properties[$i]['TITLE']=='humidity') {
+		$properties[$i]['SDEVICE_TYPE']='sensor_humidity';
+	} elseif ($properties[$i]['TITLE']=='noise' || $properties[$i]['TITLE']=='light' || $properties[$i]['TITLE']=='air_quality' || $properties[$i]['TITLE']=='noise_word' || $properties[$i]['TITLE']=='light_word' || $properties[$i]['TITLE']=='air_quality_word') {
+		$properties[$i]['SDEVICE_TYPE']='sensor_state';
+	} elseif ($properties[$i]['TITLE']=='status' || $properties[$i]['TITLE']=='lightstatus' || $properties[$i]['TITLE']=='status1' || $properties[$i]['TITLE']=='status2' || $properties[$i]['TITLE']=='status3' || $properties[$i]['TITLE']=='status4' ) {
+		$properties[$i]['SDEVICE_TYPE']='relay';
+	} else {
+		//$properties[$i]['SDEVICE_TYPE']='button';
+	}
    }
    $out['PROPERTIES']=$properties;
   }
