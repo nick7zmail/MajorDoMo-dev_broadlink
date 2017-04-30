@@ -60,8 +60,6 @@
    $rec['LINKED_OBJECT']=$linked_object;
    global $linked_property;
    $rec['LINKED_PROPERTY']=$linked_property;
-   global $linked_method;
-   $rec['LINKED_METHOD']=$linked_method;
    global $updated_date;
    global $updated_minutes;
    global $updated_hours;
