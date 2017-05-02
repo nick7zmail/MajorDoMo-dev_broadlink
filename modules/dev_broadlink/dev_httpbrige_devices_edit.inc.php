@@ -121,9 +121,6 @@
   //updating 'LANG_LINKED_PROPERTY' (varchar)
    global $linked_property;
    $rec['LINKED_PROPERTY']=$linked_property;
-  //updating 'LANG_METHOD' (varchar)
-   global $linked_method;
-   $rec['LINKED_METHOD']=$linked_method;
   //updating 'LANG_UPDATED' (datetime)
    global $updated_date;
    global $updated_minutes;
