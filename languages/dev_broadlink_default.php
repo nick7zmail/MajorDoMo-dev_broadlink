@@ -14,7 +14,7 @@ $dictionary=array(
 'BR_GOOD'=>'good',
 'BR_BAD'=>'bad',
 'BR_QUIET'=>'quiet',
-'BR_NOISY'=>'noisy'
+'BR_NOISY'=>'noisy',
 
 //rm_bridge
 'BR_STEP1'=>'Шаг 1: Укажите адрес RM-brige',
