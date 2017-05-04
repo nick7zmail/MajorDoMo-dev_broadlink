@@ -262,7 +262,7 @@
 	} elseif ($properties[$i]['TITLE']=='status' || $properties[$i]['TITLE']=='lightstatus' || $properties[$i]['TITLE']=='status1' || $properties[$i]['TITLE']=='status2' || $properties[$i]['TITLE']=='status3' || $properties[$i]['TITLE']=='status4' ) {
 		$properties[$i]['SDEVICE_TYPE']='relay';
 	} else {
-		//$properties[$i]['SDEVICE_TYPE']='button';
+		$properties[$i]['SDEVICE_TYPE']='button';
 	}
    }
    $out['PROPERTIES']=$properties;

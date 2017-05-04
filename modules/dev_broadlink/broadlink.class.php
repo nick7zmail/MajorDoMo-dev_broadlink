@@ -69,6 +69,9 @@ class Broadlink{
             case 4:
                 return new MP1($h, $m, $p, $d);
                 break;
+			case 5:
+                return new MS1($h, $m, $p, $d);
+                break;
             default:
         } 
 
@@ -182,7 +185,10 @@ class Broadlink{
     			break;
             case 0x4EB5: 
                 $type = "MP1";
-                break;    
+                break;
+            case 0x271F: 
+                $type = "MS1";
+                break;				
     		default:
     			break;
     	}
@@ -264,7 +270,10 @@ class Broadlink{
     			break;
             case 0x4EB5: 
                 $type = 4;
-                break;      
+                break;
+            case 0x271F: 
+                $type = 5;
+                break;   				
     		default:
     			break;
     	}
@@ -376,7 +385,6 @@ class Broadlink{
 			}
 
 			$host = substr($host, 0, strlen($host) - 1);
-
 			$device = Broadlink::CreateDevice($host, $mac, 80, $devtype);
 
 			if($device != NULL){
@@ -804,7 +812,7 @@ class MP1 extends Broadlink{
         $packet[0x06] = 0xae;
         $packet[0x07] = 0xc0;
         $packet[0x08] = 0x01;
-
+		
         $response = $this->send_packet(0x6a, $packet);
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
         
@@ -837,6 +845,44 @@ class MP1 extends Broadlink{
         }
         return $data;
 
+    }  
+
+}
+
+class MS1 extends Broadlink{
+
+    function __construct($h = "", $m = "", $p = 80, $d = 0x271F) {
+
+         parent::__construct($h, $m, $p, $d);
+
+    } 
+	public function Check_Power(){
+
+        $packet = self::bytearray(16);
+        $packet[0] = 0x01;
+
+        $response = $this->send_packet(0x6a, $packet);
+        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+        
+
+        if($err == 0){
+            $enc_payload = array_slice($response, 0x38);
+
+            if(count($enc_payload) > 0){
+
+                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+
+//				foreach($payload as $val) {
+//					file_put_contents ('test_payload', $val.PHP_EOL ,FILE_APPEND);
+//				}
+				return $data;
+            }
+
+        }
+
+        return false;
+
+        
     }  
 
 }
