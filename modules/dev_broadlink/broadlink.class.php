@@ -914,7 +914,7 @@ class S1 extends Broadlink{
 		$data['col_sensors'] = $payload[0x04];
 		for ($i=0;$i<$data['col_sensors'];$i++) {
 			$offset = 0x05+$i*0x53;
-			$status = payload[$offset+0x00]*256+$payload[$offset+0x01];
+			$status = $payload[$offset+0x00]*256+$payload[$offset+0x01];
 			$data[$i]['sensor_number'] = $payload[$offset+0x02];
 			$data[$i]['product_id'] = $payload[$offset+0x04];
 			$data[$i]['photo'] = 'http://jp-clouddb.ibroadlink.com/sensor/picture/'.$data[$i]['product_id'].'.png';
