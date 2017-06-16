@@ -41,8 +41,14 @@
 		$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
 	}
   }
-    if ($this->mode=='add_from_scan') {
-    global $type;
+  if ($this->mode=='set_time') {
+	  if (isset($_GET['time'])) {
+		  $rec['CHTIME']=$_GET['time'];
+		  SQLUpdate('dev_httpbrige_devices', $rec);
+	  }
+  }
+  if ($this->mode=='add_from_scan') {
+   global $type;
    $rec['TYPE']=$type;
    global $title;
    $rec['TITLE']=$title;
@@ -258,6 +264,14 @@
 	if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
        addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
     }
+	if($rec['TYPE']=='s1'){
+		$properties[$i]['DEVTYPE']='s1';
+		$devinfo=json_decode($properties[$i]['VALUE']);
+		$properties[$i]['VAL']=$devinfo->status;
+		$properties[$i]['ZONE']=$devinfo->location;
+		$properties[$i]['PARM']=$devinfo->armPart;
+		$properties[$i]['FARM']=$devinfo->armFull;
+	}	
 	if ($properties[$i]['TITLE']=='temperature') {
 		$properties[$i]['SDEVICE_TYPE']='sensor_temp';
 	} elseif ($properties[$i]['TITLE']=='humidity') {

@@ -339,19 +339,17 @@ function usual(&$out) {
 				$rm->Set_Power(substr($properties[$i]['TITLE'], -1), $value);
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);				
-		}	
+		}elseif ($rec['TYPE']=='s1') {
+				$rm->Set_Arm($value);
+				$properties[$i]['VALUE']=$value;
+				SQLUpdate('dev_broadlink_commands', $properties[$i]);
+		}
     }
    }
   }
  }
  
-function processSubscription($event_name, $details='') {
-  if ($event_name=='HOURLY') {
-		$this->check_params();
-  }
- }
- 
- function check_params() {
+ function check_params($chtime = '') {
 	require(DIR_MODULES.$this->name.'/dev_broadlink_check.inc.php');
  }
 /**
@@ -362,7 +360,7 @@ function processSubscription($event_name, $details='') {
 * @access private
 */
  function install($data='') {
- subscribeToEvent($this->name, 'HOURLY');
+  unsubscribeFromEvent($this->name, 'HOURLY');
   parent::install();
  }
 /**
@@ -396,6 +394,7 @@ dev_httpbrige_devices -
  dev_httpbrige_devices: DEVTYPE varchar(10) NOT NULL DEFAULT ''
  dev_httpbrige_devices: IP varchar(20) NOT NULL DEFAULT ''
  dev_httpbrige_devices: MAC varchar(20) NOT NULL DEFAULT ''
+ dev_httpbrige_devices: CHTIME varchar(10) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: UPDATED datetime

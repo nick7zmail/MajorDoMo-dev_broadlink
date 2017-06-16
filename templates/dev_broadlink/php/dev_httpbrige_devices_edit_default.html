@@ -20,6 +20,7 @@
  </label>
  <div class="col-lg-4">
 	 <select class="form-control" name="type">
+	   <option value="">Выберите устройство
 	   <option value="rm"[#if TYPE=="rm"#] selected[#endif#]>RM(1,2,Pro)
 	   <option value="rm3"[#if TYPE=="rm3"#] selected[#endif#]>RM3 mini 
 	   <option value="a1"[#if TYPE=="a1"#] selected[#endif#]>A1 e-Air
@@ -27,6 +28,8 @@
 	   <option value="spmini"[#if TYPE=="spmini"#] selected[#endif#]>SP mini
 	   <option value="sp3"[#if TYPE=="sp3"#] selected[#endif#]>SP3 (SP CC)
 	   <option value="mp1"[#if TYPE=="mp1"#] selected[#endif#]>MP1
+	   <option value="sc1"[#if TYPE=="sc1"#] selected[#endif#]>Выключатель SC1
+	   <option value="s1"[#if TYPE=="s1"#] selected[#endif#]>S1/S1c
 	 </select>
  </div>
 </div>
@@ -72,6 +75,23 @@
  </div>
 </div>
 [#endif#]
+
+<div class="form-group">
+ <label class="col-lg-3 control-label">
+Обновлять каждые:
+ </label>
+ <div class="col-lg-4">
+	<div class="btn-group">
+	  <a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=set_time&time=none" class="btn [#if CHTIME="none"#]btn-primary [#else#]btn-default [#endif#]">None</a>
+	  <a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=set_time&time=5s" class="btn [#if CHTIME="5s"#]btn-primary [#else#]btn-default [#endif#]">5s</a>
+	  <a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=set_time&time=20s" class="btn [#if CHTIME="20s"#]btn-primary [#else#]btn-default [#endif#]">20s</a>
+	  <a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=set_time&time=1m" class="btn [#if CHTIME="1m"#]btn-primary [#else#]btn-default [#endif#]">1m</a>
+	  <a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=set_time&time=10m" class="btn [#if CHTIME="10m"#]btn-primary [#else#]btn-default [#endif#]">10m</a>
+	  <a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=set_time&time=1h" class="btn [#if CHTIME="1h"#]btn-primary [#else#]btn-default [#endif#]">1h</a>
+	</div>
+ </div>
+</div>
+
 <!-- UPDATED (datetime) -->
 <div class="form-group">
  <label class="col-lg-3 control-label"[#if ERR_UPDATED#] style="color:red;font-weight:bold"[#endif#]>

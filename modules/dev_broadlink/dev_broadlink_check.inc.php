@@ -5,8 +5,15 @@
 		include_once (ROOT . 'languages/'. $this->name. '_default.php');
 	}
 	$this->getConfig();
-	$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
+	if(isset($chtime) && $chtime!='all' && $chtime!='') {
+		$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices WHERE CHTIME='$chtime'");
+	} elseif (isset($chtime) && $chtime!='all') {
+		$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
+	} else {
+		$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices WHERE CHTIME<>'none'");
+	}
 	if ($this->config['API']=='httpbrige') {
+		$db_rec=SQLSelect("SELECT * FROM dev_httpbrige_devices");
 		for ($i = 1; $i <= count($db_rec); $i++) {
 			$response ='';
 			$rec=$db_rec[$i-1];
@@ -68,7 +75,7 @@
 		}
 	} else {
 		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
-		foreach ($db_rec as $key => $rec) {
+		foreach ($db_rec as $rec) {
 			$response = '';
 			$properties = '';
 			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
@@ -100,117 +107,20 @@
 				if ($rec['TYPE']=='a1') {
 						$response = $rm->Check_sensors();
 						if(isset($response) && $response!='') {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='temperature' AND DEVICE_ID='$id'");
-							$total=count($properties);
-							if ($total) {
-								$properties['VALUE']=(float)$response['temperature'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(float)$response['temperature'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='temperature';
-								SQLInsert($table, $properties);								
-							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='humidity' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=(float)$response['humidity'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(float)$response['humidity'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='humidity';
-								SQLInsert($table, $properties);								
-							}							
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='noise' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=(int)$response['noise'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(int)$response['noise'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='noise';
-								SQLInsert($table, $properties);								
-							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='light' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=(int)$response['light'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(int)$response['light'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='light';
-								SQLInsert($table, $properties);								
-							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='air_quality' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=(int)$response['air_quality'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(int)$response['air_quality'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='air_quality';
-								SQLInsert($table, $properties);								
-							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='light_word' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=$response['light_word'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=$response['light_word'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='light_word';
-								SQLInsert($table, $properties);								
-							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='noise_word' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=$response['noise_word'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=$response['noise_word'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='noise_word';
-								SQLInsert($table, $properties);								
-							}
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='air_quality_word' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=$response['air_quality_word'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['air_quality_word']);
-								}
-							} else {
-								$properties['VALUE']=$response['air_quality_word'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='air_quality_word';
-								SQLInsert($table, $properties);								
+							foreach ($response as $key => $value) {
+								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$key' AND DEVICE_ID='$id'");
+								if ($total) {
+									$properties['VALUE']=$value;
+									SQLUpdate($table, $properties);
+									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+									}
+								} else {
+									$properties['VALUE']=$value;
+									$properties['DEVICE_ID']=$rec['ID'];
+									$properties['TITLE']=$key;
+									SQLInsert($table, $properties);								
+								}	
 							}							
 						}
 				}
@@ -270,6 +180,44 @@
 								}
 							}
 						}
+				}
+				if ($rec['TYPE']=='s1') {
+					$response = $rm->Check_Sensors();
+					if(isset($response) && $response!='') {
+						for($i=0;$i<$response['col_sensors'];$i++) {
+							$sens_arr=$response[$i];
+							$sens_name='['.$sens_arr['sensor_number'].'] '.$sens_arr['product_type'];
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$sens_name' AND DEVICE_ID='$id'");
+							if ($total) {
+								$properties['VALUE']=json_encode($sens_arr);
+								SQLUpdate($table, $properties);
+								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sens_arr['status']);
+								}
+							} else {
+								$properties['VALUE']=json_encode($sens_arr);
+								$properties['DEVICE_ID']=$rec['ID'];
+								$properties['TITLE']=$sens_name;
+								SQLInsert($table, $properties);								
+							}
+						}
+					}
+					$response = $rm->Check_Status();
+					if(isset($response) && $response!='') {
+							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
+							if ($total) {
+								$properties['VALUE']=$response['status'];
+								SQLUpdate($table, $properties);
+								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['status']);
+								}
+							} else {
+								$properties['VALUE']=$response['status'];
+								$properties['DEVICE_ID']=$rec['ID'];
+								$properties['TITLE']='status';
+								SQLInsert($table, $properties);								
+							}
+					}
 				}
 				if(isset($response) && $response!='') {
 					$rec['UPDATED']=date('Y-m-d H:i:s');

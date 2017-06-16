@@ -36,10 +36,13 @@
 			TITLE=="status1" || 
 			TITLE=="status2" || 
 			TITLE=="status3" || 
-			TITLE=="status4"
+			TITLE=="status4" ||
+			DEVTYPE=="s1"
 			#]class="success">
-  <td valign="top"><input type="hidden" class="form-control" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]"><input type="text" class="form-control" value="[#TITLE#]" disabled></td>
-  <td valign="top"><input type="hidden" class="form-control" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]"><input type="text" class="form-control" value="[#VALUE#]" disabled></td>
+  <td valign="top"><input type="hidden" class="form-control" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]">
+  <input type="text" class="form-control" value="[#TITLE#]" disabled>[#if DEVTYPE=="s1"#]<br><small>Zone: [#ZONE#]</small>[#endif#]</td> 
+  <td valign="top"><input type="hidden" class="form-control" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]">
+  [#if DEVTYPE=="s1"#]<input type="text" class="form-control" value="[#VAL#]" disabled><br>[#if PARM=="1"#]<span class="label label-primary">PART</span>[#endif#][#if FARM=="1"#]<span class="label label-primary">FULL</span>[#endif#][#else#]<input type="text" class="form-control" value="[#VALUE#]" disabled>[#endif#]</td>
   [#else#]>
   <td valign="top"><input type="text" class="form-control" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]"></td>
   <td valign="top"><input type="text" class="form-control" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]"></td>
