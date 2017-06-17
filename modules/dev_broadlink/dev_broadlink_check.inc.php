@@ -184,10 +184,11 @@
 				if ($rec['TYPE']=='s1') {
 					$response = $rm->Check_Sensors();
 					if(isset($response) && $response!='') {
-						for($i=0;$i<$response['col_sensors'];$i++) {
-							$sens_arr=$response[$i];
+						for($sn=0;$sn<$response['col_sensors'];$sn++) {
+							$sens_arr=$response[$sn];
 							$sens_name='['.$sens_arr['sensor_number'].'] '.$sens_arr['product_type'];
 							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$sens_name' AND DEVICE_ID='$id'");
+							$total=count($properties);
 							if ($total) {
 								$properties['VALUE']=json_encode($sens_arr);
 								SQLUpdate($table, $properties);
@@ -205,14 +206,15 @@
 					$response = $rm->Check_Status();
 					if(isset($response) && $response!='') {
 							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
+							$total=count($properties);
 							if ($total) {
-								$properties['VALUE']=$response['status'];
+								$properties['VALUE']=$response['status_id'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['status']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['status_id']);
 								}
 							} else {
-								$properties['VALUE']=$response['status'];
+								$properties['VALUE']=$response['status_id'];
 								$properties['DEVICE_ID']=$rec['ID'];
 								$properties['TITLE']='status';
 								SQLInsert($table, $properties);								

@@ -383,7 +383,7 @@ class Broadlink{
 		$packet[0x20] = $checksum & 0xff;
 		$packet[0x21] = $checksum >> 8;
 
-		socket_sendto($cs, self::byte($packet), sizeof($packet), 0, "255.255.255.255", 80);
+		socket_sendto($cs, self::byte($packet), sizeof($packet), 0, false, 80);
 		while(socket_recvfrom($cs, $response, 1024, 0, $from, $port)){
 
 			$host = '';
