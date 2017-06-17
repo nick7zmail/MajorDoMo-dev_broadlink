@@ -109,6 +109,7 @@
 						if(isset($response) && $response!='') {
 							foreach ($response as $key => $value) {
 								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$key' AND DEVICE_ID='$id'");
+								$total=count($properties);
 								if ($total) {
 									$properties['VALUE']=$value;
 									SQLUpdate($table, $properties);
