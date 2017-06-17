@@ -264,7 +264,7 @@
 	if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
        addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
     }
-	if($rec['TYPE']=='s1'){
+	if($rec['TYPE']=='s1' && $properties[$i]['TITLE'] != 'status'){
 		$properties[$i]['DEVTYPE']='s1';
 		$devinfo=json_decode($properties[$i]['VALUE']);
 		$properties[$i]['VAL']=$devinfo->status;
