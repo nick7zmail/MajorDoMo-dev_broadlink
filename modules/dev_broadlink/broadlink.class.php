@@ -1121,19 +1121,19 @@ class S1 extends Broadlink{
 			$enc_payload = array_slice($response, 0x38);
 			if(count($enc_payload) > 0){
 				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-				$data['status_id'] = $payload[0x04];
-				switch ($data['status_id']) {
+				$data['status'] = $payload[0x04];
+				switch ($data['status']) {
 					case 0x00:
-						$data['status'] = 'disarm';
+						$data['status_val'] = 'disarm';
 						break;
 					case 0x01:
-						$data['status'] = 'part';
+						$data['status_val'] = 'part';
 						break;
 					case 0x02:
-						$data['status'] = 'full';
+						$data['status_val'] = 'full';
 						break;
 					default:
-						$data['status'] = 'Unknown: '.$data['status_id'];
+						$data['status'] = 'Unknown: '.$data['status'];
 				}
 			}
 		}
