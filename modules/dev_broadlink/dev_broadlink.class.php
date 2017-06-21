@@ -335,14 +335,16 @@ function usual(&$out) {
 				$powerstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='status' AND DEVICE_ID='".$rec['ID']."'");
 				$lstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='lightstatus' AND DEVICE_ID='".$rec['ID']."'");
 				$rm->Set_Power($powerstat['VALUE']+$lstat['VALUE']*2);
-		}elseif ($rec['TYPE']=='mp1') {
+		} elseif ($rec['TYPE']=='mp1') {
 				$rm->Set_Power(substr($properties[$i]['TITLE'], -1), $value);
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);				
-		}elseif ($rec['TYPE']=='s1') {
+		} elseif ($rec['TYPE']=='s1') {
+			if($properties[$i]['TITLE']='status') {
 				$rm->Set_Arm($value);
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
+			}
 		}
     }
    }
