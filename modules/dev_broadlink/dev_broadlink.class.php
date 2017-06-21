@@ -340,7 +340,7 @@ function usual(&$out) {
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);				
 		} elseif ($rec['TYPE']=='s1') {
-			if($properties[$i]['TITLE']='status') {
+			if($properties[$i]['TITLE']=='status') {
 				$rm->Set_Arm($value);
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);

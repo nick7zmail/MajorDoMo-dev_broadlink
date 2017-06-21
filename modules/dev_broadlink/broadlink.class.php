@@ -930,13 +930,16 @@ class S1 extends Broadlink{
 					$data[$i]['product_type'] = 'Wall Motion Sensor';
 					switch ($status) {
 						case 0x0000:
-							$data[$i]['status'] = 'No Person';	// in last 30 sec
+							$data[$i]['status'] = 0;	// in last 30 sec
+							$data[$i]['status_val'] = 'No Person';
 							break;
 						case 0x0080:
-							$data[$i]['status'] = 'No Person';	// in last 6 min
+							$data[$i]['status'] = 0;	// in last 6 min
+							$data[$i]['status_val'] = 'No Person';
 							break;
 						case 0x0010:
-							$data[$i]['status'] = 'Person Detected';
+							$data[$i]['status'] = 1;
+							$data[$i]['status_val'] = 'Person Detected';
 							break;
 						default:
 							$data[$i]['status'] = 'Unknown: '.$status;
@@ -947,15 +950,19 @@ class S1 extends Broadlink{
 					switch ($status) {
 						case 0x0000:
 						case 0x9501:
-							$data[$i]['status'] = 'Closed';
+						case 0x0080:
+							$data[$i]['status'] = 0;
+							$data[$i]['status_val'] = 'Closed';
 							break;
 						case 0x9581:
-							$data[$i]['status'] = 'Closed now';
+							$data[$i]['status'] = 0;
+							$data[$i]['status_val'] = 'Closed now';
 							break;
 						case 0x0010:
 						case 0x0090:
 						case 0x9591:
-							$data[$i]['status'] = 'Opened';
+							$data[$i]['status'] = 1;
+							$data[$i]['status_val'] = 'Opened';
 							break;
 						default:
 							$data[$i]['status'] = 'Unknown: '.$status;
@@ -1148,19 +1155,19 @@ class S1 extends Broadlink{
 			$enc_payload = array_slice($response, 0x38);
 			if(count($enc_payload) > 0){
 				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-				$data['status_id'] = $payload[0x04];
-				switch ($data['status_id']) {
+				$data['status'] = $payload[0x04];
+				switch ($data['status']) {
 					case 0x00:
-						$data['status'] = 'disarm';
+						$data['status_val'] = 'disarm';
 						break;
 					case 0x01:
-						$data['status'] = 'part';
+						$data['status_val'] = 'part';
 						break;
 					case 0x02:
-						$data['status'] = 'full';
+						$data['status_val'] = 'full';
 						break;
 					default:
-						$data['status'] = 'Unknown: '.$data['status_id'];
+						$data['status'] = 'Unknown: '.$data['status'];
 				}
 			}
 		}

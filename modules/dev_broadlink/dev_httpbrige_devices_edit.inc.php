@@ -233,7 +233,18 @@
 		}
 		SQLUpdate('dev_broadlink_commands', $data);
 		$rm->Set_Power(substr($data['TITLE'], -1), $data['VALUE']);
+	} elseif($rec['TYPE'] == 's1') {
+		if($data['VALUE']==1) {
+			$data['VALUE']=2;
+		} elseif($data['VALUE']==2) {
+			$data['VALUE']=0;		
+		} else {
+			$data['VALUE']=1;		
+		}
+		SQLUpdate('dev_broadlink_commands', $data);	
+		$rm->Set_Arm($data['VALUE']);
 	}
+	
 	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
    }
    global $sort_by_name;

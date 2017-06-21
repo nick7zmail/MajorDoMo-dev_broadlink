@@ -209,13 +209,13 @@
 							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
 							$total=count($properties);
 							if ($total) {
-								$properties['VALUE']=$response['status_id'];
+								$properties['VALUE']=$response['status'];
 								SQLUpdate($table, $properties);
 								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['status_id']);
+									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['status']);
 								}
 							} else {
-								$properties['VALUE']=$response['status_id'];
+								$properties['VALUE']=$response['status'];
 								$properties['DEVICE_ID']=$rec['ID'];
 								$properties['TITLE']='status';
 								SQLInsert($table, $properties);								
