@@ -318,7 +318,8 @@ function usual(&$out) {
 		$id=$properties[$i]['DEVICE_ID'];
 		$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
 		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-		$rm->Auth();
+		$decoded_keys=json_decode($rec['KEYS']);
+		$rm->Auth($decoded_keys->id, $decoded_keys->key);
 		if ($rec['TYPE']=='rm' || $rec['TYPE']=='rm3') {
 			 if ($value==1) {
 					$data=$properties[$i]['VALUE'];
@@ -353,6 +354,32 @@ function usual(&$out) {
  
  function check_params($chtime = '') {
 	require(DIR_MODULES.$this->name.'/dev_broadlink_check.inc.php');
+ }
+ 
+ function table_data_set($prop, $dev_id, $val, $sg_val='') {
+	$table='dev_broadlink_commands';
+	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
+	$total=count($properties);
+	if ($total) {
+		$properties['VALUE']=$val;
+		SQLUpdate($table, $properties);
+			if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+				if(isset($sg_val) && $sg_val!='') {
+					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
+				} else {
+					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $val);
+				}
+			}
+	} else {
+		if(isset($sg_val) && $sg_val!='') {
+			$properties['VALUE']=$sg_val;
+		} else {
+			$properties['VALUE']=$val;
+		}	
+		$properties['DEVICE_ID']=$dev_id;
+		$properties['TITLE']=$prop;
+		SQLInsert($table, $properties);								
+	}
  }
 /**
 * Install
@@ -397,6 +424,7 @@ dev_httpbrige_devices -
  dev_httpbrige_devices: IP varchar(20) NOT NULL DEFAULT ''
  dev_httpbrige_devices: MAC varchar(20) NOT NULL DEFAULT ''
  dev_httpbrige_devices: CHTIME varchar(10) NOT NULL DEFAULT ''
+ dev_httpbrige_devices: KEYS varchar(128) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  dev_httpbrige_devices: UPDATED datetime

@@ -17,8 +17,8 @@
 		$out['MESSAGE']='Режим обучения';
 		$json = array();
 		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-		$rm->Auth();
-
+		$decoded_keys=json_decode($rec['KEYS']);
+		$rm->Auth($decoded_keys->id, $decoded_keys->key);	
 		$rm->Enter_learning();
 		$i = 0;
 		do {
@@ -204,7 +204,8 @@
    if ($test_id) {
 	$data=SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE ID='$test_id'");
 	$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-	$rm->Auth();
+	$decoded_keys=json_decode($rec['KEYS']);
+	$rm->Auth($decoded_keys->id, $decoded_keys->key);
 	if($rec['TYPE']=='rm'||$rec['TYPE']=='rm3'){
 		$rm->Send_data($data['VALUE']);
 	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini') {
@@ -282,6 +283,7 @@
 		$properties[$i]['ZONE']=$devinfo->location;
 		$properties[$i]['PARM']=$devinfo->armPart;
 		$properties[$i]['FARM']=$devinfo->armFull;
+		$properties[$i]['STAT']=$devinfo->status_val;
 	}	
 	if ($properties[$i]['TITLE']=='temperature') {
 		$properties[$i]['SDEVICE_TYPE']='sensor_temp';

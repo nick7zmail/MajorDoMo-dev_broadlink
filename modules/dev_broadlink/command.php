@@ -17,7 +17,8 @@ $data = $command_arr['VALUE'];
 
 $json['code'] = -1;	
 $rm = Broadlink::CreateDevice($info['IP'], $info['MAC'], 80, $info['DEVTYPE']);
-$rm->Auth();
+$decoded_keys=json_decode($info['KEYS']);
+$rm->Auth($decoded_keys->id, $decoded_keys->key);
 $rm->Send_data($data);
 $json['code'] = 1;
 

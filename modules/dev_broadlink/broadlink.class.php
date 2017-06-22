@@ -533,6 +533,12 @@ class Broadlink{
 
 			$this->id = array_slice($payload, 0x00, 4);
 			$this->key = array_slice($payload, 0x04, 16);
+			
+			$data['id']=$this->id;
+			$data['key']=$this->key;
+			$data['time']=time();
+			
+			return $data;
 		} else {
 			$this->id = $id_authorized;
 			$this->key = $key_authorized;

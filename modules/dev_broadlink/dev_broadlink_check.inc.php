@@ -77,29 +77,25 @@
 		include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 		foreach ($db_rec as $rec) {
 			$response = '';
-			$properties = '';
 			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 			if(!is_null($rm)) {
-				$rm->Auth();
-				$table='dev_broadlink_commands';
-				$id=$rec['ID'];
+				if(isset($rec['KEYS']) && $rec['KEYS']!='') {
+					$decoded_keys=json_decode($rec['KEYS']);
+					if (time()-$decoded_keys->time > 604800) {
+						$keys=$rm->Auth();
+						$rec['KEYS']=json_encode($keys);
+					} else {
+						$rm->Auth($decoded_keys->id, $decoded_keys->key);
+					}
+				} else {
+					$keys=$rm->Auth();
+					$rec['KEYS']=json_encode($keys);
+				}
+				
 				if ($rec['TYPE']=='rm') {
 						$response = $rm->Check_temperature();
 						if(isset($response) && $response!='') {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='temperature' AND DEVICE_ID='$id'");
-							$total=count($properties);
-							if ($total) {
-								$properties['VALUE']=(float)$response;
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(float)$response;
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='temperature';
-								SQLInsert($table, $properties);
-							}
+							$this->table_data_set('temperature', $rec['ID'], (float)$response);
 						}
 				}
 				if ($rec['TYPE']=='rm3') {
@@ -108,55 +104,16 @@
 						$response = $rm->Check_sensors();
 						if(isset($response) && $response!='') {
 							foreach ($response as $key => $value) {
-								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$key' AND DEVICE_ID='$id'");
-								$total=count($properties);
-								if ($total) {
-									$properties['VALUE']=$value;
-									SQLUpdate($table, $properties);
-									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-									}
-								} else {
-									$properties['VALUE']=$value;
-									$properties['DEVICE_ID']=$rec['ID'];
-									$properties['TITLE']=$key;
-									SQLInsert($table, $properties);								
-								}	
+								$this->table_data_set($key, $rec['ID'], $value);
 							}							
 						}
 				}
-				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
+				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE'] == 'sc1') {
 					$response = $rm->Check_Power();	
 						if(isset($response) && $response!='') {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
-							$total=count($properties);						
-							if ($total) {
-								$properties['VALUE']=(int)$response['power_state'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-								}
-							} else {
-								$properties['VALUE']=(int)$response['power_state'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='status';
-								SQLInsert($table, $properties);								
-							}
+							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);
 							if ($rec['TYPE'] == 'sp3') {
-								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='lightstatus' AND DEVICE_ID='$id'");
-								$total=count($properties);
-								if ($total) {
-									$properties['VALUE']=(int)$response['light_state'];
-									SQLUpdate($table, $properties);
-									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-									}
-								} else {
-									$properties['VALUE']=(int)$response['light_state'];
-									$properties['DEVICE_ID']=$rec['ID'];
-									$properties['TITLE']='lightstatus';
-									SQLInsert($table, $properties);								
-								}
+								$this->table_data_set('lightstatus', $rec['ID'], (int)$response['light_state']);
 							}
 						}
 						
@@ -165,20 +122,7 @@
 					$response = $rm->Check_Power();	
 						if(isset($response) && $response!='') {
 							for($i=0;$i<4;$i++) {
-								$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status".($i+1)."' AND DEVICE_ID='$id'");
-								$total=count($properties);
-								if ($total) {
-									$properties['VALUE']=(int)$response[$i];
-									SQLUpdate($table, $properties);
-									if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-										sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
-									}
-								} else {
-									$properties['VALUE']=(int)$response[$i];
-									$properties['DEVICE_ID']=$rec['ID'];
-									$properties['TITLE']='status'.($i+1);
-									SQLInsert($table, $properties);								
-								}
+								$this->table_data_set('status'.($i+1), $rec['ID'], (int)$response[$i]);
 							}
 						}
 				}
@@ -188,38 +132,12 @@
 						for($sn=0;$sn<$response['col_sensors'];$sn++) {
 							$sens_arr=$response[$sn];
 							$sens_name='['.$sens_arr['sensor_number'].'] '.$sens_arr['product_type'];
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$sens_name' AND DEVICE_ID='$id'");
-							$total=count($properties);
-							if ($total) {
-								$properties['VALUE']=json_encode($sens_arr);
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sens_arr['status']);
-								}
-							} else {
-								$properties['VALUE']=json_encode($sens_arr);
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']=$sens_name;
-								SQLInsert($table, $properties);								
-							}
+							$this->table_data_set($sens_name, $rec['ID'], json_encode($sens_arr), $sens_arr['status']);
 						}
 					}
 					$response = $rm->Check_Status();
 					if(isset($response) && $response!='') {
-							$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='status' AND DEVICE_ID='$id'");
-							$total=count($properties);
-							if ($total) {
-								$properties['VALUE']=$response['status'];
-								SQLUpdate($table, $properties);
-								if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-									sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $response['status']);
-								}
-							} else {
-								$properties['VALUE']=$response['status'];
-								$properties['DEVICE_ID']=$rec['ID'];
-								$properties['TITLE']='status';
-								SQLInsert($table, $properties);								
-							}
+							$this->table_data_set('status'.($i+1), $rec['ID'], $response['status']);
 					}
 				}
 				if(isset($response) && $response!='') {

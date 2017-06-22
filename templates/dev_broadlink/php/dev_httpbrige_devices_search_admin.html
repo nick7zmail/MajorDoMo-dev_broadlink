@@ -30,6 +30,7 @@
   <td><#LANG_TITLE#></td>
   <td>IP</td>
   <td>MAC</td>
+  <td>Время обновления</td>
   <td><#LANG_UPDATED#></td>
   <td>&nbsp;</td>
  </tr>
@@ -54,6 +55,14 @@
    >
   [#if MAC!=""#]
    [#MAC#]
+  [#else#]
+   &nbsp;
+  [#endif#]
+ </td>
+ <td style="vertical-align:middle"
+   >
+  [#if CHTIME!=""#]
+   [#CHTIME#]
   [#else#]
    &nbsp;
   [#endif#]
