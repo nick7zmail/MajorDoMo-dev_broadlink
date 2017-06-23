@@ -253,7 +253,7 @@ function usual(&$out) {
 */
  function delete_dev_httpbrige_devices($id) {
   $rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
-  if ($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3') {
+  if ($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE'] == 'sc1') {
 	removeLinkedProperty($rec['LINKED_OBJECT'], 'status', $this->name);
   }
   if ($rec['TYPE'] == 'sp3') {
@@ -326,7 +326,7 @@ function usual(&$out) {
 					$rm->Send_data($data);
 					sg($object.".".$property, 0);
 			 }
-		} elseif ($rec['TYPE']=='sp2' || $rec['TYPE']=='spmini') {
+		} elseif ($rec['TYPE']=='sp2' || $rec['TYPE']=='spmini' || $rec['TYPE'] == 'sc1') {
 				$rm->Set_Power($value);
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
@@ -342,10 +342,12 @@ function usual(&$out) {
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);				
 		} elseif ($rec['TYPE']=='s1') {
 			if($properties[$i]['TITLE']=='status') {
-				$rm->Set_Arm($value);
-				$properties[$i]['VALUE']=$value;
+				$arm_pack=json_decode($properties[$i]['VALUE'], true);
+				$arm_pack['status']=$value;
+				$rm->Set_Arm($arm_pack);
+				$properties[$i]['VALUE']=json_encode($arm_pack);
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
-			}
+			} 
 		}
     }
    }

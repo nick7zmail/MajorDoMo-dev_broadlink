@@ -136,8 +136,8 @@
 						}
 					}
 					$response = $rm->Check_Status();
-					if(isset($response) && $response!='') {
-							$this->table_data_set('status'.($i+1), $rec['ID'], $response['status']);
+					if(isset($response) && $response!='') {	
+							$this->table_data_set('status', $rec['ID'], json_encode($response), $response['status']);
 					}
 				}
 				if(isset($response) && $response!='') {

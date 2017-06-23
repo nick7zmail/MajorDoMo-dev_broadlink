@@ -208,7 +208,7 @@
 	$rm->Auth($decoded_keys->id, $decoded_keys->key);
 	if($rec['TYPE']=='rm'||$rec['TYPE']=='rm3'){
 		$rm->Send_data($data['VALUE']);
-	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini') {
+	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sc1') {
 		if($data['VALUE']==1){
 			$data['VALUE']=0;
 		} else {
@@ -235,17 +235,18 @@
 		SQLUpdate('dev_broadlink_commands', $data);
 		$rm->Set_Power(substr($data['TITLE'], -1), $data['VALUE']);
 	} elseif($rec['TYPE'] == 's1') {
-		if($data['VALUE']==1) {
-			$data['VALUE']=2;
-		} elseif($data['VALUE']==2) {
-			$data['VALUE']=0;		
+		$arm_pack=json_decode($data['VALUE'], true);
+		if($arm_pack['status']==1) {
+			$arm_pack['status']=2;
+		} elseif($arm_pack['status']==2) {
+			$arm_pack['status']=0;		
 		} else {
-			$data['VALUE']=1;		
+			$arm_pack['status']=1;		
 		}
+		$rm->Set_Arm($arm_pack);
+		$data['VALUE']=json_encode($arm_pack);
 		SQLUpdate('dev_broadlink_commands', $data);	
-		$rm->Set_Arm($data['VALUE']);
 	}
-	
 	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
    }
    global $sort_by_name;
@@ -276,7 +277,7 @@
 	if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
        addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
     }
-	if($rec['TYPE']=='s1' && $properties[$i]['TITLE'] != 'status'){
+	if($rec['TYPE']=='s1'){
 		$properties[$i]['DEVTYPE']='s1';
 		$devinfo=json_decode($properties[$i]['VALUE']);
 		$properties[$i]['VAL']=$devinfo->status;

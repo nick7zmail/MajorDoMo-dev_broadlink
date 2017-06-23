@@ -1128,6 +1128,12 @@ class S1 extends Broadlink{
 			if(count($enc_payload) > 0){
 				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				$data['status'] = $payload[0x04];
+				$data['delay_time_m'] = $packet[0x08];
+				$data['delay_time_s'] = $packet[0x09];
+				$data['alarm_buzzing'] = $packet[0x0a];
+				$data['alarm_buzzing_duration'] = $packet[0x0b];
+				$data['beep_mute'] = $packet[0x0d];
+				$data['alarm_detector'] = $packet[0x28];
 				switch ($data['status']) {
 					case 0x00:
 						$data['status_val'] = 'disarm';
@@ -1146,13 +1152,20 @@ class S1 extends Broadlink{
 		return $data;
 	}
 	
-	public function Set_Arm($mode){
+	public function Set_Arm($params){
 	
 		$data = array();
 		
 		$packet = self::bytearray(48);
+		
 		$packet[0x00] = 0x11;
-		$packet[0x04] = $mode;	//2 - full, 1 - part, 0 - disarm
+		$packet[0x04] = $params['status']; //2 - full, 1 - part, 0 - disarm
+		$packet[0x08] = $params['delay_time_m'];
+		$packet[0x09] = $params['delay_time_s'];
+		$packet[0x0a] = $params['alarm_buzzing'];
+		$packet[0x0b] = $params['alarm_buzzing_duration'];
+		$packet[0x0d] = $params['beep_mute'];
+		$packet[0x28] = $params['alarm_detector'];
 		
 		$response = $this->send_packet(0x6a, $packet);
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
@@ -1162,6 +1175,12 @@ class S1 extends Broadlink{
 			if(count($enc_payload) > 0){
 				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				$data['status'] = $payload[0x04];
+				$data['delay_time_m'] = $packet[0x08];
+				$data['delay_time_s'] = $packet[0x09];
+				$data['alarm_buzzing'] = $packet[0x0a];
+				$data['alarm_buzzing_duration'] = $packet[0x0b];
+				$data['beep_mute'] = $packet[0x0d];
+				$data['alarm_detector'] = $packet[0x28];
 				switch ($data['status']) {
 					case 0x00:
 						$data['status_val'] = 'disarm';
