@@ -358,7 +358,7 @@ function usual(&$out) {
 	require(DIR_MODULES.$this->name.'/dev_broadlink_check.inc.php');
  }
  
- function table_data_set($prop, $dev_id, $val, $sg_val='') {
+ function table_data_set($prop, $dev_id, $val, $sg_val='none') {
 	$table='dev_broadlink_commands';
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
 	$total=count($properties);
@@ -366,14 +366,14 @@ function usual(&$out) {
 		$properties['VALUE']=$val;
 		SQLUpdate($table, $properties);
 			if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-				if(isset($sg_val) && $sg_val!='') {
+				if($sg_val!='none') {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
 				} else {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $val);
 				}
 			}
 	} else {
-		if(isset($sg_val) && $sg_val!='') {
+		if($sg_val!='none') {
 			$properties['VALUE']=$sg_val;
 		} else {
 			$properties['VALUE']=$val;
