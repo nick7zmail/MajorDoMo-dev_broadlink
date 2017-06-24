@@ -286,7 +286,7 @@ function usual(&$out) {
    if ($total) {
     for($i=0;$i<$total;$i++) {
      //to-do
-		if ($properties[$i]['TYPE'] == 'sp2' || $properties[$i]['TYPE'] == 'spmini' || $properties[$i]['TYPE'] == 'sp3' || $properties[$i]['TYPE'] == 'sc1') {
+		if ($properties[$i]['TYPE'] == 'sp2' || $properties[$i]['TYPE'] == 'spmini' || $properties[$i]['TYPE'] == 'sp3') {
 			if ($property == 'status') {
 				if (gg($properties[$i]['LINKED_OBJECT'].'.'.'status') == 1 ) {
 					$api_command=$this->config['API_URL'].'/?devMAC='.$properties[$i]['MAC'].'&action=on';
@@ -373,11 +373,7 @@ function usual(&$out) {
 				}
 			}
 	} else {
-		if($sg_val!='none') {
-			$properties['VALUE']=$sg_val;
-		} else {
-			$properties['VALUE']=$val;
-		}	
+		$properties['VALUE']=$val;
 		$properties['DEVICE_ID']=$dev_id;
 		$properties['TITLE']=$prop;
 		SQLInsert($table, $properties);								
