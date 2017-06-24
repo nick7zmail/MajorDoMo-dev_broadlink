@@ -19,6 +19,20 @@ $dictionary=array(
 //rm_bridge
 'BR_STEP1'=>'Шаг 1: Укажите адрес RM-brige',
 'BR_STEP1_DESC'=>'Введите ip-адрес, указанный в приложении <i>Android RM Bridge</i> и нажмите кнопку <i><b>Проверить устройства</b></i>.',
+//s1
+'BRS1_NO_PERSON'=>'Никого',
+'BRS1_PERSON_DETECTED'=>'Обнаружено',
+'BRS1_UNKNOWN'=>'Неизвестен: ',
+'BRS1_CLOSED'=>'Закрыто',
+'BRS1_CLOSED_NOW'=>'Закрыто только что',
+'BRS1_OPENED'=>'Открыто',
+'BRS1_CANCEL_SOS'=>'Отмена SOS',
+'BRS1_DISARM'=>'Отключена',
+'BRS1_ARMED_FULL'=>'Полная охрана',
+'BRS1_ARMED_PART'=>'Частичная охрана',
+'BRS1_PART'=>'Частичная',
+'BRS1_FULL'=>'Полная',
+'BRS1_ZONE'=>'Зона: ',
 );
 
 foreach ($dictionary as $k=>$v) {

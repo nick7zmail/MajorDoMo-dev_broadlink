@@ -937,18 +937,18 @@ class S1 extends Broadlink{
 					switch ($status) {
 						case 0x0000:
 							$data[$i]['status'] = 0;	// in last 30 sec
-							$data[$i]['status_val'] = 'No Person';
+							$data[$i]['status_val'] = constant('LANG_BRS1_NO_PERSON');
 							break;
 						case 0x0080:
 							$data[$i]['status'] = 0;	// in last 6 min
-							$data[$i]['status_val'] = 'No Person';
+							$data[$i]['status_val'] = constant('LANG_BRS1_NO_PERSON');
 							break;
 						case 0x0010:
 							$data[$i]['status'] = 1;
-							$data[$i]['status_val'] = 'Person Detected';
+							$data[$i]['status_val'] = constant('LANG_BRS1_PERSON_DETECTED');
 							break;
 						default:
-							$data[$i]['status'] = 'Unknown: '.$status;
+							$data[$i]['status'] = constant('LANG_BRS1_UNKNOWN').$status;
 					}
 					break;
 				case 0x31:
@@ -958,20 +958,20 @@ class S1 extends Broadlink{
 						case 0x9501:
 						case 0x0080:
 							$data[$i]['status'] = 0;
-							$data[$i]['status_val'] = 'Closed';
+							$data[$i]['status_val'] = constant('LANG_BRS1_CLOSED');
 							break;
 						case 0x9581:
 							$data[$i]['status'] = 0;
-							$data[$i]['status_val'] = 'Closed now';
+							$data[$i]['status_val'] = constant('LANG_BRS1_CLOSED_NOW');
 							break;
 						case 0x0010:
 						case 0x0090:
 						case 0x9591:
 							$data[$i]['status'] = 1;
-							$data[$i]['status_val'] = 'Opened';
+							$data[$i]['status_val'] = constant('LANG_BRS1_OPENED');
 							break;
 						default:
-							$data[$i]['status'] = 'Unknown: '.$status;
+							$data[$i]['status'] = constant('LANG_BRS1_UNKNOWN').$status;
 					}
 					switch ($payload[$offset+0x26]) {
 						case 0x00:
@@ -989,24 +989,25 @@ class S1 extends Broadlink{
 					break;
 				case 0x91:
 					$data[$i]['product_type'] = 'Key Fob';
+					$data[$i]['status']=$status;
 					switch ($status) {
 						case 0x0000:
-							$data[$i]['status'] = 'Cancel SOS';
+							$data[$i]['status_val'] = constant('LANG_BRS1_CANCEL_SOS');
 							break;
 						case 0x0010:
-							$data[$i]['status'] = 'Disarm';
+							$data[$i]['status_val'] = constant('LANG_BRS1_DISARM');
 							break;
 						case 0x0020:
-							$data[$i]['status'] = 'Armed Full';
+							$data[$i]['status_val'] = constant('LANG_BRS1_ARMED_FULL');
 							break;
 						case 0x0040:
-							$data[$i]['status'] = 'Armed Part';
+							$data[$i]['status_val'] = constant('LANG_BRS1_ARMED_PART');
 							break;
 						case 0x0080:
-							$data[$i]['status'] = 'SOS';
+							$data[$i]['status_val'] = 'SOS';
 							break;
 						default:
-							$data[$i]['status'] = 'Unknown: '.$status;
+							$data[$i]['status_val'] = constant('LANG_BRS1_UNKNOWN').$status;
 					}
 					break;
 				// for future:
@@ -1016,7 +1017,7 @@ class S1 extends Broadlink{
 						case 0x0000:
 						case 0x0010:
 						default:
-							$data[$i]['status'] = 'Unknown: '.$status;
+							$data[$i]['status'] = constant('LANG_BRS1_UNKNOWN').$status;
 					}
 					break;
 				case 0x51:
@@ -1025,7 +1026,7 @@ class S1 extends Broadlink{
 						case 0x0000:
 						case 0x0010:
 						default:
-							$data[$i]['status'] = 'Unknown: '.$status;
+							$data[$i]['status'] = constant('LANG_BRS1_UNKNOWN').$status;
 					}
 					break;
 				default:
@@ -1082,7 +1083,7 @@ class S1 extends Broadlink{
 					$data[$i]['zone'] = 'Garage';
 					break;
 				default:
-					$data[$i]['zone'] = 'Unknown: '.$payload[$offset+0x2b];
+					$data[$i]['zone'] = constant('LANG_BRS1_UNKNOWN').$payload[$offset+0x2b];
 			}
 
 			$data[$i]['delay_online'] 			= $payload[$offset+0x39]*256+$payload[$offset+0x38];
@@ -1136,16 +1137,16 @@ class S1 extends Broadlink{
 				$data['alarm_detector'] = $packet[0x28];
 				switch ($data['status']) {
 					case 0x00:
-						$data['status_val'] = 'disarm';
+						$data['status_val'] = constant('LANG_BRS1_DISARM');
 						break;
 					case 0x01:
-						$data['status_val'] = 'part';
+						$data['status_val'] = constant('LANG_BRS1_PART');
 						break;
 					case 0x02:
-						$data['status_val'] = 'full';
+						$data['status_val'] = constant('LANG_BRS1_FULL');
 						break;
 					default:
-						$data['status'] = 'Unknown: '.$data['status'];
+						$data['status'] = constant('LANG_BRS1_UNKNOWN').$data['status'];
 				}
 			}
 		}
@@ -1183,16 +1184,16 @@ class S1 extends Broadlink{
 				$data['alarm_detector'] = $packet[0x28];
 				switch ($data['status']) {
 					case 0x00:
-						$data['status_val'] = 'disarm';
+						$data['status_val'] = constant('LANG_BRS1_DISARM');;
 						break;
 					case 0x01:
-						$data['status_val'] = 'part';
+						$data['status_val'] = constant('LANG_BRS1_PART');
 						break;
 					case 0x02:
-						$data['status_val'] = 'full';
+						$data['status_val'] = constant('LANG_BRS1_FULL');
 						break;
 					default:
-						$data['status'] = 'Unknown: '.$data['status'];
+						$data['status'] = constant('LANG_BRS1_UNKNOWN').$data['status'];
 				}
 			}
 		}
