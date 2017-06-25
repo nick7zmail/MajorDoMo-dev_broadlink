@@ -1129,12 +1129,12 @@ class S1 extends Broadlink{
 			if(count($enc_payload) > 0){
 				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				$data['status'] = $payload[0x04];
-				$data['delay_time_m'] = $packet[0x08];
-				$data['delay_time_s'] = $packet[0x09];
-				$data['alarm_buzzing'] = $packet[0x0a];
-				$data['alarm_buzzing_duration'] = $packet[0x0b];
-				$data['beep_mute'] = $packet[0x0d];
-				$data['alarm_detector'] = $packet[0x28];
+				$data['delay_time_m'] = $payload[0x08];
+				$data['delay_time_s'] = $payload[0x09];
+				$data['alarm_buzzing'] = $payload[0x0a];
+				$data['alarm_buzzing_duration'] = $payload[0x0b];
+				$data['beep_mute'] = $payload[0x0d];
+				$data['alarm_detector'] = $payload[0x28];
 				switch ($data['status']) {
 					case 0x00:
 						$data['status_val'] = constant('LANG_BRS1_DISARM');
@@ -1176,12 +1176,12 @@ class S1 extends Broadlink{
 			if(count($enc_payload) > 0){
 				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				$data['status'] = $payload[0x04];
-				$data['delay_time_m'] = $packet[0x08];
-				$data['delay_time_s'] = $packet[0x09];
-				$data['alarm_buzzing'] = $packet[0x0a];
-				$data['alarm_buzzing_duration'] = $packet[0x0b];
-				$data['beep_mute'] = $packet[0x0d];
-				$data['alarm_detector'] = $packet[0x28];
+				$data['delay_time_m'] = $payload[0x08];
+				$data['delay_time_s'] = $payload[0x09];
+				$data['alarm_buzzing'] = $payload[0x0a];
+				$data['alarm_buzzing_duration'] = $payload[0x0b];
+				$data['beep_mute'] = $payload[0x0d];
+				$data['alarm_detector'] = $payload[0x28];
 				switch ($data['status']) {
 					case 0x00:
 						$data['status_val'] = constant('LANG_BRS1_DISARM');;
