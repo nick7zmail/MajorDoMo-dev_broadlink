@@ -384,7 +384,7 @@ class Broadlink{
 		$packet[0x21] = $checksum >> 8;
 
 		socket_sendto($cs, self::byte($packet), sizeof($packet), 0, '255.255.255.255', 80);
-		while(socket_recvfrom($cs, $response, 1024, 0, $from, $port)){
+		while(socket_recvfrom($cs, $response, 2048, 0, $from, $port)){
 
 			$host = '';
 
@@ -488,7 +488,7 @@ class Broadlink{
 	    socket_sendto($cs, $this->byte($packet), sizeof($packet), 0, $this->host, $this->port);
 	    socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>$this->timeout, 'usec'=>0));
 
-	    $ret = socket_recvfrom($cs, $response, 1024, 0, $from, $port);
+	    $ret = socket_recvfrom($cs, $response, 2048, 0, $from, $port);
 
 	    if($cs){
 	    	socket_close($cs);
