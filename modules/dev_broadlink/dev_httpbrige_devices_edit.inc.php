@@ -285,6 +285,7 @@
 		$properties[$i]['PARM']=$devinfo->armPart;
 		$properties[$i]['FARM']=$devinfo->armFull;
 		$properties[$i]['STAT']=$devinfo->status_val;
+		$properties[$i]['VOL']=$devinfo->beep_mute;
 	}	
 	if ($properties[$i]['TITLE']=='temperature') {
 		$properties[$i]['SDEVICE_TYPE']='sensor_temp';

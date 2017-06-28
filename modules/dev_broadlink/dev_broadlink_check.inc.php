@@ -94,7 +94,7 @@
 				
 				if ($rec['TYPE']=='rm') {
 						$response = $rm->Check_temperature();
-						if(isset($response) && $response!='') {
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 							$this->table_data_set('temperature', $rec['ID'], (float)$response);
 						}
 				}
@@ -102,7 +102,7 @@
 				}
 				if ($rec['TYPE']=='a1') {
 						$response = $rm->Check_sensors();
-						if(isset($response) && $response!='') {
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 							foreach ($response as $key => $value) {
 								$this->table_data_set($key, $rec['ID'], $value);
 							}							
@@ -110,7 +110,7 @@
 				}
 				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE'] == 'sc1') {
 					$response = $rm->Check_Power();	
-						if(isset($response) && $response!='') {
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);
 							if ($rec['TYPE'] == 'sp3') {
 								$this->table_data_set('lightstatus', $rec['ID'], (int)$response['light_state']);
@@ -120,7 +120,7 @@
 				}
 				if ($rec['TYPE']=='mp1') {
 					$response = $rm->Check_Power();	
-						if(isset($response) && $response!='') {
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 							for($i=0;$i<4;$i++) {
 								$this->table_data_set('status'.($i+1), $rec['ID'], (int)$response[$i]);
 							}
@@ -128,7 +128,7 @@
 				}
 				if ($rec['TYPE']=='s1') {
 					$response = $rm->Check_Sensors();
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 						for($sn=0;$sn<$response['col_sensors'];$sn++) {
 							$sens_arr=$response[$sn];
 							$sens_name='['.$sens_arr['sensor_number'].'] '.$sens_arr['product_type'];
@@ -136,11 +136,11 @@
 						}
 					}
 					$response = $rm->Check_Status();
-					if(isset($response) && $response!='') {	
+					if(isset($response) && $response!='' && $response!=false && !empty($response)) {	
 							$this->table_data_set('status', $rec['ID'], json_encode($response), $response['status']);
 					}
 				}
-				if(isset($response) && $response!='') {
+				if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 					$rec['UPDATED']=date('Y-m-d H:i:s');
 					SQLUpdate('dev_httpbrige_devices', $rec);
 				}

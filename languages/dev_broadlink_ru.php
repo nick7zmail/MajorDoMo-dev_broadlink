@@ -33,6 +33,8 @@ $dictionary=array(
 'BRS1_PART'=>'Частичная',
 'BRS1_FULL'=>'Полная',
 'BRS1_ZONE'=>'Зона: ',
+'BRS1_PART_U'=>'ЧАСТ',
+'BRS1_FULL_U'=>'ПОЛН',
 );
 
 foreach ($dictionary as $k=>$v) {
