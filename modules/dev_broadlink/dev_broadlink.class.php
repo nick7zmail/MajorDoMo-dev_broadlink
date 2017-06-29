@@ -363,8 +363,9 @@ function usual(&$out) {
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
 	$total=count($properties);
 	if ($total) {
-		$properties['VALUE']=$val;
-		SQLUpdate($table, $properties);
+		if ($val!=$properties['VALUE']) {
+			$properties['VALUE']=$val;
+			SQLUpdate($table, $properties);
 			if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
 				if(is_null($sg_val)) {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $val);
@@ -372,6 +373,7 @@ function usual(&$out) {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
 				}
 			}
+		}
 	} else {
 		$properties['VALUE']=$val;
 		$properties['DEVICE_ID']=$dev_id;
