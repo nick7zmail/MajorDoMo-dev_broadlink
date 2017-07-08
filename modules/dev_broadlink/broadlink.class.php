@@ -154,7 +154,10 @@ class Broadlink{
     			$type = "SPMiniPlus";
     			break;
 			case 0x7547:
-    			$type = "SC1 switch";
+				$type = "SC1 switch";
+				break;
+			case 0x947a: 
+				$type = "SP3C";
 				break;
     		case 0x2712: 
     			$type = "RM2";
@@ -245,8 +248,11 @@ class Broadlink{
     			$type = 1;
     			break;
 			case 0x7547:
-			    $type = 1;
-    			break;
+				$type = 1;
+				break;
+			case 0x947a:
+				$type = 1;
+				break;
     		case 0x2712: 
     			$type = 2;
     			break;

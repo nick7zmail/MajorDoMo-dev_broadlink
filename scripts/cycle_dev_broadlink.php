@@ -56,7 +56,7 @@ while (1)
 				$br->check_params('10m');
 				$m10=0;
 			} else {
-				$m10=$m10++;
+				$m10++;
 			}
 	   }
 
