@@ -53,7 +53,7 @@ class Broadlink{
 
     public static function CreateDevice($h = "", $m = "", $p = 80, $d = 0){
 
-        switch (self::getdevtype($d)) {
+        switch (self::model($d)) {
             case 0:
                 return new SP1($h, $m, $p, $d);
                 break;
@@ -113,194 +113,232 @@ class Broadlink{
    	}
 
     public function devmodel(){
-        return self::getdevtype($this->devtype);
+        return self::model($this->devtype);
     }
 
-   	public function model(){
-    	
-    	$type = "Unknown";
-
-    	switch ($this->devtype) {
-    		case 0:
-    			$type = "SP1";
-    			break;
-    		case 0x2711:
-    			$type = "SP2";
-    			break;
-    		case 0x2719: 
-    		case 0x7919:
-    		case 0x271a:
-    		case 0x791a:
-    			$type = "Honeywell SP2";
-    			break;
-    		case 0x2720: 
-    			$type = "SPMini";
-    			break;
-    		case 0x753e: 
-    			$type = "SP3";
-    			break;
-    		case 0x2728: 
-    			$type = "SPMini2";
-    			break;
-    		case 0x2733: 
-    		case 0x273e:
-    			$type = "OEM branded SPMini";
-    			break;
-    		case 0x7530: 
-    		case 0x7918:
-    			$type = "OEM branded SPMini2";
-    			break;
-    		case 0x2736: 
-    			$type = "SPMiniPlus";
-    			break;
+	public function model($devtype = NULL){
+		
+		$type = "Unknown";
+		$model = "Unknown";
+		if(is_null($devtype)) {
+			$dtswitch=$this->devtype;
+		} else {
+			$dtswitch=$devtype;
+		}
+		 
+		switch ($dtswitch) {
+			case 0:
+				$model = "SP1";
+				$type = 0;
+				break;
+			case 0x2711:
+				$model = "SP2";
+				$type = 1;
+				break;
+			case 0x2719: 
+			case 0x7919:
+			case 0x271a:
+			case 0x791a:
+				$model = "Honeywell SP2";
+				$type = 1;
+				break;
+			case 0x2720: 
+				$model = "SPMini";
+				$type = 1;
+				break;
+			case 0x753e: 
+				$model = "SP3";
+				$type = 1;
+				break;
+			case 0x2728: 
+				$model = "SPMini2";
+				$type = 1;
+				break;
+			case 0x2733: 
+			case 0x273e:
+			case 0x7539:
+			case 0x754e:
+			case 0x753d:
+			case 0x7536:
+				$model = "OEM branded SPMini";
+				$type = 1;
+				break;
+			case 0x7530: 
+			case 0x7918:
+			case 0x7549:
+				$model = "OEM branded SPMini2";
+				$type = 1;
+				break;
+			case 0x2736: 
+				$model = "SPMiniPlus";
+				$type = 1;
+				break;
+			case 0x947c: 
+				$model = "SPMiniPlus2";
+				$type = 1;
+				break;
 			case 0x7547:
-				$type = "SC1 switch";
+				$model = "SC1 WiFi Box";
+				$type = 1;
 				break;
 			case 0x947a: 
-				$type = "SP3C";
+			case 0x9479:
+				$model = "SP3S";
+				$type = 1;
 				break;
-    		case 0x2712: 
-    			$type = "RM2";
-    			break;
-    		case 0x2737: 
-    			$type = "RM Mini";
-    			break;
-    		case 0x273d: 
-    			$type = "RM Pro Phicomm";
-    			break;
-    		case 0x2783: 
-    			$type = "RM2 Home Plus";
-    			break;
-    		case 0x277c: 
-    			$type = "RM2 Home Plus";
-    			break;														 	    			
-    		case 0x277c: 
-    			$type = "RM2 Home Plus GDT";
-    			break;
-    		case 0x272a: 
-    			$type = "RM2 Pro Plus";
-    			break;
-    		case 0x2787: 
-    			$type = "RM2 Pro Plus2";
-    			break;
-    		case 0x278b: 
-    			$type = "RM2 Pro Plus BL";
-    			break;														 	    			
-    		case 0x278f: 
-    			$type = "RM Mini Shate";
-    			break;
-    		case 0x2714: 
-    			$type = "A1";
-    			break;
-    		case 0x4EB5: 
-    			$type = "MP1";
-    			break;
-    		case 0x271F: 
-    			$type = "MS1";
-    			break;
-    		case 0x2722: 
-    			$type = "S1";
-    			break;
-    		default:
-    			break;
-    	}
+			case 0x2710: 
+				$model = "RM1";
+				$type = 2;
+				break;
+			case 0x2712: 
+				$model = "RM2";
+				$type = 2;
+				break;
+			case 0x2737: 
+				$model = "RM Mini";
+				$type = 2;
+				break;
+			case 0x27a2: 
+				$model = "RM Mini R2";
+				$type = 2;
+				break;
+			case 0x273d: 
+				$model = "RM Pro Phicomm";
+				$type = 2;
+				break;
+			case 0x2783: 
+				$model = "RM2 Home Plus";
+				$type = 2;
+				break;
+			case 0x277c: 
+				$model = "RM2 Home Plus GDT";
+				$type = 2;
+				break;
+			case 0x272a: 
+				$model = "RM2 Pro Plus";
+				$type = 2;
+				break;
+			case 0x2787: 
+				$model = "RM2 Pro Plus2";
+				$type = 2;
+				break;
+			case 0x279d: 
+				$model = "RM2 Pro Plus3";
+				$type = 2;
+				break;
+			case 0x2797: 
+				$model = "RM2 Pro Plus HYC";
+				$type = 2;
+				break;
+			case 0x278b: 
+				$model = "RM2 Pro Plus BL";
+				$type = 2;
+				break;	
+			case 0x27a1: 
+				$model = "RM2 Pro Plus R1";
+				$type = 2;
+				break;				
+			case 0x278f: 
+				$model = "RM Mini Shate";
+				$type = 2;
+				break;
+			case 0x2714:
+			case 0x27a3:
+				$model = "A1";
+				$type = 3;
+				break;
+			case 0x4EB5: 
+				$model = "MP1";
+				$type = 4;
+				break;
+			case 0x271F: 
+				$model = "MS1";
+				$type = 5;
+				break;
+			case 0x2722: 
+				$model = "S1";
+				$type = 6;
+				break;
+			case 0x273c: 
+				$model = "S1 Phicomm";
+				$type = 6;
+				break;
+			case 0x4f34: 
+			case 0x4f35: 
+			case 0x4f36: 
+				$model = "TW2 Switch";
+				$type = 1;
+				break;
+			case 0x4ee6: 
+			case 0x4eee: 
+			case 0x4eef: 
+				$model = "NEW Switch";
+				$type = 1;
+				break;
+			case 0x271b: 
+			case 0x271c: 
+				$model = "Honyar switch";
+				$type = 1;
+				break;
+			case 0x2721: 
+				$model = "Camera";
+				$type = 100;
+				break;
+			case 0x42: 
+			case 0x4e62: 
+				$model = "DEYE HUMIDIFIER";
+				$type = 100;
+				break;
+			case 0x2d: 
+			case 0x4f42:
+			case 0x4e4d:
+				$model = "DOOYA CURTAIN";
+				$type = 100;
+				break;
+			case 0x2723:
+			case 0x4eb5:
+			case 0x4eda:
+				$model = "HONYAR MS";
+				$type = 100;
+				break;
+			case 0x2727:
+			case 0x2726:
+			case 0x2724:
+			case 0x2725:
+				$model = "HONYAR SL";
+				$type = 100;
+				break;
+			case 0x4c:
+			case 0x4e6c:
+				$model = "MFRESH AIR";
+				$type = 100;
+				break;
+			case 0x271e:
+			case 0x2746:
+				$model = "PLC (TW_ROUTER)";
+				$type = 100;
+				break;
+			case 0x2774:
+			case 0x7530:
+			case 0x2742:
+			case 0x4e20:
+				$model = "MIN/MAX AP/OEM";
+				$type = 100;
+				break;
+			case 0x4e69:
+				$model = "LIGHTMATES";
+				$type = 100;
+				break;
+			default:
+				break;
+		}
 
-    	return $type;
+		if(is_null($devtype)) {
+			return $model;
+		} else {
+			return $type;
+		}
     }
-
-    public static function getdevtype($devtype){
-    	
-    	$type = -1;
-
-        $devtype = is_string($devtype) ? hexdec($devtype) : $devtype;
-
-    	switch ($devtype) {
-    		case 0:
-    			$type = 0;
-    			break;
-    		case 0x2711:
-    			$type = 1;
-    			break;
-    		case 0x2719: 
-    		case 0x7919:
-    		case 0x271a:
-    		case 0x791a:
-    			$type = 1;
-    			break;
-    		case 0x2720: 
-    			$type = 1;
-    			break;
-    		case 0x753e: 
-    			$type = 1;
-    			break;
-    		case 0x2728: 
-    			$type = 1;
-    			break;
-    		case 0x2733: 
-    		case 0x273e:
-    			$type = 1;
-    			break;
-    		case 0x7530: 
-    		case 0x7918:
-    			$type = 1;
-    			break;
-    		case 0x2736:
-    			$type = 1;
-    			break;
-			case 0x7547:
-				$type = 1;
-				break;
-			case 0x947a:
-				$type = 1;
-				break;
-    		case 0x2712: 
-    			$type = 2;
-    			break;
-    		case 0x2737: 
-    			$type = 2;
-    			break;
-    		case 0x273d: 
-    			$type = 2;
-    			break;
-    		case 0x2783: 
-    			$type = 2;
-    			break;
-    		case 0x277c: 
-    			$type = 2;
-    			break;														 	    			
-    		case 0x277c: 
-    			$type = 2;
-    			break;
-    		case 0x272a: 
-    			$type = 2;
-    			break;
-    		case 0x2787: 
-    			$type = 2;
-    			break;
-    		case 0x278b: 
-    			$type = 2;
-    			break;														 	    			
-    		case 0x278f: 
-    			$type = 2;
-    			break;
-    		case 0x2714: 
-    			$type = 3;
-    			break;
-    		case 0x4EB5: 
-    			$type = 4;
-    			break;
-    		case 0x271F: 
-    			$type = 5;
-    			break;
-    		case 0x2722: 
-    			$type = 6;
-    			break;
-    		default:
-    			break;
-    	}
-
-    	return $type;
-    } 	
 
     protected static function bytearray($size){
 

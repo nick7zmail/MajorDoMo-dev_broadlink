@@ -95,7 +95,7 @@
 				if ($rec['TYPE']=='rm') {
 						$response = $rm->Check_temperature();
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
-							$this->table_data_set('temperature', $rec['ID'], (float)$response);
+							if((int)$response!=249) $this->table_data_set('temperature', $rec['ID'], (float)$response);
 						}
 				}
 				if ($rec['TYPE']=='rm3') {
