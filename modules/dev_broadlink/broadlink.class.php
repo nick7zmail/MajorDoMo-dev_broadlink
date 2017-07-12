@@ -75,6 +75,9 @@ class Broadlink{
             case 6:
                 return new S1($h, $m, $p, $d);
                 break;
+            case 100:
+                return new UNK($h, $m, $p, $d);
+                break;
             default:
         } 
 
@@ -748,7 +751,6 @@ class A1 extends Broadlink{
     }   
 
 }
-
 
 class RM extends Broadlink{
 
@@ -1456,4 +1458,47 @@ class S1 extends Broadlink{
 
 }
 
+class UNK extends Broadlink{
+
+    function __construct($h = "", $m = "", $p = 80, $d = 0x2712) {
+
+         parent::__construct($h, $m, $p, $d);
+
+    }
+
+    public function some_action($params){
+
+        $packet = self::bytearray(16);
+        $packet[0] = 0x02;
+        $packet[4] = (int)$state;
+
+        $this->send_packet(0x6a, $packet);
+    }
+
+    public function some_req(){
+
+        $packet = self::bytearray(16);
+        $packet[0] = 0x01;
+
+        $response = $this->send_packet(0x6a, $packet);
+        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+        
+
+        if($err == 0){
+            $enc_payload = array_slice($response, 0x38);
+
+            if(count($enc_payload) > 0){
+
+                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));	
+				return $payload;
+            }
+
+        }
+
+        return false;
+
+        
+    }   
+
+}
 ?>
