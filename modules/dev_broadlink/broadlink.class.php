@@ -1466,20 +1466,18 @@ class UNK extends Broadlink{
 
     }
 
-    public function some_action($params){
+    public function some_action($params){//пример команды
 
-        $packet = self::bytearray(16);
-        $packet[0] = 0x02;
-        $packet[4] = (int)$state;
-
+        $packet = self::bytearray(16); 
+        $packet[0] = 0x02; //стартовый байт, определяющий действие (команда)
+		$packet[4] = 1; // управляющий байт в команде
         $this->send_packet(0x6a, $packet);
     }
 
     public function some_req(){
 
-        $packet = self::bytearray(16);
-        $packet[0] = 0x01;
-
+        $packet = self::bytearray(16); //размер массива может быть другой...но как правило 16 или 48 байт
+        $packet[0] = 0x01; //стартовый байт, определяющий действие (запрос)
         $response = $this->send_packet(0x6a, $packet);
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
         
@@ -1501,4 +1499,5 @@ class UNK extends Broadlink{
     }   
 
 }
+
 ?>
