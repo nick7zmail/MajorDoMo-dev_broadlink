@@ -126,6 +126,12 @@
 							}
 						}
 				}
+				if ($rec['TYPE']=='ms1') {
+					$response = 'add_val';	
+						$this->table_data_set('ButtonPower', $rec['ID'], $response);
+						$this->table_data_set('ButtonPlay', $rec['ID'], $response);
+						$this->table_data_set('ButtonPause', $rec['ID'], $response);
+				}
 				if ($rec['TYPE']=='s1') {
 					$response = $rm->Check_Sensors();
 					if(isset($response) && $response!='' && $response!=false && !empty($response)) {

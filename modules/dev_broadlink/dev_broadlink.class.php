@@ -339,7 +339,13 @@ function usual(&$out) {
 		} elseif ($rec['TYPE']=='mp1') {
 				$rm->Set_Power(substr($properties[$i]['TITLE'], -1), $value);
 				$properties[$i]['VALUE']=$value;
-				SQLUpdate('dev_broadlink_commands', $properties[$i]);				
+				SQLUpdate('dev_broadlink_commands', $properties[$i]);
+		} elseif ($rec['TYPE']=='ms1') {
+				if ($value==1) {
+					if($properties[$i]['TITLE']=='ButtonPower') $rm->send_str('{"command":"key","value":2}');
+					if($properties[$i]['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":3}');
+					if($properties[$i]['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
+				}
 		} elseif ($rec['TYPE']=='s1') {
 			if($properties[$i]['TITLE']=='status') {
 				$arm_pack=json_decode($properties[$i]['VALUE'], true);

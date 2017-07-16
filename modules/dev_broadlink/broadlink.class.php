@@ -925,34 +925,39 @@ class MS1 extends Broadlink{
 
          parent::__construct($h, $m, $p, $d);
 
-    } 
-	public function Check_Power(){
-
+    }
+	public function send_str($ascii){
+		
         $packet = self::bytearray(16);
-        $packet[0] = 0x01;
-
+		$ascii='LEN:'.strlen($ascii).chr(10).$ascii;
+        $hex = '';
+		for ($i = 0; $i < strlen($ascii); $i++) {
+			$byte = strtoupper(dechex(ord($ascii{$i})));
+			$byte = str_repeat('0', 2 - strlen($byte)).$byte;
+			$hex.=$byte.' ';
+		}
+		$hex_arr=explode(' ', $hex);
+		$i=0;
+		foreach($hex_arr as $hex_arr_byte) {
+			$packet[$i]='0x'.$hex_arr_byte;
+			$i++;
+		}
+		
         $response = $this->send_packet(0x6a, $packet);
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
         
-
         if($err == 0){
             $enc_payload = array_slice($response, 0x38);
 
             if(count($enc_payload) > 0){
-
                 $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-
-//				foreach($payload as $val) {
-//					file_put_contents ('test_payload', $val.PHP_EOL ,FILE_APPEND);
-//				}
 				return $data;
             }
 
         }
-
+		
         return false;
-
-        
+		
     }  
 
 }
