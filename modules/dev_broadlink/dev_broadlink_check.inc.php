@@ -129,8 +129,17 @@
 				if ($rec['TYPE']=='ms1') {
 					$response = 'add_val';	
 						$this->table_data_set('ButtonPower', $rec['ID'], $response);
+						$this->table_data_set('ButtonMute', $rec['ID'], $response);
 						$this->table_data_set('ButtonPlay', $rec['ID'], $response);
-						$this->table_data_set('ButtonPause', $rec['ID'], $response);
+					$response = $rm->send_str('{"command":"request-pb"}');
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {					
+						}
+					$response = $rm->send_str('{"command":"request-dev"}');
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							$decoded=json_decode($response);
+							$this->table_data_set('volume', $rec['ID'], $decoded->vol);
+							$this->table_data_set('battery', $rec['ID'], $decoded->battery);
+						}
 				}
 				if ($rec['TYPE']=='s1') {
 					$response = $rm->Check_Sensors();

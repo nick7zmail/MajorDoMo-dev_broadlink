@@ -75,6 +75,9 @@ class Broadlink{
             case 6:
                 return new S1($h, $m, $p, $d);
                 break;
+            case 7:
+                return new DOOYA($h, $m, $p, $d);
+                break;
             case 100:
                 return new UNK($h, $m, $p, $d);
                 break;
@@ -296,7 +299,7 @@ class Broadlink{
 			case 0x4f42:
 			case 0x4e4d:
 				$model = "DOOYA CURTAIN";
-				$type = 100;
+				$type = 7;
 				break;
 			case 0x2723:
 			case 0x4eb5:
@@ -951,7 +954,14 @@ class MS1 extends Broadlink{
 
             if(count($enc_payload) > 0){
                 $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-				return $data;
+				for($i=0; $i<count($payload); $i++) {
+					$payload[$i]=dechex($payload[$i]);
+					if (strlen($payload[$i])==1) $payload[$i]='0'.$payload[$i];
+					if ($payload[$i]=='00') $payload[$i]='';
+				}
+				$hex=implode('', $payload);
+				for($i=14;$i<strlen($hex);$i+=2) $str .= chr(hexdec(substr($hex,$i,2)));
+				return $str;
             }
 
         }
@@ -1460,6 +1470,48 @@ class S1 extends Broadlink{
 		return $data;
 	}
 
+
+}
+
+class DOOYA extends Broadlink{
+
+    function __construct($h = "", $m = "", $p = 80, $d = 0x2d) {
+
+         parent::__construct($h, $m, $p, $d);
+
+    }
+
+    public function set_level($lvl){
+
+        $packet = self::bytearray(16); 
+        $packet[0] = 0x09;
+		$packet[4] = $lvl;
+        $this->send_packet(0x6a, $packet);
+    }
+
+   /* public function some_req(){
+
+        $packet = self::bytearray(16); //размер массива может быть другой...но как правило 16 или 48 байт
+        $packet[0] = 0x01; //стартовый байт, определяющий действие (запрос)
+        $response = $this->send_packet(0x6a, $packet);
+        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+        
+
+        if($err == 0){
+            $enc_payload = array_slice($response, 0x38);
+
+            if(count($enc_payload) > 0){
+
+                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));	
+				return $payload;
+            }
+
+        }
+
+        return false;
+
+        
+    } */  
 
 }
 

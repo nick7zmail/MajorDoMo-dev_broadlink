@@ -15,7 +15,7 @@ $rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE IP='$host'");
 $rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 $decoded_keys=json_decode($rec['KEYS']);
 $rm->Auth($decoded_keys->id, $decoded_keys->key);
-$payload = $rm->some_req();			//команда (для примера...нужно её)
+$payload = $rm->some_req();			//команда (для примера...можно менять на другие)
 
 echo '<hr>payload decrypted:<br>';
 print_dec_table($payload);

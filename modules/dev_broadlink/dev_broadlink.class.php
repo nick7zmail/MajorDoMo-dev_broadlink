@@ -341,10 +341,12 @@ function usual(&$out) {
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
 		} elseif ($rec['TYPE']=='ms1') {
-				if ($value==1) {
+				if($properties[$i]['TITLE']=='volume') {
+					$rm->send_str("{\"command\":\"vol-setting\",\"value\":$value}");
+				} elseif ($value==1) {
 					if($properties[$i]['TITLE']=='ButtonPower') $rm->send_str('{"command":"key","value":2}');
-					if($properties[$i]['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":3}');
-					if($properties[$i]['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
+					if($properties[$i]['TITLE']=='ButtonMute') $rm->send_str('{"command":"key","value":3}');
+					if($properties[$i]['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":9}');
 				}
 		} elseif ($rec['TYPE']=='s1') {
 			if($properties[$i]['TITLE']=='status') {
@@ -395,7 +397,6 @@ function usual(&$out) {
 * @access private
 */
  function install($data='') {
-  unsubscribeFromEvent($this->name, 'HOURLY');
   parent::install();
  }
 /**
@@ -406,7 +407,6 @@ function usual(&$out) {
 * @access public
 */
  function uninstall() {
-  unsubscribeFromEvent($this->name, 'HOURLY');
   SQLExec('DROP TABLE IF EXISTS dev_httpbrige_devices');
   SQLExec('DROP TABLE IF EXISTS dev_broadlink_commands');
   parent::uninstall();

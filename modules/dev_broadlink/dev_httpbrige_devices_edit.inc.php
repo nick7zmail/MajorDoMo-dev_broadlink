@@ -236,8 +236,8 @@
 		$rm->Set_Power(substr($data['TITLE'], -1), $data['VALUE']);
 	} elseif($rec['TYPE'] == 'ms1') {
 		if($data['TITLE']=='ButtonPower') $rm->send_str('{"command":"key","value":2}');
-		if($data['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":3}');
-		if($data['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
+		if($data['TITLE']=='ButtonMute') $rm->send_str('{"command":"key","value":3}');
+		if($data['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":9}');
 	} elseif($rec['TYPE'] == 's1') {
 		$arm_pack=json_decode($data['VALUE'], true);
 		if($arm_pack['status']==1) {
