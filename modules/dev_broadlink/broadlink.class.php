@@ -659,7 +659,35 @@ class SP2 extends Broadlink{
 
         
     }   
+	
+    public function Check_Energy(){
 
+        $packet = self::bytearray(16);
+			$packet[0x00] = 0x08;
+			$packet[0x02] = 0xFE;
+			$packet[0x03] = 0x01;
+			$packet[0x04] = 0x05;
+			$packet[0x05] = 0x01;
+			$packet[0x09] = 0x2D;
+        $response = $this->send_packet(0x6a, $packet);
+        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+        
+
+        if($err == 0){
+            $enc_payload = array_slice($response, 0x38);
+
+            if(count($enc_payload) > 0){
+                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				$data=$payload[0x7].$payload[0x6].'.'.$payload[0x5];
+				return $data;
+            }
+
+        }
+
+        return false;
+
+        
+    }
 }
 
 class A1 extends Broadlink{
@@ -1485,6 +1513,10 @@ class DOOYA extends Broadlink{
 
         $packet = self::bytearray(16); 
         $packet[0] = 0x09;
+		$packet[2] = 0xbb;
+		$packet[3] = 0x06;
+		$packet[9] = 0xfa;
+		$packet[10] = 0x44;
 		$packet[4] = $lvl;
         $this->send_packet(0x6a, $packet);
     }

@@ -111,13 +111,20 @@
 				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE'] == 'sc1') {
 					$response = $rm->Check_Power();	
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
-							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);
+							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);						
 							if ($rec['TYPE'] == 'sp3') {
 								$this->table_data_set('lightstatus', $rec['ID'], (int)$response['light_state']);
 							}
 						}
 						
 				}
+				if ($rec['TYPE']=='sp2') {
+					$response = $rm->Check_Energy();	
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							$this->table_data_set('power', $rec['ID'], (float)$response);						
+						}
+						
+				}				
 				if ($rec['TYPE']=='mp1') {
 					$response = $rm->Check_Power();	
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
