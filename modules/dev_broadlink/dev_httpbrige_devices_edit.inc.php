@@ -237,7 +237,13 @@
 	} elseif($rec['TYPE'] == 'ms1') {
 		if($data['TITLE']=='ButtonPower') $rm->send_str('{"command":"key","value":2}');
 		if($data['TITLE']=='ButtonMute') $rm->send_str('{"command":"key","value":3}');
-		if($data['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":9}');
+		if($data['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
+		if($data['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":1}');
+		if($data['TITLE']=='ButtonNext') $rm->send_str('{"command":"key","value":7}');
+		if($data['TITLE']=='ButtonPrev') $rm->send_str('{"command":"key","value":8}');					
+		if($data['TITLE']=='ButtonVolUp') $rm->send_str('{"command":"key","value":4}');
+		if($data['TITLE']=='ButtonVolDown') $rm->send_str('{"command":"key","value":5}');
+		if($data['TITLE']=='ButtonAux') $rm->send_str('{"command":"key","value":6}');	
 	} elseif($rec['TYPE'] == 's1') {
 		$arm_pack=json_decode($data['VALUE'], true);
 		if($arm_pack['status']==1) {

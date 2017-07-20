@@ -327,9 +327,11 @@ function usual(&$out) {
 					sg($object.".".$property, 0);
 			 }
 		} elseif ($rec['TYPE']=='sp2' || $rec['TYPE']=='spmini' || $rec['TYPE'] == 'sc1') {
-				$rm->Set_Power($value);
-				$properties[$i]['VALUE']=$value;
-				SQLUpdate('dev_broadlink_commands', $properties[$i]);
+			if($properties[$i]['TITLE']=='status') {
+					$rm->Set_Power($value);
+					$properties[$i]['VALUE']=$value;
+					SQLUpdate('dev_broadlink_commands', $properties[$i]);
+			}
 		} elseif ($rec['TYPE']=='sp3') {
 				$properties[$i]['VALUE']=$value;
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
@@ -346,7 +348,13 @@ function usual(&$out) {
 				} elseif ($value==1) {
 					if($properties[$i]['TITLE']=='ButtonPower') $rm->send_str('{"command":"key","value":2}');
 					if($properties[$i]['TITLE']=='ButtonMute') $rm->send_str('{"command":"key","value":3}');
-					if($properties[$i]['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":9}');
+					if($properties[$i]['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
+					if($properties[$i]['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":1}');
+					if($properties[$i]['TITLE']=='ButtonNext') $rm->send_str('{"command":"key","value":7}');
+					if($properties[$i]['TITLE']=='ButtonPrev') $rm->send_str('{"command":"key","value":8}');					
+					if($properties[$i]['TITLE']=='ButtonVolUp') $rm->send_str('{"command":"key","value":4}');
+					if($properties[$i]['TITLE']=='ButtonVolDown') $rm->send_str('{"command":"key","value":5}');
+					if($properties[$i]['TITLE']=='ButtonAux') $rm->send_str('{"command":"key","value":6}');					
 				}
 		} elseif ($rec['TYPE']=='s1') {
 			if($properties[$i]['TITLE']=='status') {

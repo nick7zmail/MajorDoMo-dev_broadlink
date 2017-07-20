@@ -121,13 +121,17 @@ class Broadlink{
     public function devmodel(){
         return self::model($this->devtype);
     }
+	
+	public function dtsw_par(){
+        return $this->devtype;
+    }
 
 	public function model($devtype = NULL){
 		
 		$type = "Unknown";
 		$model = "Unknown";
 		if(is_null($devtype)) {
-			$dtswitch=$this->devtype;
+			$dtswitch= self::dtsw_par();
 		} else {
 			$dtswitch=$devtype;
 		}

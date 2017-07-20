@@ -137,9 +137,19 @@
 					$response = 'add_val';	
 						$this->table_data_set('ButtonPower', $rec['ID'], $response);
 						$this->table_data_set('ButtonMute', $rec['ID'], $response);
+						$this->table_data_set('ButtonPause', $rec['ID'], $response);
 						$this->table_data_set('ButtonPlay', $rec['ID'], $response);
+						$this->table_data_set('ButtonNext', $rec['ID'], $response);
+						$this->table_data_set('ButtonPrev', $rec['ID'], $response);
+						$this->table_data_set('ButtonVolUp', $rec['ID'], $response);
+						$this->table_data_set('ButtonVolDown', $rec['ID'], $response);
+						$this->table_data_set('ButtonAux', $rec['ID'], $response);
 					$response = $rm->send_str('{"command":"request-pb"}');
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {					
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {	
+							$decoded=json_decode($response);
+							$this->table_data_set('status', $rec['ID'], $decoded->status);
+						} else {
+							$this->table_data_set('status', $rec['ID'], 'Offline');
 						}
 					$response = $rm->send_str('{"command":"request-dev"}');
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
