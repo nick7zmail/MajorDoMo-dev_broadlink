@@ -682,7 +682,7 @@ class SP2 extends Broadlink{
 
             if(count($enc_payload) > 0){
                 $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-				$data=$payload[0x7].$payload[0x6].'.'.$payload[0x5];
+				$data= (dechex($payload[0x7])*10000+dechex($payload[0x6])*100+dechex($payload[0x5]))/100; 
 				return $data;
             }
 

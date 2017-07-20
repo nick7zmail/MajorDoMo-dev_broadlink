@@ -145,7 +145,8 @@
 						$this->table_data_set('ButtonVolDown', $rec['ID'], $response);
 						$this->table_data_set('ButtonAux', $rec['ID'], $response);
 					$response = $rm->send_str('{"command":"request-pb"}');
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {	
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							//$this->table_data_set('info-pb', $rec['ID'], $response);
 							$decoded=json_decode($response);
 							$this->table_data_set('status', $rec['ID'], $decoded->status);
 						} else {
@@ -153,6 +154,7 @@
 						}
 					$response = $rm->send_str('{"command":"request-dev"}');
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							//$this->table_data_set('info-dev', $rec['ID'], $response);
 							$decoded=json_decode($response);
 							$this->table_data_set('volume', $rec['ID'], $decoded->vol);
 							$this->table_data_set('battery', $rec['ID'], $decoded->battery);
