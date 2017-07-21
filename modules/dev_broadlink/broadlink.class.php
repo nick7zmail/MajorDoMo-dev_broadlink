@@ -173,6 +173,10 @@ class Broadlink{
 				$model = "OEM branded SPMini";
 				$type = 1;
 				break;
+			case 0x7540:
+				$model = "MP2";
+				$type = 1;
+				break;				
 			case 0x7530: 
 			case 0x7918:
 			case 0x7549:
