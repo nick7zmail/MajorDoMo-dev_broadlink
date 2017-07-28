@@ -602,7 +602,26 @@ class Broadlink{
 			$this->key = $key_authorized;
 		}
     }
+	
+	public static function Cloud($nickname = "", $userid = "", $loginsession = "") {
 
+		return new Cloud($nickname, $userid, $loginsession);
+
+    }
+
+	protected static function str2hex_array($str){
+		
+		$str_arr = str_split(strToUpper($str), 2);
+		$str_hex='';
+		for ($i=0; $i < count($str_arr); $i++){
+			$ord1 = ord($str_arr[$i][0])-48;
+			$ord2 = ord($str_arr[$i][1])-48;
+			if ($ord1 > 16) $ord1 = $ord1 - 7;
+			if ($ord2 > 16) $ord2 = $ord2 - 7;
+			$str_hex[$i] = $ord1 * 16 + $ord2;
+		}
+		return $str_hex;
+	}
 
 }
 
@@ -1597,4 +1616,224 @@ class UNK extends Broadlink{
 
 }
 
+class Cloud extends Broadlink{
+	protected $authorized = false;
+	protected $loginsession;
+	protected $userid;
+	protected $nickname;
+	protected static $workdir = SERVER_ROOT."files/";
+	protected static $file = "bl_buckup.zip";
+	
+    function __construct($nickname = "", $userid = "", $loginsession = "") {
+		
+		$this->loginsession = $loginsession;
+		$this->userid = $userid;
+        $this->nickname = $nickname;
+		if (($nickname === "") || ($userid === "") || ($loginsession === "")) {
+			$this->authorized = false;
+		} else {
+			$this->authorized = true;
+		}
+    }
+
+	protected function geturi($host, $post, $headers, $request = 0) {
+		
+		$url = "https://".$host.$post;
+		$timeout = 7;
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $url);
+		if (preg_match("/\bPOST\b/i", $headers[0])) curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+		if ($request) curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
+		$result["msg"] = curl_exec($curl);
+		$result["error"] = curl_errno($curl);
+		if ($result["error"]) {
+			$result["msg"] = curl_error($curl);
+		}
+		return $result;
+	}
+	
+	protected function get_token($timestamp) {
+		return md5(base64_encode(sha1("\x42\x72\x6F\x61\x64\x6C\x69\x6E\x6B\x3A290".$timestamp,true)));
+	}
+	
+	public function Auth($email = "", $password = "") {
+		
+		if (($email === "") || (strlen($password) < 6)) {
+			$result["error"] = -1005;
+			$result["msg"] = "Data Error";
+			return $result;
+		}
+		
+		$authiv = array(-22, -86, -86, 58, -69, 88, 98, -94, 25, 24, -75, 119, 29, 22, 21, -86);
+		$password = sha1($password."4969fj#k23#");
+		$data_str = str_pad('{"email":"'.$email.'","password":"'.$password.'"}',  112, "\0");
+		$token = md5('{"email":"'.$email.'","password":"'.$password.'"}'."xgx3d*fe3478\$ukx");
+		
+		$host = "account.ibroadlink.com";
+		$post = "/v1/account/login/api?email=".$email."&password=".$password."&serialVersionUID=2297929119272048467";
+		$headers = array(
+			"GET ".$post." HTTP/1.1",
+			"language: zh_cn",
+			"serialVersionUID: -6225108491617746123",
+			"Host: ".$host,
+			"Connection: Keep-Alive"
+		);
+		$result = $this->geturi($host, $post, $headers);
+		if ($result["error"]) {
+			return $result;
+		}
+		$result = json_decode($result["msg"], true);
+		
+		if (($result["error"] != 0) || ($result["msg"] != "ok")) {
+			return $result;
+		}
+		
+		$timestamp = $result["timestamp"];
+		$key = $this->byte($this->str2hex_array($result["key"]));
+		$request = aes128_cbc_encrypt($key, $data_str, $this->byte($authiv));
+		$post = "/v2/account/login/info";
+		$host = "secure.ibroadlink.com";
+		$headers = array(
+			"POST ".$post." HTTP/1.1",
+			"Timestamp: ".$timestamp,
+			"Token: ".$token,
+			"language: zh_cn",
+			"serialVersionUID: -6225108491617746123",
+			"Content-Length: 112",
+			"Host: ".$host,
+			"Connection: Keep-Alive",
+			"Expect: 100-continue"
+		);
+		$result = $this->geturi($host, $post, $headers, $request);
+		if ($result["error"]) {
+			return $result;
+		}
+		$result = json_decode($result["msg"], true);
+		return $result;
+	}
+	
+	public function GetUserInfo() {
+		
+		if (!$this->authorized) {
+			$result["error"] = -1009;
+			$result["msg"] = "Authorization Required";
+			return $result;
+		}
+		
+		$post = "/v1/account/userinfo/get";
+		$host = "account.ibroadlink.com";
+		$headers = array(
+			"GET ".$post." HTTP/1.1",
+			"LOGINSESSION: ".$this->loginsession,
+			"USERID: ".$this->userid,
+			"language: zh_cn",
+			"serialVersionUID: -6225108491617746123",
+			"Host: ".$host,
+			"Connection: Keep-Alive"
+		);
+		$result = $this->geturi($host, $post, $headers);
+		if ($result["error"]) {
+			return $result;
+		}
+		$result = json_decode($result["msg"], true);
+		$this->nickname = $result["nickname"];
+		return $result;
+	}
+	
+	public function GetListBackups() {
+		
+		if (!$this->authorized) {
+			$result["error"] = -1009;
+			$result["msg"] = "Authorization Required";
+			return $result;
+		}
+		
+		$timestamp = round(microtime(true) * 1000);
+		$post = "/rest/1.0/backup?method=list&user=".$this->nickname."&id=".$this->userid."&timestamp=".$timestamp."&token=".$this->get_token($timestamp);
+		$host = "ebackup.ibroadlink.com";
+		$headers = array(
+			"GET ".$post." HTTP/1.1",
+			"accountType: bl",
+			"reqUserId: ".$this->userid,
+			"reqUserSession: ".$this->loginsession,
+			"serialVersionUID: -855048957473660878",
+			"Host: ".$host,
+			"Connection: Keep-Alive"
+		);
+		$result = $this->geturi($host, $post, $headers, 0);
+		if ($result["error"]) {
+			return $result;
+		}
+		$result = json_decode($result["msg"], true);
+		$result["error"] = 0;
+		return $result;
+	}
+	
+	public function GetBackup($pathname) {
+
+		if (!$this->authorized) {
+			$result["error"] = -1009;
+			$result["msg"] = "Authorization Required";
+			return $result;
+		}
+		
+		$BLbackupFolderName = "SharedData";
+		$timestamp = round(microtime(true) * 1000);
+		$post = "/rest/1.0/backup?method=download&pathname=".$pathname."&timestamp=".$timestamp."&token=".$this->get_token($timestamp);
+		$host = "ebackup.ibroadlink.com";
+		$timestamp = $timestamp + 56;
+		$headers = array(
+			"GET ".$post." HTTP/1.1",
+			"timestamp: ".$timestamp,
+			"token: ".$this->get_token($timestamp),
+			"accountType: bl",
+			"reqUserId: ".$this->userid,
+			"reqUserSession: ".$this->loginsession,
+			"serialVersionUID: -855048957473660878",
+			"Host: ".$host,
+			"Connection: Keep-Alive"
+		);
+		$result = $this->geturi($host, $post, $headers);
+		if ($result["error"]) {
+			return $result;
+		}
+		
+		file_put_contents(self::$workdir.self::$file, $result["msg"]);
+		
+		if (file_exists(self::$workdir.self::$file)) {
+			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+				exec(sprintf("rd /s /q ".self::$workdir.$BLbackupFolderName));
+				exec('unzip '.self::$workdir.self::$file.' -d '.self::$workdir, $output, $res);
+			} else {
+				if (file_exists(self::$workdir.$BLbackupFolderName)) exec(sprintf("rm -rf ".self::$workdir.$BLbackupFolderName));
+				exec('unzip '.self::$workdir.self::$file.' -d '.self::$workdir, $output, $res);
+				exec("find ".self::$workdir.$BLbackupFolderName." -exec chmod 0777 {} +");
+			}
+			unlink(self::$workdir.self::$file);
+		}
+		if (file_exists(self::$workdir.$BLbackupFolderName)) {
+			$result["error"] = 0;
+			$result["msg"] = self::$workdir.$BLbackupFolderName;
+		} else {
+			$result["error"] = -9999;
+			$result["msg"] = "Something Went Wrong";
+		}
+		return $result;
+	}
+	
+	public function GetLastBackup() {
+		
+		$LastBackupFile = "";
+		$result = $this->GetListBackups();
+		if ($result["code"] == "200") {
+			$count_files = count($result["list"]);
+			$LastBackupFile = $result["list"][$count_files-1]["pathname"];
+			$result = $this->GetBackup($LastBackupFile);
+		}
+		return $result;
+	}
+}
 ?>
