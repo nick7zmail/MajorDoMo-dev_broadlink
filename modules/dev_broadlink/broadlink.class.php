@@ -1621,7 +1621,7 @@ class Cloud extends Broadlink{
 	protected $loginsession;
 	protected $userid;
 	protected $nickname;
-	protected static $workdir = SERVER_ROOT."files/";
+	protected $workdir = "files";
 	protected static $file = "bl_buckup.zip";
 	
     function __construct($nickname = "", $userid = "", $loginsession = "") {
@@ -1629,6 +1629,7 @@ class Cloud extends Broadlink{
 		$this->loginsession = $loginsession;
 		$this->userid = $userid;
         $this->nickname = $nickname;
+		$this->workdir = SERVER_ROOT.$this->workdir."/";
 		if (($nickname === "") || ($userid === "") || ($loginsession === "")) {
 			$this->authorized = false;
 		} else {
@@ -1801,22 +1802,22 @@ class Cloud extends Broadlink{
 			return $result;
 		}
 		
-		file_put_contents(self::$workdir.self::$file, $result["msg"]);
+		file_put_contents($this->workdir.self::$file, $result["msg"]);
 		
-		if (file_exists(self::$workdir.self::$file)) {
+		if (file_exists($this->workdir.self::$file)) {
 			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-				exec(sprintf("rd /s /q ".self::$workdir.$BLbackupFolderName));
-				exec('unzip '.self::$workdir.self::$file.' -d '.self::$workdir, $output, $res);
+				exec(sprintf("rd /s /q ".$this->workdir.$BLbackupFolderName));
+				exec('unzip '.$this->workdir.self::$file.' -d '.$this->workdir, $output, $res);
 			} else {
-				if (file_exists(self::$workdir.$BLbackupFolderName)) exec(sprintf("rm -rf ".self::$workdir.$BLbackupFolderName));
-				exec('unzip '.self::$workdir.self::$file.' -d '.self::$workdir, $output, $res);
-				exec("find ".self::$workdir.$BLbackupFolderName." -exec chmod 0777 {} +");
+				if (file_exists($this->workdir.$BLbackupFolderName)) exec(sprintf("rm -rf ".$this->workdir.$BLbackupFolderName));
+				exec('unzip '.$this->workdir.self::$file.' -d '.$this->workdir, $output, $res);
+				exec("find ".$this->workdir.$BLbackupFolderName." -exec chmod 0777 {} +");
 			}
-			unlink(self::$workdir.self::$file);
+			unlink($this->workdir.self::$file);
 		}
-		if (file_exists(self::$workdir.$BLbackupFolderName)) {
+		if (file_exists($this->workdir.$BLbackupFolderName)) {
 			$result["error"] = 0;
-			$result["msg"] = self::$workdir.$BLbackupFolderName;
+			$result["msg"] = $this->workdir.$BLbackupFolderName;
 		} else {
 			$result["error"] = -9999;
 			$result["msg"] = "Something Went Wrong";
