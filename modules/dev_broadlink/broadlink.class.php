@@ -119,24 +119,15 @@ class Broadlink{
    	}
 
     public function devmodel(){
-        return self::model($this->devtype);
+        return self::model($this->devtype, 'model');
     }
 	
-	public function dtsw_par(){
-        return $this->devtype;
-    }
-
-	public function model($devtype = NULL){
+	public function model($devtype, $needle='type'){
 		
 		$type = "Unknown";
 		$model = "Unknown";
-		if(is_null($devtype)) {
-			$dtswitch= self::dtsw_par();
-		} else {
-			$dtswitch=$devtype;
-		}
-		 
-		switch ($dtswitch) {
+
+		switch ($devtype) {
 			case 0:
 				$model = "SP1";
 				$type = 0;
@@ -347,7 +338,7 @@ class Broadlink{
 				break;
 		}
 
-		if(is_null($devtype)) {
+		if($needle=='model') {
 			return $model;
 		} else {
 			return $type;
