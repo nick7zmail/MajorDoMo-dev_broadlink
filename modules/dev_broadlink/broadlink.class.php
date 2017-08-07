@@ -19,6 +19,9 @@ class Broadlink{
     protected $iv = array(0x56, 0x2e, 0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58);
     protected $id = array(0, 0, 0, 0);
     protected $devtype;
+	public $ping_response;
+	public $ping_time = 'down';
+	public $ping_status;
 
     function __construct($h = "", $m = "", $p = 80, $d = 0) {
 
@@ -126,7 +129,8 @@ class Broadlink{
 		
 		$type = "Unknown";
 		$model = "Unknown";
-
+		if (is_string($devtype)) $devtype = hexdec($devtype);
+		
 		switch ($devtype) {
 			case 0:
 				$model = "SP1";
@@ -301,7 +305,6 @@ class Broadlink{
 				$type = 7;
 				break;
 			case 0x2723:
-			case 0x4eb5:
 			case 0x4eda:
 				$model = "HONYAR MS";
 				$type = 100;
@@ -373,16 +376,19 @@ class Broadlink{
     	$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
   		socket_connect($s ,'8.8.8.8', 53);  // connecting to a UDP address doesn't send packets
   		socket_getsockname($s, $local_ip_address, $port);
-  		socket_close($s);
+  		@socket_shutdown($s, 2);
+		socket_close($s);
 
   		$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
-   		if($cs){
-   			socket_set_option($cs, SOL_SOCKET, SO_REUSEADDR, 1);
-    		socket_set_option($cs, SOL_SOCKET, SO_BROADCAST, 1);
-    		socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>1, 'usec'=>0));
-    		socket_bind($cs, 0, 0);
-   		}
+   		if(!$cs){
+			return $devices;
+		}
+
+		socket_set_option($cs, SOL_SOCKET, SO_REUSEADDR, 1);
+		socket_set_option($cs, SOL_SOCKET, SO_BROADCAST, 1);
+		socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>1, 'usec'=>0));
+		socket_bind($cs, 0, 0);
 
   		$address = explode('.', $local_ip_address);
 		$packet = self::bytearray(0x30);
@@ -395,15 +401,12 @@ class Broadlink{
 		    $packet[0x09] = 0xff;
 		    $packet[0x0a] = 0xff;
 		    $packet[0x0b] = 0xff;
-		}
-		else{
-
+		} else {
 		    $packet[0x08] = $timezone;
 		    $packet[0x09] = 0;
 		    $packet[0x0a] = 0;
 		    $packet[0x0b] = 0;
 		}    
-
 		$packet[0x0c] = $year & 0xff;
 		$packet[0x0d] = $year >> 8;
 		$packet[0x0e] = intval(date("i"));
@@ -422,11 +425,9 @@ class Broadlink{
 		$packet[0x26] = 6;
 
 		$checksum = 0xbeaf;
-
 		for($i = 0 ; $i < sizeof($packet) ; $i++){
 	      $checksum += $packet[$i];
 	    }
-
 	   	$checksum = $checksum & 0xffff;
 
 		$packet[0x20] = $checksum & 0xff;
@@ -436,15 +437,15 @@ class Broadlink{
 		while(socket_recvfrom($cs, $response, 2048, 0, $from, $port)){
 
 			$host = '';
-
 			$responsepacket = self::byte2array($response);
-
-
 			$devtype = hexdec(sprintf("%x%x", $responsepacket[0x35], $responsepacket[0x34]));
 			$host_array = array_slice($responsepacket, 0x36, 4);
 			$mac = array_slice($responsepacket, 0x3a, 6);
+			if (array_slice($responsepacket, 0, 8) !== array(0x5a, 0xa5, 0xaa, 0x55, 0x5a, 0xa5, 0xaa, 0x55)) {
+				$host_array = array_reverse($host_array);
+			}
 
-			foreach ( array_reverse($host_array) as $ip ) {
+			foreach ( $host_array as $ip ) {
  				$host .= $ip . ".";
 			}
 
@@ -455,33 +456,33 @@ class Broadlink{
                 $device->name = str_replace(array("\0","\2"), '', Broadlink::byte(array_slice($responsepacket, 0x40)));
 				array_push($devices, $device);
 			}
-
-
 		}
 
-		if($cs){
-			socket_close($cs);
-		}
+		@socket_shutdown($cs, 2);
+		socket_close($cs);
 
 		return $devices;
-
     }
 
-
     function send_packet($command, $payload){
+		
+		if (!$this->ping()) {
+			return array();
+		}
+		
+		$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
-    	$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+	    if (!$cs) {
+			return array();
+	    }
 
-   		if($cs){
-   			socket_set_option($cs, SOL_SOCKET, SO_REUSEADDR, 1);
-   			socket_set_option($cs, SOL_SOCKET, SO_BROADCAST, 1);
-   			socket_bind($cs, 0, 0);
-   		}
+	    socket_set_option($cs, SOL_SOCKET, SO_REUSEADDR, 1);
+	    socket_set_option($cs, SOL_SOCKET, SO_BROADCAST, 1);
+	    socket_bind($cs, 0, 0);
 
 	    $this->count = ($this->count + 1) & 0xffff;
 
 	    $packet = $this->bytearray(0x38);
-
 	    $packet[0x00] = 0x5a;
 	    $packet[0x01] = 0xa5;
 	    $packet[0x02] = 0xaa;
@@ -531,20 +532,16 @@ class Broadlink{
 	    $packet[0x21] = $checksum >> 8;
 
 	    $starttime = time();
-
-
 	    $from = '';
 	    socket_sendto($cs, $this->byte($packet), sizeof($packet), 0, $this->host, $this->port);
 	    socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>$this->timeout, 'usec'=>0));
 
 	    $ret = socket_recvfrom($cs, $response, 2048, 0, $from, $port);
 
-	    if($cs){
-	    	socket_close($cs);
-	    }
-
+ 	    @socket_shutdown($cs, 2);
+ 	    socket_close($cs);
+		
 	    return $this->byte2array($response);
-
     }
 
     public function Auth($id_authorized = null, $key_authorized = null){
@@ -614,6 +611,164 @@ class Broadlink{
 		return $str_hex;
 	}
 
+	public function ping() {
+
+		$timeout   = 500;
+		$precision = 5;
+		$udp_port  = 33439;
+		$request   = 'broadlink-monitoring-system';
+		
+		switch (self::model($this->devtype)) {
+			case 1:	//SP2
+                $ping_type = 'ICMP';
+				$retries = 1;
+                break;
+            default:
+				$ping_type = 'UDP';
+				$retries = 3;
+        }
+		
+		if (!$this->host) {
+			$this->ping_response = 'Destination address not specified';
+			$this->ping_time     = 'down';
+			$this->ping_status   = false;
+			return false;
+		}
+		
+		$to_sec  = floor($timeout/1000);
+		$to_usec = ($timeout%1000)*1000;
+
+		$this->ping_status   = false;
+		$this->ping_time     = 'down';
+		$this->ping_response = 'default';
+
+		if ($ping_type === 'ICMP') {
+
+			if (substr_count(strtolower(PHP_OS), 'sun')) {
+				$result = shell_exec('ping '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'hpux')) {
+				$result = shell_exec('ping -m '.ceil($timeout/1000).' -n '.$retries.' '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'mac')) {
+				$result = shell_exec('ping -t '.ceil($timeout/1000).' -c '.$retries.' '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'freebsd')) {
+				$result = shell_exec('ping -t '.ceil($timeout/1000).' -c '.$retries.' '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'darwin')) {
+				$result = shell_exec('ping -t '.ceil($timeout/1000).' -c '.$retries.' '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'bsd')) {
+				$result = shell_exec('ping -w '.ceil($timeout/1000).' -c '.$retries.' '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'aix')) {
+				$result = shell_exec('ping -i '.ceil($timeout/1000).' -c '.$retries.' '.$this->host);
+			}else if (substr_count(strtolower(PHP_OS), 'winnt')) {
+				$result = shell_exec('chcp 437 && ping -w '.$timeout.' -n '.$retries.' '.$this->host);
+			} else {
+				$pattern  = bin2hex($request);
+				$result = shell_exec('ping -W '.ceil($timeout/1000).' -c '.$retries.' -p '.$pattern.' '.$this->host.' 2>&1');
+				if (substr_count($result, 'unknown host') && file_exists('/bin/ping6')) {
+					$result = shell_exec('ping6 -W '.ceil($timeout/1000).' -c '.$retries.' -p '.$pattern.' '.$this->host);
+				}
+			}
+
+			if (strtolower(PHP_OS) != 'winnt') {
+				$position = strpos($result, 'min/avg/max');
+
+				if ($position > 0) {
+					$output  = trim(str_replace(' ms', '', substr($result, $position)));
+					$pieces  = explode('=', $output);
+					$results = explode('/', $pieces[1]);
+					$this->ping_status   = true;
+					$this->ping_time     = $results[1];
+					$this->ping_response = 'ICMP Ping Success ('.$this->ping_time.' ms)';
+					return true;
+				} else {
+					$this->ping_status   = false;
+					$this->ping_time     = 'down';
+					$this->ping_response = 'ICMP ping Timed out';
+					return false;
+				}
+			} else {
+				$position = strpos($result, 'Minimum');
+
+				if ($position > 0) {
+					$output  = trim(substr($result, $position));
+					$pieces  = explode(',', $output);
+					$results = explode('=', $pieces[2]);
+					$this->ping_status   = true;
+					$this->ping_time     = trim(str_replace('ms', '', $results[1]));
+					$this->ping_response = 'ICMP Ping Success ('.$this->ping_time.' ms)';
+					return true;
+				} else {
+					$this->ping_status   = false;
+					$this->ping_time     = 'down';
+					$this->ping_response = 'ICMP ping Timed out';
+					return false;
+				}
+			}
+			
+		} else
+		
+		if ($ping_type === 'UDP') {
+			if (substr_count($this->host,':') > 0) {
+				if (defined('AF_INET6')) {
+					$cs = socket_create(AF_INET6, SOCK_DGRAM, SOL_UDP);
+				} else {
+					$this->ping_response = 'PHP version does not support IPv6';
+					$this->ping_time     = 'down';
+					$this->ping_status   = false;
+					return false;
+				}
+			} else {
+				$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+			}
+			socket_set_nonblock($cs);
+			socket_connect($cs, $this->host, $udp_port);
+			$request = chr(0) . chr(1) . chr(0) . $request . chr(0);
+
+			$error = '';
+			$retry_count = 0;
+			while (true) {
+				if ($retry_count >= $retries) {
+					$this->ping_status   = false;
+					$this->ping_time     = 'down';
+					$this->ping_response = 'UDP ping error: '.$error;
+					@socket_shutdown($cs, 2);
+					socket_close($cs);
+					return false;
+				}
+
+				$timer_start_time = microtime(true);
+
+				socket_write($cs, $request, strlen($request));
+
+				$w = $f = array();
+				$r = array($cs);
+				$num_changed_sockets = socket_select($r, $w, $f, $to_sec, $to_usec);
+				if ($num_changed_sockets === false) {	
+					$error = 'socket_select() failed, reason: ' . socket_strerror(socket_last_error());
+				} else {
+					switch($num_changed_sockets) {
+					case 2: /* response received, so host is available */
+					case 1:
+						$start_time = $timer_start_time;
+						$end_time = microtime(true);
+						$time = number_format ($end_time - $start_time, $precision);
+						$code = @socket_recv($cs, $this->reply, 256, 0);
+						$err = socket_last_error($cs);
+						$this->ping_status   = true;
+						$this->ping_time     = $time * 1000;
+						$this->ping_response = "UDP Ping Success (".$this->ping_time." ms)";
+						@socket_shutdown($cs, 2);
+						socket_close($cs);
+						return true;
+						break;
+					case 0: /* timeout */
+						$error = 'timeout';
+						break;
+					}
+				}
+				$retry_count++;
+			}
+		}
+	}
 }
 
 class SP1 extends Broadlink{
