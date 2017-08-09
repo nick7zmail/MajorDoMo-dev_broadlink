@@ -465,11 +465,7 @@ class Broadlink{
     }
 
     function send_packet($command, $payload){
-		
-		if (!$this->ping()) {
-			return array();
-		}
-		
+
 		$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
 	    if (!$cs) {
@@ -620,6 +616,7 @@ class Broadlink{
 		
 		switch (self::model($this->devtype)) {
 			case 1:	//SP2
+			case 4:	//MP1
                 $ping_type = 'ICMP';
 				$retries = 1;
                 break;
@@ -1102,7 +1099,7 @@ class MP1 extends Broadlink{
 
         }
 
-        return false;
+        return null;
 
         
     }
