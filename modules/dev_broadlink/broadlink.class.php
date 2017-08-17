@@ -1790,6 +1790,8 @@ class Cloud extends Broadlink{
 		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $timeout);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 		if ($request) curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
 		$result["msg"] = curl_exec($curl);
 		$result["error"] = curl_errno($curl);
