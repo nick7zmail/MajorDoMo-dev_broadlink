@@ -4,8 +4,7 @@
 <div>
 <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>
 <div class="float-right">
-	<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#about">О модуле&nbsp;&nbsp;<span class="glyphicon glyphicon-info-sign icon-white"></span>
-	</button>
+<a href="?data_source=<#DATA_SOURCE#>&view_mode=cloud" class="btn btn-primary"><span class="glyphicon glyphicon-cloud"></span> BLCloud</a>
 </div>
 </div>
 <div style="display:none" id='api_settings'>
@@ -59,7 +58,7 @@
    [#inc php/action_admin.html#]
  [#endif API_TYPE#]
  
- <div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
-[#inc about.html#]
-</div>
+ [#if VIEW_MODE="cloud"#]
+   [#inc cloud.html#]
+ [#endif VIEW_MODE#]
 

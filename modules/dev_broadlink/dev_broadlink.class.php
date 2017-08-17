@@ -157,19 +157,16 @@ function admin(&$out) {
    $this->redirect("?");
  }
  if ($this->mode=='save_api_rm') {
-	 $this->getConfig();
 	 $this->config['API']='rm-brige';
 	 $this->saveConfig();
 	 $this->redirect("?");
  }
  if ($this->mode=='save_api_hb') {
-	 $this->getConfig();
 	 $this->config['API']='httpbrige';
 	 $this->saveConfig();
 	 $this->redirect("?");
  }
  if ($this->mode=='save_api_php') {
-	 $this->getConfig();
 	 $this->config['API']='php';
 	 $this->saveConfig();
 	 $this->redirect("?");
@@ -196,7 +193,9 @@ function admin(&$out) {
   if ($this->view_mode=='broadlink_devices_scan') {
         $this->broadlink_devices_scan($out);
   }
-
+  if ($this->view_mode=='cloud') {
+        $this->cloud_func($out);
+  }
  }
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
@@ -226,25 +225,27 @@ function usual(&$out) {
 * @access public
 */
  function search_dev_httpbrige_devices(&$out) {
-  require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_search.inc.php');
+	require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_search.inc.php');
  }
 /**
 * broadlink_devices_scan search
 *
 * @access public
 */
-  function broadlink_devices_scan(&$out) {
-    //print("in metod broadlink_devices_scan");
-        require(DIR_MODULES.$this->name.'/broadlink_devices_scan.inc.php');
-    }
+ function broadlink_devices_scan(&$out) {
+    require(DIR_MODULES.$this->name.'/broadlink_devices_scan.inc.php');
+ }
 
+ function cloud_func(&$out) {
+    require(DIR_MODULES.$this->name.'/dev_broadlink_cloud.inc.php');
+ }
 /**
 * dev_httpbrige_devices edit/add
 *
 * @access public
 */
  function edit_dev_httpbrige_devices(&$out, $id) {
-  require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_edit.inc.php');
+	require(DIR_MODULES.$this->name.'/dev_httpbrige_devices_edit.inc.php');
  }
 /**
 * dev_httpbrige_devices delete record
