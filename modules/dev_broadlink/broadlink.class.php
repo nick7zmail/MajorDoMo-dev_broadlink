@@ -1772,7 +1772,7 @@ class Cloud extends Broadlink{
 		$this->loginsession = $loginsession;
 		$this->userid = $userid;
         $this->nickname = $nickname;
-		$this->workdir = SERVER_ROOT.'/'.$this->workdir.'/';
+		$this->workdir = ROOT.$this->workdir.DIRECTORY_SEPARATOR;
 		if (($nickname === "") || ($userid === "") || ($loginsession === "")) {
 			$this->authorized = false;
 		} else {
