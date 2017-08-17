@@ -14,11 +14,15 @@
 	global $password;
 	$cloud = Broadlink::Cloud();
 	$response = $cloud->Auth($username, $password);
-	$this->config['username']=$response['nickname'];
-	$this->config['userid']=$response['userid'];
-	$this->config['loginsession']=$response['loginsession'];
-	$this->saveConfig();
-	$this->redirect("?view_mode=cloud");
+	if($response['error']==0) {
+		$this->config['username']=$response['nickname'];
+		$this->config['userid']=$response['userid'];
+		$this->config['loginsession']=$response['loginsession'];
+		$this->saveConfig();
+		$this->redirect("?view_mode=cloud");
+	} else {
+		$out['WARN']='Error '.$response['error'].': '.$response['msg'];
+	}
   }
   if($this->mode=='unlogin') {
 	$this->config['username']='';
@@ -30,6 +34,10 @@
   if($this->mode=='get_last') {
 	$cloud = Broadlink::Cloud($this->config['username'], $this->config['userid'], $this->config['loginsession']);
 	$response = $cloud->GetLastBackup();
-	$out['OK']=$response['msg'];
+	if($response['error']==0) {
+		$out['OK']=$response['msg'];
+	} else {
+		$out['WARN']='Error '.$response['error'].': '.$response['msg'];
+	}
   }  
 ?>

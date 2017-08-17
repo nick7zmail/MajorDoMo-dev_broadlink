@@ -4,6 +4,9 @@
 [#if OK#]
 <div class="alert alert-success">[#OK#]</div>
 [#endif OK#]
+[#if WARN#]
+<div class="alert alert-warning">[#WARN#]</div>
+[#endif WARN#]
 [#if NEED_LOGIN=="true"#]
 <form class="form-horizontal" role="form">
 	<div class="input-group">
