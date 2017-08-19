@@ -35,6 +35,15 @@ $dictionary=array(
 'BRS1_ZONE'=>'Zone: ',
 'BRS1_PART_U'=>'PART',
 'BRS1_FULL_U'=>'FULL',
+//cloud
+'LOGIN'=>'Login',
+'LOGINED'=>'Logined: ',
+'GET_LAST'=>'Get the latest backup',
+'GET_LIST'=>'Get backup list',
+'SIZE'=>'Size',
+'DOWNLOAD'=>'Download',
+'UNPACKED'=>'Archive is unpacked into the directory',
+'CLOUD_FUNC'=>'Cloud functions',
 );
 
 foreach ($dictionary as $k=>$v) {

@@ -35,6 +35,15 @@ $dictionary=array(
 'BRS1_ZONE'=>'Зона: ',
 'BRS1_PART_U'=>'ЧАСТ',
 'BRS1_FULL_U'=>'ПОЛН',
+//cloud
+'LOGIN'=>'Войти',
+'LOGINED'=>'Вход выполнен: ',
+'GET_LAST'=>'Скачать последний бэкап',
+'GET_LIST'=>'Загрузить список бэкапов',
+'SIZE'=>'Размер',
+'DOWNLOAD'=>'Скачать',
+'UNPACKED'=>'Архив распакован в папку ',
+'CLOUD_FUNC'=>'Облачные функции',
 );
 
 foreach ($dictionary as $k=>$v) {
