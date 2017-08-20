@@ -37,7 +37,6 @@ $dictionary=array(
 'BRS1_FULL_U'=>'FULL',
 //cloud
 'LOGIN'=>'Login',
-'LOGINED'=>'Logined: ',
 'GET_LAST'=>'Get the latest backup',
 'GET_LIST'=>'Get backup list',
 'SIZE'=>'Size',
