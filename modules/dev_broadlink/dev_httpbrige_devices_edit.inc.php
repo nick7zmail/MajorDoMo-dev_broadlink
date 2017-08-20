@@ -312,14 +312,12 @@
    $out['PROPERTIES']=$properties;
   }
   if($this->tab=='data_export') {
-	$properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY TITLE");
+	$properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' AND TITLE <> 'temperature' ORDER BY TITLE");
 	$total=count($properties);
 	for($i=0;$i<$total;$i++) {
-		if($properties[$i]['TITLE']!='temperature') {
-			$export[$i]['name']=$properties[$i]['TITLE'];
-			$export[$i]['data']=$properties[$i]['VALUE'];
-			$export[$i]['mac']=$rec['MAC'];
-		}
+		$export[$i]['name']=$properties[$i]['TITLE'];
+		$export[$i]['data']=$properties[$i]['VALUE'];
+		$export[$i]['mac']=$rec['MAC'];
 	}
 	$out['TEXTAREA']=json_encode($export, JSON_UNESCAPED_UNICODE);
   }
@@ -330,8 +328,8 @@
 		$insert['TITLE']=$value['name'];
 		$insert['VALUE']=$value['data'];
 		$insert['DEVICE_ID']=$rec['ID'];
+		SQLInsert('dev_broadlink_commands',$insert);
 	}
-	SQLInsert('dev_broadlink_commands',$insert);
 	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
   }
  
