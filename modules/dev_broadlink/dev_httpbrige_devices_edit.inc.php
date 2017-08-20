@@ -312,7 +312,6 @@
    $out['PROPERTIES']=$properties;
   }
   if($this->tab=='data_export') {
-	$this->getConfig();
 	$properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY TITLE");
 	$total=count($properties);
 	for($i=0;$i<$total;$i++) {
@@ -322,7 +321,7 @@
 			$export[$i]['mac']=$rec['MAC'];
 		}
 	}
-	$out['TEXTAREA']=json_encode($export);
+	$out['TEXTAREA']=json_encode($export, JSON_UNESCAPED_UNICODE);
   }
   if($this->tab=='data_import' && $this->mode=='update') {
 	global $textarea;
