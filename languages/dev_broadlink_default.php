@@ -43,6 +43,7 @@ $dictionary=array(
 'DOWNLOAD'=>'Download',
 'UNPACKED'=>'Archive is unpacked into the directory',
 'CLOUD_FUNC'=>'Cloud functions',
+'CLOUD_EXPORT'=>'Export cloud codes',
 );
 
 foreach ($dictionary as $k=>$v) {

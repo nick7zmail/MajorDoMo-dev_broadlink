@@ -66,5 +66,35 @@
 	} else {
 		$out['WARN']='<#LANG_STRING_ERROR#>: '.$response['error'].': '.$response['msg'];
 	}
-  }   
+  }
+  if($this->mode=='cloud_export') {
+	$sharedDataDir = ROOT.'files'.DIRECTORY_SEPARATOR.'SharedData';
+	$arrayDevice = json_decode(file_get_contents($sharedDataDir.'/jsonDevice'), true);
+	$arraySubIr  = json_decode(file_get_contents($sharedDataDir.'/jsonSubIr'), true);
+	$arrayButton = json_decode(file_get_contents($sharedDataDir.'/jsonButton'), true);
+	$arrayIrCode = json_decode(file_get_contents($sharedDataDir.'/jsonIrCode'), true);
+	$i=0;
+	foreach ($arrayIrCode as $arrayIrCode["id"]) {
+		$IrCode  = $arrayIrCode["id"];
+		$code    = implode(array_map("bin2hex", array_map("chr", $IrCode["code"])));
+		$Button  = $arrayButton[search($arrayButton,$IrCode["buttonId"])];
+		$SubIr   = $arraySubIr[search($arraySubIr,$Button["subIRId"])];
+		$Device  = $arrayDevice[search($arrayDevice,$SubIr["deviceId"])];
+		$cmd_name=$SubIr["name"];
+		if ($Button["name"]) $cmd_name.='_'.$Button["name"];
+		$cmd_name.=	'_'.$IrCode["buttonId"];
+		$response[$i]['name'] = $cmd_name;
+		$response[$i]['data'] = $code;
+		$i++;
+	}
+	$out['TEXTAREA']=json_encode($response, JSON_UNESCAPED_UNICODE);
+  } 
+
+function search($array,$id) {
+	$i=0;
+	$y=count($array);
+	do 
+		if ($array[$i]['id'] == $id) return $i;
+	while (++$i<$y);
+}  
 ?>
