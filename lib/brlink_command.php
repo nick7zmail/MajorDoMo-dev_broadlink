@@ -8,7 +8,8 @@ $id=$command_arr['DEVICE_ID'];
 $info=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$id'");
 $data = $command_arr['VALUE'];
 $rm = Broadlink::CreateDevice($info['IP'], $info['MAC'], 80, $info['DEVTYPE']);
-$rm->Auth();
+$decoded_keys=json_decode($info['KEYS']);
+$rm->Auth($decoded_keys->id, $decoded_keys->key);
 $rm->Send_data($data);
 }
 ?>

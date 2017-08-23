@@ -858,6 +858,32 @@ class SP2 extends Broadlink{
 
         
     }
+	public function Check_Energy_SP2(){
+
+        $packet = self::bytearray(16);
+			$packet[0x00] = 0x04;
+			$packet[0x04] = 0xF2;
+			$packet[0x05] = 0x20;
+			$packet[0x06] = 0x02;
+        $response = $this->send_packet(0x6a, $packet);
+        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+        
+
+        if($err == 0){
+            $enc_payload = array_slice($response, 0x38);
+
+            if(count($enc_payload) > 0){
+                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				$data= (dechex($payload[0x6])*10000+dechex($payload[0x5])*100+dechex($payload[0x4]))/100; 
+				return $data;
+            }
+
+        }
+
+        return false;
+
+        
+    }
 }
 
 class A1 extends Broadlink{
@@ -1679,16 +1705,17 @@ class DOOYA extends Broadlink{
 
     }
 
-    public function set_level($lvl){
+    public function set_level($val){
 
         $packet = self::bytearray(16); 
         $packet[0] = 0x09;
 		$packet[2] = 0xbb;
-		$packet[3] = 0x06;
+		$packet[3] = $val;
 		$packet[9] = 0xfa;
 		$packet[10] = 0x44;
-		$packet[4] = $lvl;
-        $this->send_packet(0x6a, $packet);
+		//$packet[4] = $lvl;
+        $payload=$this->send_packet(0x6a, $packet);
+		return $payload;
     }
 
    /* public function some_req(){

@@ -108,7 +108,7 @@
 							}							
 						}
 				}
-				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE'] == 'sc1') {
+				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE']=='sp3s' || $rec['TYPE'] == 'sc1') {
 					$response = $rm->Check_Power();	
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);						
@@ -119,6 +119,13 @@
 						
 				}
 				if ($rec['TYPE']=='sp2') {
+					$response = $rm->Check_Energy_SP2();	
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							$this->table_data_set('power', $rec['ID'], (float)$response);						
+						}
+						
+				}
+				if ($rec['TYPE']=='sp3s') {
 					$response = $rm->Check_Energy();	
 						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 							$this->table_data_set('power', $rec['ID'], (float)$response);						
@@ -173,6 +180,9 @@
 					if(isset($response) && $response!='' && $response!=false && !empty($response)) {	
 							$this->table_data_set('status', $rec['ID'], json_encode($response), $response['status']);
 					}
+				}
+				if ($rec['TYPE']=='dooya') {
+					$this->table_data_set('state', $rec['ID'], '');	
 				}
 				if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 					$rec['UPDATED']=date('Y-m-d H:i:s');

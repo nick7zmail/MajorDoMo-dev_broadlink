@@ -1,4 +1,11 @@
 <?php
+	include_once('broadlink.class.php');
+	chdir(dirname(__FILE__) . '/../../');
+	include_once("./config.php");
+	include_once("./lib/loader.php");
+	$db = new mysql(DB_HOST, '', DB_USER, DB_PASSWORD, DB_NAME);
+	include_once("./load_settings.php");
+	
 if($_GET['mode']=='decrypt'){
 	header("Cache-Control: no-cache, must-revalidate, Content-Type: text/plain");
 	echo '<tt>';
@@ -77,13 +84,6 @@ if($_GET['mode']=='decrypt'){
 	print_hex_table($payload);
 } else {
 	header("Cache-Control: no-cache, must-revalidate, Content-Type: text/plain"); // HTTP/1.1
-	include_once('broadlink.class.php');
-	chdir(dirname(__FILE__) . '/../../');
-	include_once("./config.php");
-	include_once("./lib/loader.php");
-	$db = new mysql(DB_HOST, '', DB_USER, DB_PASSWORD, DB_NAME);
-	include_once("./load_settings.php");
-
 	echo '<tt>';
 
 	$host = $_GET['ip'];
@@ -133,24 +133,6 @@ function print_dec_table($payload){
 		}
 		echo '<br>';
 	}
-}
-
-function byte2array($data){
-	return array_merge(unpack('C*', $data));
-}
-
-function byte($array){
-	return implode(array_map("chr", $array));
-}
-
-function aes128_cbc_encrypt($key, $data, $iv) {
-  return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
-  //return openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $iv);
-}
-
-function aes128_cbc_decrypt($key, $data, $iv) {
-  return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
-  //return openssl_decrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $iv);
 }
 
 function key2str(){

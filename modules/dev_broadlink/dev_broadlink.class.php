@@ -327,7 +327,7 @@ function usual(&$out) {
 					$rm->Send_data($data);
 					sg($object.".".$property, 0);
 			 }
-		} elseif ($rec['TYPE']=='sp2' || $rec['TYPE']=='spmini' || $rec['TYPE'] == 'sc1') {
+		} elseif ($rec['TYPE']=='sp2' || $rec['TYPE']=='spmini' || $rec['TYPE']=='sp3s' || $rec['TYPE'] == 'sc1') {
 			if($properties[$i]['TITLE']=='status') {
 					$rm->Set_Power($value);
 					$properties[$i]['VALUE']=$value;
@@ -365,6 +365,12 @@ function usual(&$out) {
 				$properties[$i]['VALUE']=json_encode($arm_pack);
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
 			} 
+		} elseif ($rec['TYPE']=='dooya') {
+			if($properties[$i]['TITLE']=='status') {
+					$rm->set_level($value);
+					$properties[$i]['VALUE']=$value;
+					SQLUpdate('dev_broadlink_commands', $properties[$i]);
+			}
 		}
     }
    }

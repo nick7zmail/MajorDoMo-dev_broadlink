@@ -208,7 +208,7 @@
 	$rm->Auth($decoded_keys->id, $decoded_keys->key);
 	if($rec['TYPE']=='rm'||$rec['TYPE']=='rm3'){
 		$rm->Send_data($data['VALUE']);
-	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sc1') {
+	} elseif($rec['TYPE'] == 'sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE']=='sp3s' || $rec['TYPE'] == 'sc1') {
 		if($data['VALUE']==1){
 			$data['VALUE']=0;
 		} else {
