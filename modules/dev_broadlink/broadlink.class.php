@@ -1791,7 +1791,7 @@ class Cloud extends Broadlink{
 	protected $loginsession;
 	protected $userid;
 	protected $nickname;
-	protected $workdir = 'files';
+	protected $workdir = 'cached';
 	protected static $file = 'bl_buckup.zip';
 	
     function __construct($nickname = "", $userid = "", $loginsession = "") {
@@ -1799,7 +1799,7 @@ class Cloud extends Broadlink{
 		$this->loginsession = $loginsession;
 		$this->userid = $userid;
         $this->nickname = $nickname;
-		$this->workdir = ROOT.$this->workdir.DIRECTORY_SEPARATOR;
+		$this->workdir = ROOT.$this->workdir.DIRECTORY_SEPARATOR.'broadlink'.DIRECTORY_SEPARATOR;
 		if (($nickname === "") || ($userid === "") || ($loginsession === "")) {
 			$this->authorized = false;
 		} else {
@@ -1975,7 +1975,10 @@ class Cloud extends Broadlink{
 		}
 		
 		file_put_contents($this->workdir.self::$file, $result["msg"]);
-		
+		if (!is_dir($this->workdir)){
+			@mkdir(ROOT . 'cached', 0777);
+			@mkdir($this->workdir, 0777);
+		}
 		if (file_exists($this->workdir.self::$file)) {
 			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 				exec(sprintf("rd /s /q ".$this->workdir.$BLbackupFolderName));
