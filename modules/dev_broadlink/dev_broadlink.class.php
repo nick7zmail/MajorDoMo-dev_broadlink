@@ -148,11 +148,14 @@ function admin(&$out) {
   $out['API_URL']='http://';
  }
  $out['API_TYPE']=$this->config['API'];
+ $out['IP_UPDATE']=$this->config['IP_UPDATE'];
  if ($this->view_mode=='update_settings') {
    global $api_type;
    $this->config['API']=$api_type;
    global $api_url;
    $this->config['API_URL']=$api_url;
+   global $ip_update;
+   if($ip_update==true) $this->config['IP_UPDATE']='need'; else $this->config['IP_UPDATE']='not';
    $this->saveConfig();
    $this->redirect("?");
  }
@@ -404,6 +407,17 @@ function usual(&$out) {
 		SQLInsert($table, $properties);								
 	}
  }
+ 
+ function refrash_ip() {
+	$devices = Broadlink::Discover();
+	foreach ($devices as $device) {
+		$mac=$device->mac();
+		$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE MAC='$mac'");
+		$rec['IP']=$device->host();
+		$rec['UPDATED']=date('Y-m-d H:i:s');
+		SQLUpdate('dev_httpbrige_devices', $rec);
+	}
+ } 
 /**
 * Install
 *

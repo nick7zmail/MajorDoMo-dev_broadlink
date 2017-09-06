@@ -16,13 +16,21 @@
  API:
  </label>
  <div class="controls">
- <input type="radio" name="api_type" value="rm-brige"[#if API_TYPE="" || API_TYPE="rm-brige"#] checked[#endif#]> RM-Bridge
+ <input type="radio" name="api_type" value="php"[#if API_TYPE="php"#] checked[#endif#]> PHP (aka module-only)
+ &nbsp;&nbsp;&nbsp;
+ <input type="radio" name="api_type" value="rm-brige"[#if API_TYPE="rm-brige"#] checked[#endif#]> RM-Bridge
  &nbsp;&nbsp;&nbsp;
  <input type="radio" name="api_type" value="httpbrige"[#if API_TYPE="httpbrige"#] checked[#endif#]> BroadlinkHTTPBridge
- &nbsp;&nbsp;&nbsp;
- <input type="radio" name="api_type" value="php"[#if API_TYPE="php"#] checked[#endif#]> PHP (aka module-only)
  </div>
 </div>
+[#if API_TYPE="php"#]
+<div class="form-group">
+ <label class="control-label"[#if ERR_IP_UPDATE#] style="color:red;font-weight:bold"[#endif#]>
+Автоматическое обновление IP:
+ </label>
+ <div class="controls"><input type="checkbox" name="ip_update" [#if IP_UPDATE="need"#] checked[#endif#]></div>
+</div>
+[#endif#]
 [#if API_TYPE="httpbrige"#]
 <div class="form-group">
  <label class="control-label"[#if ERR_API_URL#] style="color:red;font-weight:bold"[#endif#]>

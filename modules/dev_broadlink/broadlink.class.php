@@ -1704,44 +1704,79 @@ class DOOYA extends Broadlink{
          parent::__construct($h, $m, $p, $d);
 
     }
-
-    public function set_level($val){
-
-        $packet = self::bytearray(16); 
-        $packet[0] = 0x09;
+	public function get_level(){
+		$packet[0] = 0x09;
 		$packet[2] = 0xbb;
-		$packet[3] = $val;
 		$packet[9] = 0xfa;
 		$packet[10] = 0x44;
-		//$packet[4] = $lvl;
-        $payload=$this->send_packet(0x6a, $packet);
-		return $payload;
+		$response=$this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+		if($err == 0){
+			$enc_payload = array_slice($response, 0x38);
+			if(count($enc_payload) > 0){
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				$data = $payload[4];
+			}
+		}
+		return $data;
+	}
+    public function set_level($level){
+		$packet = self::bytearray(16); 
+        $packet[0] = 0x09;
+		$packet[2] = 0xbb;
+		$packet[9] = 0xfa;
+		$packet[10] = 0x44;
+		
+		if ($level==0) {
+			$packet[3] = 0x01;
+			$response=$this->send_packet(0x6a, $packet);
+			return;
+		} elseif ($level==100) {
+			$packet[3] = 0x02;
+			$response=$this->send_packet(0x6a, $packet);
+			return;
+		}
+		
+		$now_lvl= $this->get_level();
+		if ($now_lvl>$level) {
+			$packet[3] = 0x01;
+			$action='open';
+		} else {
+			$packet[3] = 0x02;
+			$action='close';
+		}
+		if($action=='open') {
+			while($now_lvl>$level) {
+				$response=$this->send_packet(0x6a, $packet);
+				$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+				if($err == 0){
+					$enc_payload = array_slice($response, 0x38);
+					if(count($enc_payload) > 0){
+						$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+						$now_lvl = $payload[4];
+					}
+				}
+				usleep(200000);
+			}
+			$packet[3] = 0x03;
+			$this->send_packet(0x6a, $packet);
+		} else {
+			while($now_lvl<$level) {
+				$response=$this->send_packet(0x6a, $packet);
+				$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+				if($err == 0){
+					$enc_payload = array_slice($response, 0x38);
+					if(count($enc_payload) > 0){
+						$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+						$now_lvl = $payload[4];
+					}
+				}
+				usleep(200000);
+			}
+			$packet[3] = 0x03;
+			$this->send_packet(0x6a, $packet);
+		}		
     }
-
-   /* public function some_req(){
-
-        $packet = self::bytearray(16); //размер массива может быть другой...но как правило 16 или 48 байт
-        $packet[0] = 0x01; //стартовый байт, определяющий действие (запрос)
-        $response = $this->send_packet(0x6a, $packet);
-        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
-
-        if($err == 0){
-            $enc_payload = array_slice($response, 0x38);
-
-            if(count($enc_payload) > 0){
-
-                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));	
-				return $payload;
-            }
-
-        }
-
-        return false;
-
-        
-    } */  
-
 }
 
 class UNK extends Broadlink{
@@ -1981,8 +2016,12 @@ class Cloud extends Broadlink{
 		}
 		if (file_exists($this->workdir.self::$file)) {
 			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-				exec(sprintf("rd /s /q ".$this->workdir.$BLbackupFolderName));
-				exec('unzip '.$this->workdir.self::$file.' -d '.$this->workdir, $output, $res);
+				if(file_exists($_SERVER['WINDIR']."\unzip.exe")) {
+					exec(sprintf("rd /s /q ".$this->workdir.$BLbackupFolderName));
+					exec('unzip '.$this->workdir.self::$file.' -d '.$this->workdir, $output, $res);
+				} else {
+					$result["need_unzip"]=true;
+				}
 			} else {
 				if (file_exists($this->workdir.$BLbackupFolderName)) exec(sprintf("rm -rf ".$this->workdir.$BLbackupFolderName));
 				exec('unzip '.$this->workdir.self::$file.' -d '.$this->workdir, $output, $res);
@@ -1990,9 +2029,12 @@ class Cloud extends Broadlink{
 			}
 			unlink($this->workdir.self::$file);
 		}
-		if (file_exists($this->workdir.$BLbackupFolderName)) {
+		if (file_exists($this->workdir.$BLbackupFolderName.DIRECTORY_SEPARATOR.'jsonSubIr')) {
 			$result["error"] = 0;
 			$result["msg"] = $this->workdir.$BLbackupFolderName;
+		} elseif($result["need_unzip"]) {
+			$result["error"] = 404;
+			$result["msg"] = 'unzip.exe not found in windows dir';
 		} else {
 			$result["error"] = -9999;
 			$result["msg"] = "Something Went Wrong";

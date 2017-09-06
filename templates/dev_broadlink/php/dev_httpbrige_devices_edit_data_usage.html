@@ -1,5 +1,19 @@
 
 <!-- Table 'dev_httpbrige_devices' edit -->
+<!-- paging -->
+[#if PAGES#]
+<table border=0>
+<td align=right><b>Pages:</b>&nbsp;</td>
+[#begin PREVPAGE#]<td><a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&mode=<#MODE#>&id=<#ID#>&tab=<#TAB#>&page=[#NUM#]">&lt;&lt;&lt;</a></td>[#end PREVPAGE#]
+<td>
+[#begin PAGES#]
+[#if !SELECTED#]<a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&mode=<#MODE#>&id=<#ID#>&tab=<#TAB#>&page=[#NUM#]">[#else#]<b>[#endif#][#NUM#]</b></a>
+[#end PAGES#]
+</td>
+[#begin NEXTPAGE#]<td><a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&mode=<#MODE#>&id=<#ID#>&tab=<#TAB#>&page=[#NUM#]">&gt;&gt;&gt;</a></td>[#end NEXTPAGE#]
+</table>
+[#endif PAGES#]
+<!-- / paging -->
 <form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
 <fieldset>
 [#if ID=""#]
@@ -33,7 +47,6 @@
 <input type="hidden" name="id" value="<#ID#>">
 <input type="hidden" name="view_mode" value="<#VIEW_MODE#>">
 <input type="hidden" name="edit_mode" value="<#EDIT_MODE#>">
-<input type="hidden" name="mode" value="update">
 <input type="hidden" name="data_source" value="<#DATA_SOURCE#>">
 <input type="hidden" name="tab" value="<#TAB#>">
         </div>

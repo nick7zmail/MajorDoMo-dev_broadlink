@@ -265,6 +265,7 @@
    } else {
 	   $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
    }
+   //paging($properties, 20, $out);
    $total=count($properties);
    for($i=0;$i<$total;$i++) {
     if ($properties[$i]['ID']==$new_id) continue;
