@@ -189,13 +189,6 @@
     if ($this->tab=='data'||$this->tab=='data_usage') {
 		$this->getConfig();
    $new_id=0;
-   if ($this->mode=='update') {
-    global $title_new;
-	if ($title_new) {
-	 $prop=array('TITLE'=>$title_new,'DEVICE_ID'=>$rec['ID']);
-	 $new_id=SQLInsert('dev_broadlink_commands',$prop);
-	}
-   }
    global $delete_id;
    if ($delete_id) {
     SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
@@ -265,11 +258,17 @@
    } else {
 	   $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
    }
-   //paging($properties, 20, $out);
+   paging($properties, 20, $out);
    $total=count($properties);
    for($i=0;$i<$total;$i++) {
     if ($properties[$i]['ID']==$new_id) continue;
     if ($this->mode=='update') {
+		//print_r($_REQUEST);exit;
+		global $title_new;
+		if ($title_new) {
+		 $prop=array('TITLE'=>$title_new,'DEVICE_ID'=>$rec['ID']);
+		 $new_id=SQLInsert('dev_broadlink_commands',$prop);
+		}
       global ${'title'.$properties[$i]['ID']};
       $properties[$i]['TITLE']=trim(${'title'.$properties[$i]['ID']});
       global ${'value'.$properties[$i]['ID']};

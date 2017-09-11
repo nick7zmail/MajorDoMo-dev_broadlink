@@ -46,6 +46,9 @@ function saveParams($data=0) {
  if (IsSet($this->tab)) {
   $p["tab"]=$this->tab;
  }
+ if (IsSet($this->page)) {
+  $p["page"]=$this->page;
+ }
  return parent::saveParams($p);
 }
 /**
