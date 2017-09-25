@@ -450,7 +450,7 @@ function usual(&$out) {
 *
 * @access private
 */
- function dbInstall() {
+ function dbInstall($data='') {
 /*
 dev_httpbrige_devices - 
 */
