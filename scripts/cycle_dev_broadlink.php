@@ -39,12 +39,18 @@ while (1)
 	$h = date('h');
 	   if ($s != $old_second)
 	   {
-			$br->check_params('5s');
+			$br->check_params('1s');
+			if($s5>=5) {
+				$br->check_params('5s');
+				$s5=1;
+			} else {
+				$s5++;
+			}
 			if($s20>=20) {
 				$br->check_params('20s');
-				$s20=0;
+				$s20=1;
 			} else {
-				$s20=$s20+5;
+				$s20++;
 			}
 			$old_second = $s;
 	   }	
@@ -54,7 +60,7 @@ while (1)
 			$old_minute = $m;
 			if($m10>=10) {
 				$br->check_params('10m');
-				$m10=0;
+				$m10=1;
 			} else {
 				$m10++;
 			}
@@ -72,6 +78,6 @@ while (1)
 		  $db->Disconnect();
 		  exit;
 	   }
-   sleep(5);
+   sleep(1);
 }
 DebMes("Unexpected close of cycle: " . basename(__FILE__));

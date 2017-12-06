@@ -1219,57 +1219,64 @@ class S1 extends Broadlink{
 			switch ($data[$i]['product_id']) {
 				case 0x21:
 					$data[$i]['product_type'] = 'Wall Motion Sensor';
-					switch ($status) {
-						case 0x0000:
-							$data[$i]['status'] = 0;	// in last 30 sec
-							$data[$i]['status_val'] = constant('LANG_BRS1_NO_PERSON');
-							break;
-						case 0x0080:
-							$data[$i]['status'] = 0;	// in last 6 min
-							$data[$i]['status_val'] = constant('LANG_BRS1_NO_PERSON');
-							break;
-						case 0x0010:
-							$data[$i]['status'] = 1;
-							$data[$i]['status_val'] = constant('LANG_BRS1_PERSON_DETECTED');
-							break;
-						default:
-							$data[$i]['status'] = constant('LANG_BRS1_UNKNOWN').$status;
+					
+					if ( $status & 0x10 )
+					{
+						$data[$i]['status'] = 1;
+						$data[$i]['status_val'] = constant('LANG_BRS1_PERSON_DETECTED');
 					}
+					else
+					{
+						$data[$i]['status'] = 0;
+						$data[$i]['status_val'] = constant('LANG_BRS1_NO_PERSON');
+					}
+					
+					if ( $status & 0x40 )
+					{
+						$data[$i]['batterylow'] = 1;
+					}
+					else
+					{
+						$data[$i]['batterylow'] = 1;
+					}
+					if ( $status & 0x20 )
+					{
+						$data[$i]['tamper'] = 1;
+					}
+					else
+					{
+						$data[$i]['tamper'] = 0;
+					}					
 					break;
 				case 0x31:
 					$data[$i]['product_type'] = 'Door Sensor';
-					switch ($status) {
-						case 0x0000:
-						case 0x9501:
-						case 0x0080:
-							$data[$i]['status'] = 0;
-							$data[$i]['status_val'] = constant('LANG_BRS1_CLOSED');
-							break;
-						case 0x9581:
-							$data[$i]['status'] = 0;
-							$data[$i]['status_val'] = constant('LANG_BRS1_CLOSED_NOW');
-							break;
-						case 0x0010:
-						case 0x0090:
-						case 0x9591:
-							$data[$i]['status'] = 1;
-							$data[$i]['status_val'] = constant('LANG_BRS1_OPENED');
-							break;
-						default:
-							$data[$i]['status'] = constant('LANG_BRS1_UNKNOWN').$status;
+					if ( $status & 0x10 )
+					{
+						$data[$i]['status'] = 1;
+						$data[$i]['status_val'] = constant('LANG_BRS1_OPENED');
 					}
-					switch ($payload[$offset+0x26]) {
-						case 0x00:
-							$data[$i]['location'] = 'Drawer';
-							break;
-						case 0x01:
-							$data[$i]['location'] = 'Door';
-							break;
-						case 0x02:
-							$data[$i]['location'] = 'Window';
-							break;
-						default:
-							$data[$i]['location'] = 'Unknown: '.$payload[$offset+0x2c];
+					else
+					{
+						$data[$i]['status'] = 0;
+						$data[$i]['status_val'] = constant('LANG_BRS1_CLOSED');
+					}
+
+					if ( $status & 0x40 )
+					{
+						$data[$i]['batterylow'] = 1;
+					}
+					else
+					{
+						$data[$i]['batterylow'] = 0;
+					}
+
+					if ( $status & 0x20 )
+					{
+						$data[$i]['tamper'] = 1;
+					}
+					else
+					{
+						$data[$i]['tamper'] = 0;
 					}
 					break;
 				case 0x91:

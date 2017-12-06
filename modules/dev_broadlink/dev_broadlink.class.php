@@ -392,15 +392,22 @@ function usual(&$out) {
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
 	$total=count($properties);
 	if ($total) {
-		if ($val!=$properties['VALUE']) {
-			$properties['VALUE']=$val;
-			SQLUpdate($table, $properties);
+		$properties['VALUE']=$val;
+		SQLUpdate($table, $properties);
+		if($rec['TYPE']!='s1') {
 			if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
 				if(is_null($sg_val)) {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $val);
 				} else {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
 				}
+			}
+		} else {
+			if($sg_val==1) sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val); else if(gg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'])!=$sg_val) sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
+			$decoded=json_decode($val);
+			if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
+				sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
+				sg($properties['LINKED_OBJECT'].'.tamper', $decoded->tamper);
 			}
 		}
 	} else {

@@ -54,7 +54,12 @@
   <td valign="top"><input type="hidden" class="form-control" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]">
   <input type="text" class="form-control" value="[#TITLE#]" disabled>[#if DEVTYPE=="s1"#]<br><small><#LANG_BRS1_ZONE#>[#ZONE#]</small>[#endif#]</td> 
   <td valign="top"><input type="hidden" class="form-control" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]">
-  [#if DEVTYPE=="s1"#]<input type="text" class="form-control" value="[#VAL#]" disabled><br>[#if PARM=="1"#]<span class="label label-primary"><#LANG_BRS1_PART_U#></span>&nbsp;[#endif#][#if FARM=="1"#]<span class="label label-primary"><#LANG_BRS1_FULL_U#></span>&nbsp;[#endif#][#if STAT!=""#]<span class="label label-success">[#STAT#]</span>[#endif#][#else#]<input type="text" class="form-control" value="[#VALUE#]" disabled>[#endif#]</td>
+  [#if DEVTYPE=="s1"#]<input type="text" class="form-control" value="[#VAL#]" disabled><br>
+  [#if PARM=="1"#]<span class="label label-primary"><#LANG_BRS1_PART_U#></span>&nbsp;[#endif#]
+  [#if FARM=="1"#]<span class="label label-primary"><#LANG_BRS1_FULL_U#></span>&nbsp;[#endif#]
+  [#if STAT!=""#]<span class="label label-success">[#STAT#]</span>[#endif#][#else#]<input type="text" class="form-control" value="[#VALUE#]" disabled>[#endif#]
+  [#if BATT!="" || TAMPER!=""#]<br>[#if BATT=="1"#]<span class="label label-danger">Низкий заряд</span>&nbsp;[#endif#][#if TAMPER=="1"#]<span class="label label-danger">Вскрыт</span>&nbsp;[#endif#][#endif#]
+  </td>
   [#else#]>
   <td valign="top"><input type="text" class="form-control" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]"></td>
   <td valign="top"><input type="text" class="form-control" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]"></td>
