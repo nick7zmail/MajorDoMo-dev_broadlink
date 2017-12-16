@@ -2,7 +2,6 @@
 <!-- table ssdp_devices search -->
 <p>
  <a href="?view_mode=broadlink_devices_scan" class="btn btn-default" title="Refresh"><i class="glyphicon glyphicon-refresh"></i> <#LANG_REFRESH#></a>
-
 </p>
 <table width=100% border=0><tr>
  <td valign=top>
@@ -23,11 +22,11 @@
   [#endif PAGES#]
   <!-- / paging -->
   <!-- search results (list) -->
-  <form action="?" method="post" name="frmList_ssdp_devices" style="padding:0px" class="form">
-   <table  align=center class="table table-striped">
+  <form action="?" method="post" name="frmList_ssdp_devices" class="form">
+   <table align=center class="table table-striped">
     <tbody>
     [#begin RESULT#]
-    <tr style="height:52px" class="hover_btn2">
+    <tr>
      <td style="vertical-align:middle">
       [#if LOGO!=""#]
       <img src=" [#LOGO#]" alt="Device Logo" width="32" height="32">
@@ -35,8 +34,7 @@
       &nbsp;
       [#endif#]
      </td>
-          <td style="vertical-align:middle"
-             >
+     <td style="vertical-align:middle">
       <b>
        [#if NAME!=""#]
        [#NAME#]
@@ -46,8 +44,7 @@
 
        </a></b>
      </td>
-     <td style="vertical-align:middle"
-             >
+     <td style="vertical-align:middle">
       <b>
        [#if DEVTYPE!=""#]
        [#DEVTYPE#]
@@ -57,24 +54,21 @@
 
        </a></b>
      </td>
-     <td style="vertical-align:middle"
-             >
+     <td style="vertical-align:middle">
       [#if HOST!=""#]
      [#HOST#]
       [#else#]
       &nbsp;
       [#endif#]
      </td>
-     <td style="vertical-align:middle"
-             >
+     <td style="vertical-align:middle">
       [#if MODEL!=""#]
       [#MODEL#]
       [#else#]
       &nbsp;
       [#endif#]
      </td>
-     <td style="vertical-align:middle"
-             >
+     <td style="vertical-align:middle">
       [#if MAC!=""#]
       [#MAC#]
       [#else#]
@@ -82,8 +76,8 @@
       [#endif#]
      </td>
 
-     <td style="vertical-align:middle" width="1%" nowrap>
-      <div style="width:120px">
+     <td style="vertical-align:middle">
+      <div>
        [#if "<#ACTION#>"=="admin"#]
        <a href="?view_mode=edit_dev_httpbrige_devices&mode=add_from_scan&mac=[#MAC#]&devtype=[#DEVTYPE#]&ip=[#HOST#]&title=[#NAME#]&model=[#MODEL#]" class="btn btn-default" title="Add"><i class="glyphicon glyphicon-plus"></i></a>
        [#endif ACTION#]
