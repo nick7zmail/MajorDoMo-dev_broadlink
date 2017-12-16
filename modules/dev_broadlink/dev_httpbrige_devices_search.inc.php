@@ -7,6 +7,11 @@
    $out['CONTROLPANEL']=1;
   }
   $qry="1";
+	if ((time() - gg('cycle_dev_broadlinkRun')) < 15 ) {
+		$out['CYCLERUN'] = 1;
+	} else {
+		$out['CYCLERUN'] = 0;
+	}
   // search filters
   // QUERY READY
   global $save_qry;

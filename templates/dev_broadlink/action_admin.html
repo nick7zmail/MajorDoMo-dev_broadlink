@@ -15,13 +15,17 @@
  <label class="control-label"[#if ERR_API_TYPE#] style="color:red;font-weight:bold"[#endif#]>
  API:
  </label>
- <div class="controls">
- <input type="radio" name="api_type" value="php"[#if API_TYPE="php"#] checked[#endif#]> PHP (aka module-only)
- &nbsp;&nbsp;&nbsp;
- <input type="radio" name="api_type" value="rm-brige"[#if API_TYPE="rm-brige"#] checked[#endif#]> RM-Bridge
- &nbsp;&nbsp;&nbsp;
- <input type="radio" name="api_type" value="httpbrige"[#if API_TYPE="httpbrige"#] checked[#endif#]> BroadlinkHTTPBridge
- </div>
+	<div class="btn-group controls" data-toggle="buttons">
+		<label class="btn [#if API_TYPE=="php"#]btn-primary[#else#]btn-default[#endif#]">
+			<input type="radio" name="api_type" value="php" [#if API_TYPE=="php"#] checked[#endif#]> PHP (module-only)
+		</label>
+		<label class="btn [#if API_TYPE=="rm-brige"#]btn-primary[#else#]btn-default[#endif#]">
+			<input type="radio" name="api_type" value="rm-brige" [#if API_TYPE=="rm-brige"#] checked[#endif#]> RM-Bridge
+		</label>
+		<label class="btn [#if API_TYPE=="httpbrige"#]btn-primary[#else#]btn-default[#endif#]">
+			<input type="radio" name="api_type" value="httpbrige" [#if API_TYPE=="httpbrige"#] checked[#endif#]> BroadlinkHTTPBridge
+		</label>
+	</div>
 </div>
 [#if API_TYPE="php"#]
 <div class="form-group">
@@ -29,6 +33,12 @@
 Автоматическое обновление IP:
  </label>
  <div class="controls"><input type="checkbox" name="ip_update" [#if IP_UPDATE="need"#] checked[#endif#]></div>
+</div>
+<div class="form-group">
+ <label class="control-label">
+Обновлять значения только при изменении:
+ </label>
+ <div class="controls"><input type="checkbox" name="val_update" [#if VAL_UPDATE="on_change"#] checked[#endif#]></div>
 </div>
 [#endif#]
 [#if API_TYPE="httpbrige"#]

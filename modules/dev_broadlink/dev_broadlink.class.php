@@ -152,6 +152,7 @@ function admin(&$out) {
  }
  $out['API_TYPE']=$this->config['API'];
  $out['IP_UPDATE']=$this->config['IP_UPDATE'];
+ $out['VAL_UPDATE']=$this->config['VAL_UPDATE'];
  if ($this->view_mode=='update_settings') {
    global $api_type;
    $this->config['API']=$api_type;
@@ -159,6 +160,8 @@ function admin(&$out) {
    $this->config['API_URL']=$api_url;
    global $ip_update;
    if($ip_update==true) $this->config['IP_UPDATE']='need'; else $this->config['IP_UPDATE']='not';
+   global $val_update;
+   if($val_update==true) $this->config['VAL_UPDATE']='on_change'; else $this->config['VAL_UPDATE']='always';
    $this->saveConfig();
    $this->redirect("?");
  }
@@ -392,22 +395,36 @@ function usual(&$out) {
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
 	$total=count($properties);
 	if ($total) {
-		$properties['VALUE']=$val;
-		SQLUpdate($table, $properties);
-		if($rec['TYPE']!='s1') {
+		if($this->config['VAL_UPDATE']=='on_change' && $val!=$properties['VALUE']) {
+			$need_rec=true;
+		} else if($this->config['VAL_UPDATE']=='on_change' && $val==$properties['VALUE']){
+			$need_rec=false;
+		} else if($this->config['VAL_UPDATE']=='always') {
+			$need_rec=true;
+		}
+		if ($need_rec) {
+			$properties['VALUE']=$val;
+			SQLUpdate($table, $properties);
 			if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
 				if(is_null($sg_val)) {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $val);
 				} else {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
 				}
+				if($rec['TYPE']=='s1') {
+					$decoded=json_decode($val);
+					if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
+						sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
+						sg($properties['LINKED_OBJECT'].'.tamper', $decoded->tamper);
+					}					
+				}
 			}
-		} else {
-			if($sg_val==1) sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val); else if(gg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'])!=$sg_val) sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
+			
+		} else if($rec['TYPE']=='s1') { 
 			$decoded=json_decode($val);
 			if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
-				sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
-				sg($properties['LINKED_OBJECT'].'.tamper', $decoded->tamper);
+				if(gg($properties['LINKED_OBJECT'].'.batterylow')!=$decoded->batterylow) sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
+				if(gg($properties['LINKED_OBJECT'].'.tamper')!=$decoded->tamper) sg($properties['LINKED_OBJECT'].'.tamper', $decoded->tamper);
 			}
 		}
 	} else {

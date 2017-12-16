@@ -25,8 +25,6 @@
 			sleep(1);
 			$json['hex'] = $rm->Check_data();
 		} while((count($json[hex]) == 0) && ($i++ < 10));
-
-		$json['hex'] = $rm->Check_data();
 		$json['hex_number'] = '';
 		foreach ($json['hex'] as $value) {
 			$json['hex_number'] .= sprintf("%02x", $value);
@@ -41,12 +39,7 @@
 		$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
 	}
   }
-  if ($this->mode=='set_time') {
-	  if (isset($_GET['time'])) {
-		  $rec['CHTIME']=$_GET['time'];
-		  SQLUpdate('dev_httpbrige_devices', $rec);
-	  }
-  }
+
   if ($this->mode=='add_from_scan') {
    global $type;
    $rec['TYPE']=$type;
@@ -121,6 +114,8 @@
   //updating 'MAC' (varchar)
    global $mac;
    $rec['MAC']=$mac;
+   global $chtime;
+   $rec['CHTIME']=$chtime;
   //updating 'LANG_LINKED_OBJECT' (varchar)
    global $linked_object;
    $rec['LINKED_OBJECT']=$linked_object;
@@ -189,6 +184,34 @@
     if ($this->tab=='data'||$this->tab=='data_usage') {
 		$this->getConfig();
    $new_id=0;
+   
+   
+   global $relearn_id;
+   if ($relearn_id) {
+    $data=SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE ID='$relearn_id'");
+	$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
+	$decoded_keys=json_decode($rec['KEYS']);
+	$rm->Auth($decoded_keys->id, $decoded_keys->key);
+	$rm->Enter_learning();
+	$i = 0;
+	do {
+		sleep(1);
+		$json['hex'] = $rm->Check_data();
+	} while((count($json[hex]) == 0) && ($i++ < 10));
+	$json['hex_number'] = '';
+	foreach ($json['hex'] as $value) {
+		$json['hex_number'] .= sprintf("%02x", $value);
+	}
+	if(count($json['hex']) > 0){
+		$data['VALUE']=$json['hex_number'];
+		SQLUpdate('dev_broadlink_commands',$data);
+		$out['OK']=1;
+	} else {
+		$out['MESSAGE']='Команда не сохранена';
+	}	
+	
+	
+   }
    global $delete_id;
    if ($delete_id) {
     SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
@@ -287,8 +310,8 @@
 	if ($properties[$i]['LINKED_OBJECT'] && $properties[$i]['LINKED_PROPERTY']) {
        addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
     }
+	$properties[$i]['DEVTYPE']=$rec['TYPE'];
 	if($rec['TYPE']=='s1'){
-		$properties[$i]['DEVTYPE']='s1';
 		$devinfo=json_decode($properties[$i]['VALUE']);
 		$properties[$i]['VAL']=$devinfo->status;
 		$properties[$i]['ZONE']=$devinfo->location;
