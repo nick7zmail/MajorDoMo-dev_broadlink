@@ -12,10 +12,10 @@
    [#if TITLE!=""#]<h4>[#TITLE#]</h4>[#endif TITLE#]
 <ul class="nav nav-tabs">
   <li[#if TAB=""#] class="active"[#endif#]>
-   <a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab="><#LANG_GENERAL#></a>
+   <a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab="><i class="glyphicon glyphicon-wrench"></i>&nbsp;&nbsp;<#LANG_GENERAL#></a>
   </li>
   <li[#if TAB="data"#] class="active"[#endif#]>
-   <a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab=data">&#060#LANG_DATA#&#062</a>
+   <a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab=data"><i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;&#060#LANG_DATA#&#062</a>
   </li>
   [#if TYPE=="rm" || TYPE=="rm3"#]<li><a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab=data&sort_by_name=0"><i class="glyphicon glyphicon-sort-by-attributes"></i></a></li>
   <li><a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab=data&sort_by_name=1"><i class="glyphicon glyphicon-sort-by-alphabet"></i></a></li>[#endif#]

@@ -15,7 +15,7 @@
  <label class="control-label"[#if ERR_API_TYPE#] style="color:red;font-weight:bold"[#endif#]>
  API:
  </label>
-	<div class="btn-group controls" data-toggle="buttons">
+	<div class="btn-group controls" style="margin-left:0px" data-toggle="buttons">
 		<label class="btn [#if API_TYPE=="php"#]btn-primary[#else#]btn-default[#endif#]">
 			<input type="radio" name="api_type" value="php" [#if API_TYPE=="php"#] checked[#endif#]> PHP (module-only)
 		</label>

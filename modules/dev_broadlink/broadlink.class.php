@@ -1237,7 +1237,7 @@ class S1 extends Broadlink{
 					}
 					else
 					{
-						$data[$i]['batterylow'] = 1;
+						$data[$i]['batterylow'] = 0;
 					}
 					if ( $status & 0x20 )
 					{

@@ -390,7 +390,7 @@ function usual(&$out) {
 	require(DIR_MODULES.$this->name.'/dev_broadlink_check.inc.php');
  }
  
- function table_data_set($prop, $dev_id, $val, $sg_val = NULL) {
+ function table_data_set($prop, $dev_id, $val, $sg_val = NULL, $batt = false) {
 	$table='dev_broadlink_commands';
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
 	$total=count($properties);
@@ -411,7 +411,7 @@ function usual(&$out) {
 				} else {
 					sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $sg_val);
 				}
-				if($rec['TYPE']=='s1') {
+				if($batt) {
 					$decoded=json_decode($val);
 					if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
 						sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
@@ -420,7 +420,7 @@ function usual(&$out) {
 				}
 			}
 			
-		} else if($rec['TYPE']=='s1') { 
+		} else if($batt) { 
 			$decoded=json_decode($val);
 			if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
 				if(gg($properties['LINKED_OBJECT'].'.batterylow')!=$decoded->batterylow) sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);

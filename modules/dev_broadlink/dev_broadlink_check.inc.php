@@ -173,7 +173,7 @@
 						for($sn=0;$sn<$response['col_sensors'];$sn++) {
 							$sens_arr=$response[$sn];
 							$sens_name='['.$sens_arr['sensor_number'].'] '.$sens_arr['product_type'];
-							$this->table_data_set($sens_name, $rec['ID'], json_encode($sens_arr), $sens_arr['status']);
+							$this->table_data_set($sens_name, $rec['ID'], json_encode($sens_arr), $sens_arr['status'], true);
 						}
 					}
 					$response = $rm->Check_Status();
