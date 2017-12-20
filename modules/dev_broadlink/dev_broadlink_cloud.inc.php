@@ -87,7 +87,11 @@
 		$response[$i]['data'] = $code;
 		$i++;
 	}
-	$out['TEXTAREA']=json_encode($response, JSON_UNESCAPED_UNICODE);
+	if($this->config['DATA_EXPORT_TYPE'] == "CSV") {
+			$out['TEXTAREA']=generateCsv($response);
+	} else {
+			$out['TEXTAREA']=json_encode($response, JSON_UNESCAPED_UNICODE);
+	}
   } 
 
 function search($array,$id) {

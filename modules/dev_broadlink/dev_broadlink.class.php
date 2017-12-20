@@ -153,6 +153,7 @@ function admin(&$out) {
  $out['API_TYPE']=$this->config['API'];
  $out['IP_UPDATE']=$this->config['IP_UPDATE'];
  $out['VAL_UPDATE']=$this->config['VAL_UPDATE'];
+ $out['DATA_EXPORT_TYPE']=$this->config['DATA_EXPORT_TYPE'];
  if ($this->view_mode=='update_settings') {
    global $api_type;
    $this->config['API']=$api_type;
@@ -162,6 +163,8 @@ function admin(&$out) {
    if($ip_update==true) $this->config['IP_UPDATE']='need'; else $this->config['IP_UPDATE']='not';
    global $val_update;
    if($val_update==true) $this->config['VAL_UPDATE']='on_change'; else $this->config['VAL_UPDATE']='always';
+   global $data_export_type;
+   $this->config['DATA_EXPORT_TYPE']=$data_export_type;
    $this->saveConfig();
    $this->redirect("?");
  }

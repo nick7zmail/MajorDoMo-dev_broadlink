@@ -344,11 +344,27 @@
 		$export[$i]['data']=$properties[$i]['VALUE'];
 		$export[$i]['mac']=$rec['MAC'];
 	}
-	$out['TEXTAREA']=json_encode($export, JSON_UNESCAPED_UNICODE);
+	if($this->config['DATA_EXPORT_TYPE'] == "CSV") {
+			$out['TEXTAREA']=generateCsv($export);
+	} else {
+			$out['TEXTAREA']=json_encode($export, JSON_UNESCAPED_UNICODE);
+	}
   }
   if($this->tab=='data_import' && $this->mode=='update') {
 	global $textarea;
-	$decoded=json_decode($textarea, true);
+	if($this->config['DATA_EXPORT_TYPE'] == "CSV") {
+				$flat_array = array_map("str_getcsv", explode("\n", $textarea));
+				$columns = $flat_array[0];
+				for ($i=1; $i<count($flat_array)-1; $i++){
+					foreach ($columns as $column_index => $column){
+						$obj[$i]->$column = $flat_array[$i][$column_index];
+					}
+				}
+				$imported_data=json_encode($obj);
+	} else {
+		$imported_data=$textarea;
+	}
+	$decoded=json_decode($imported_data, true);
 	foreach($decoded as $value) {
 		$insert['TITLE']=$value['name'];
 		$insert['VALUE']=$value['data'];

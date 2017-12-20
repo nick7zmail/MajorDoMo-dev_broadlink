@@ -40,6 +40,18 @@
  </label>
  <div class="controls"><input type="checkbox" name="val_update" [#if VAL_UPDATE="on_change"#] checked[#endif#]></div>
 </div>
+ <label class="control-label">
+Формат используемый для Импорта/Экспорта:
+ </label>
+ <div class="btn-group controls" style="margin-left:0px" data-toggle="buttons">
+ <label class="btn [#if DATA_EXPORT_TYPE="JSON"#]btn-primary[#else#]btn-default[#endif#]">
+ <input type="radio" name="data_export_type" value="JSON"[#if DATA_EXPORT_TYPE="JSON"#] checked[#endif#]> JSON
+</label>
+<label class="btn [#if DATA_EXPORT_TYPE="CSV"#]btn-primary[#else#]btn-default[#endif#]">
+ <input type="radio" name="data_export_type" value="CSV"[#if DATA_EXPORT_TYPE="CSV"#] checked[#endif#]> CSV
+</label>
+ </div>
+<br /><br /><br />
 [#endif#]
 [#if API_TYPE="httpbrige"#]
 <div class="form-group">
