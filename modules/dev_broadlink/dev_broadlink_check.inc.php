@@ -183,7 +183,7 @@
 				}
 				if ($rec['TYPE']=='dooya') {
 					$response = $rm->get_level();
-					$this->table_data_set('level', $rec['ID'], $response);	
+					$this->table_data_set('level', $rec['ID'], $response);
 				}
 				if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 					$rec['UPDATED']=date('Y-m-d H:i:s');

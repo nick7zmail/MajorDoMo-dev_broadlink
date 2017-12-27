@@ -378,7 +378,7 @@ function usual(&$out) {
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
 			} 
 		} elseif ($rec['TYPE']=='dooya') {
-			if($properties[$i]['TITLE']=='status') {
+			if($properties[$i]['TITLE']=='level') {
 					$rm->set_level($value);
 					$properties[$i]['VALUE']=$value;
 					SQLUpdate('dev_broadlink_commands', $properties[$i]);

@@ -1729,9 +1729,12 @@ class DOOYA extends Broadlink{
          parent::__construct($h, $m, $p, $d);
 
     }
-	public function get_level(){
+	public function send_req($magic1=0x06, $magic2=0x5d){
+		$packet = self::bytearray(16);
 		$packet[0] = 0x09;
 		$packet[2] = 0xbb;
+		$packet[3] = $magic1;
+		$packet[4] = $magic2;
 		$packet[9] = 0xfa;
 		$packet[10] = 0x44;
 		$response=$this->send_packet(0x6a, $packet);
@@ -1743,63 +1746,39 @@ class DOOYA extends Broadlink{
 				$data = $payload[4];
 			}
 		}
-		return $data;
+		return $data;		
+	}
+	public function get_level(){
+		return $this->send_req();
 	}
     public function set_level($level){
-		$packet = self::bytearray(16); 
-        $packet[0] = 0x09;
-		$packet[2] = 0xbb;
-		$packet[9] = 0xfa;
-		$packet[10] = 0x44;
-		
 		if ($level==0) {
-			$packet[3] = 0x01;
-			$response=$this->send_packet(0x6a, $packet);
+			$response=$this->send_req(0x02, 0x00); //закрыть
 			return;
 		} elseif ($level==100) {
-			$packet[3] = 0x02;
-			$response=$this->send_packet(0x6a, $packet);
+			$response=$this->send_req(0x01, 0x00); //открыть
 			return;
 		}
-		
-		$now_lvl= $this->get_level();
+		$now_lvl=$this->get_level();
 		if ($now_lvl>$level) {
-			$packet[3] = 0x01;
-			$action='open';
-		} else {
-			$packet[3] = 0x02;
+			$response=$this->send_req(0x02, 0x00);
 			$action='close';
+		} else {
+			$response=$this->send_req(0x01, 0x00);
+			$action='open';
 		}
-		if($action=='open') {
+		if($action=='close') {
 			while($now_lvl>$level) {
-				$response=$this->send_packet(0x6a, $packet);
-				$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-				if($err == 0){
-					$enc_payload = array_slice($response, 0x38);
-					if(count($enc_payload) > 0){
-						$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-						$now_lvl = $payload[4];
-					}
-				}
+				$now_lvl=$this->get_level();
 				usleep(200000);
 			}
-			$packet[3] = 0x03;
-			$this->send_packet(0x6a, $packet);
+			$this->send_req(0x03, 0x00);
 		} else {
 			while($now_lvl<$level) {
-				$response=$this->send_packet(0x6a, $packet);
-				$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-				if($err == 0){
-					$enc_payload = array_slice($response, 0x38);
-					if(count($enc_payload) > 0){
-						$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-						$now_lvl = $payload[4];
-					}
-				}
+				$now_lvl=$this->get_level();
 				usleep(200000);
 			}
-			$packet[3] = 0x03;
-			$this->send_packet(0x6a, $packet);
+			$this->send_req(0x03, 0x00);
 		}		
     }
 }
