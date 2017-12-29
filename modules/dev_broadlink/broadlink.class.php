@@ -1760,26 +1760,28 @@ class DOOYA extends Broadlink{
 			return;
 		}
 		$now_lvl=$this->get_level();
-		if ($now_lvl>$level) {
-			$response=$this->send_req(0x02, 0x00);
-			$action='close';
-		} else {
-			$response=$this->send_req(0x01, 0x00);
-			$action='open';
+		if ($level!=$now_lvl) {
+			if ($now_lvl>$level) {
+				$response=$this->send_req(0x02, 0x00);
+				$action='close';
+			} else {
+				$response=$this->send_req(0x01, 0x00);
+				$action='open';
+			}
+			if($action=='close') {
+				while($now_lvl>$level) {
+					$now_lvl=$this->get_level();
+					usleep(200000);
+				}
+				$this->send_req(0x03, 0x00);
+			} else {
+				while($now_lvl<$level) {
+					$now_lvl=$this->get_level();
+					usleep(200000);
+				}
+				$this->send_req(0x03, 0x00);
+			}
 		}
-		if($action=='close') {
-			while($now_lvl>$level) {
-				$now_lvl=$this->get_level();
-				usleep(200000);
-			}
-			$this->send_req(0x03, 0x00);
-		} else {
-			while($now_lvl<$level) {
-				$now_lvl=$this->get_level();
-				usleep(200000);
-			}
-			$this->send_req(0x03, 0x00);
-		}		
     }
 }
 
