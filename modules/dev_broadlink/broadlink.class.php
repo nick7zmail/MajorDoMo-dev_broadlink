@@ -982,6 +982,9 @@ class A1 extends Broadlink{
                     case 2:
                         $data['noise_word'] = constant('LANG_BR_NOISY');
                         break;
+                    case 3:
+                        $data['noise_word'] = constant('LANG_BR_EXTREME');
+                        break;						
                     default:
                         $data['noise_word'] = constant('LANG_BR_UNKNOWN');
                         break;
