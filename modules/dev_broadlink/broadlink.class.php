@@ -23,7 +23,7 @@ function generateCsv($data) {
 	$csv = stream_get_contents($fh);
 	fclose($fh);
 
-	eturn $csv;
+	return $csv;
 }
 
 class Broadlink{
