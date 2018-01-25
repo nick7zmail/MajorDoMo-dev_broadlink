@@ -9,139 +9,139 @@ function aes128_cbc_decrypt($key, $data, $iv) {
 }
 
 function generateCsv($data) {
-        # Generate CSV data from array
-        $fh = fopen('php://temp', 'rw'); # don't create a file, attempt
-                                         # to use memory instead
-        # write out the headers
-        fputcsv($fh, array_keys(current($data)));
+	# Generate CSV data from array
+	$fh = fopen('php://temp', 'rw');	# don't create a file, attempt
+										# to use memory instead
+	# write out the headers
+	fputcsv($fh, array_keys(current($data)));
 
-        # write out the data
-        foreach ( $data as $row ) {
-                fputcsv($fh, $row);
-        }
-        rewind($fh);
-        $csv = stream_get_contents($fh);
-        fclose($fh);
+	# write out the data
+	foreach ( $data as $row ) {
+		fputcsv($fh, $row);
+	}
+	rewind($fh);
+	$csv = stream_get_contents($fh);
+	fclose($fh);
 
-        return $csv;
+	eturn $csv;
 }
 
 class Broadlink{
 	protected $name; 
-    protected $host;
-    protected $port = 80;
-    protected $mac;
-    protected $timeout = 10;
-    protected $count;
-    protected $key = array(0x09, 0x76, 0x28, 0x34, 0x3f, 0xe9, 0x9e, 0x23, 0x76, 0x5c, 0x15, 0x13, 0xac, 0xcf, 0x8b, 0x02);
-    protected $iv = array(0x56, 0x2e, 0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58);
-    protected $id = array(0, 0, 0, 0);
-    protected $devtype;
+	protected $host;
+	protected $port = 80;
+	protected $mac;
+	protected $timeout = 10;
+	protected $count;
+	protected $key = array(0x09, 0x76, 0x28, 0x34, 0x3f, 0xe9, 0x9e, 0x23, 0x76, 0x5c, 0x15, 0x13, 0xac, 0xcf, 0x8b, 0x02);
+	protected $iv = array(0x56, 0x2e, 0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58);
+	protected $id = array(0, 0, 0, 0);
+	protected $devtype;
 	public $ping_response;
 	public $ping_time = 'down';
 	public $ping_status;
 
-    function __construct($h = "", $m = "", $p = 80, $d = 0) {
+	function __construct($h = "", $m = "", $p = 80, $d = 0) {
 
-    	$this->host = $h;
-    	$this->port = $p;
-    	$this->devtype = is_string($d) ? hexdec($d) : $d;
+		$this->host = $h;
+		$this->port = $p;
+		$this->devtype = is_string($d) ? hexdec($d) : $d;
 
-    	if(is_array($m)){
+		if(is_array($m)){
 
-    		$this->mac = $m;      		
-    	}
-    	else{
+			$this->mac = $m;      		
+		}
+		else{
 
-    		$this->mac = array();
-		    $mac_str_array = explode(':', $m);
+			$this->mac = array();
+			$mac_str_array = explode(':', $m);
 
-            foreach ( array_reverse($mac_str_array) as $value ) {
-                array_push($this->mac, $value);
-            }
+			foreach ( array_reverse($mac_str_array) as $value ) {
+				array_push($this->mac, $value);
+			}
 
-    	}
+		}
 
-    	 		
+				
 		$this->count = rand(0, 0xffff);
 
-    }
-    
-    function __destruct() {
+	}
 
-		    
-    }
+	function __destruct() {
 
-    public static function CreateDevice($h = "", $m = "", $p = 80, $d = 0){
+			
+	}
 
-        switch (self::model($d)) {
-            case 0:
-                return new SP1($h, $m, $p, $d);
-                break;
-            case 1:
-                return new SP2($h, $m, $p, $d);
-                break;
-            case 2:
-                return new RM($h, $m, $p, $d);
-                break;    
-            case 3:
-                return new A1($h, $m, $p, $d);
-                break;
-            case 4:
-                return new MP1($h, $m, $p, $d);
-                break;
-            case 5:
-                return new MS1($h, $m, $p, $d);
-                break;
-            case 6:
-                return new S1($h, $m, $p, $d);
-                break;
-            case 7:
-                return new DOOYA($h, $m, $p, $d);
-                break;
-            case 100:
-                return new UNK($h, $m, $p, $d);
-                break;
-            default:
-        } 
+	public static function CreateDevice($h = "", $m = "", $p = 80, $d = 0){
 
-        return NULL;
-    }
+		switch (self::model($d)) {
+			case 0:
+				return new SP1($h, $m, $p, $d);
+				break;
+			case 1:
+				return new SP2($h, $m, $p, $d);
+				break;
+			case 2:
+				return new RM($h, $m, $p, $d);
+				break;    
+			case 3:
+				return new A1($h, $m, $p, $d);
+				break;
+			case 4:
+				return new MP1($h, $m, $p, $d);
+				break;
+			case 5:
+				return new MS1($h, $m, $p, $d);
+				break;
+			case 6:
+				return new S1($h, $m, $p, $d);
+				break;
+			case 7:
+				return new DOOYA($h, $m, $p, $d);
+				break;
+			case 100:
+				return new UNK($h, $m, $p, $d);
+				break;
+			default:
+		} 
 
-    protected function key(){
-    	return implode(array_map("chr", $this->key));
-    }
+		return NULL;
+	}
 
-    protected function iv(){
-    	return implode(array_map("chr", $this->iv));
-    }
+	protected function key(){
+		return implode(array_map("chr", $this->key));
+	}
 
-    public function mac(){
+	protected function iv(){
+		return implode(array_map("chr", $this->iv));
+	}
 
-    	$mac = "";
+	public function mac(){
 
-    	foreach ($this->mac as $value) {
-    		$mac = sprintf("%02x", $value) . ':' . $mac;
-    	}
+		$mac = "";
 
-    	return substr($mac, 0, strlen($mac) - 1);
-    }
+		foreach ($this->mac as $value) {
+			$mac = sprintf("%02x", $value) . ':' . $mac;
+		}
 
-    public function host(){
-    	return $this->host;
-   	}
+		return substr($mac, 0, strlen($mac) - 1);
+	}
 
-   	public function name(){
-    	return $this->name;
-   	}
+	public function host(){
+		return $this->host;
+	}
 
-   	public function devtype(){
-    	return sprintf("0x%x", $this->devtype);
-   	}
+	public function name(){
+		return $this->name;
+	}
 
-    public function devmodel(){
-        return self::model($this->devtype, 'model');
-    }
+	public function devtype(){
+		return sprintf("0x%x", $this->devtype);
+	}
+
+	public function devmodel(){
+		return self::model($this->devtype, 'model');
+	}
 	
 	public function model($devtype, $needle='type'){
 		
@@ -368,38 +368,38 @@ class Broadlink{
 
     protected static function bytearray($size){
 
-    	$packet = array();
+		$packet = array();
 
-	    for($i = 0 ; $i < $size ; $i++){
-	    	$packet[$i] = 0;
-	    }
+		for($i = 0 ; $i < $size ; $i++){
+			$packet[$i] = 0;
+		}
 
-	    return $packet;
-    }
+		return $packet;
+	}
 
-    protected static function byte2array($data){
+	protected static function byte2array($data){
 
 	    return array_merge(unpack('C*', $data));
-    }
+	}
 
     protected static function byte($array){
 
 	    return implode(array_map("chr", $array));
-    }
+	}
 
-    public static function Discover(){
+	public static function Discover(){
 
-    	$devices = array();
+		$devices = array();
 
-    	$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-  		socket_connect($s ,'8.8.8.8', 53);  // connecting to a UDP address doesn't send packets
-  		socket_getsockname($s, $local_ip_address, $port);
-  		@socket_shutdown($s, 2);
+		$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		socket_connect($s ,'8.8.8.8', 53);  // connecting to a UDP address doesn't send packets
+		socket_getsockname($s, $local_ip_address, $port);
+		@socket_shutdown($s, 2);
 		socket_close($s);
 
-  		$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		$cs = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
-   		if(!$cs){
+		if(!$cs){
 			return $devices;
 		}
 
@@ -411,8 +411,8 @@ class Broadlink{
   		$address = explode('.', $local_ip_address);
 		$packet = self::bytearray(0x30);
 
-	    $timezone = (int)intval(date("Z"))/-3600;
-	  	$year = date("Y");
+		$timezone = (int)intval(date("Z"))/-3600;
+		$year = date("Y");
 
 		if($timezone < 0){
 		    $packet[0x08] = 0xff + $timezone - 1;
@@ -444,9 +444,9 @@ class Broadlink{
 
 		$checksum = 0xbeaf;
 		for($i = 0 ; $i < sizeof($packet) ; $i++){
-	      $checksum += $packet[$i];
-	    }
-	   	$checksum = $checksum & 0xffff;
+			$checksum += $packet[$i];
+		}
+		$checksum = $checksum & 0xffff;
 
 		$packet[0x20] = $checksum & 0xff;
 		$packet[0x21] = $checksum >> 8;
@@ -471,7 +471,7 @@ class Broadlink{
 			$device = Broadlink::CreateDevice($host, $mac, 80, $devtype);
 
 			if($device != NULL){
-                $device->name = str_replace(array("\0","\2"), '', Broadlink::byte(array_slice($responsepacket, 0x40)));
+				$device->name = str_replace(array("\0","\2"), '', Broadlink::byte(array_slice($responsepacket, 0x40)));
 				array_push($devices, $device);
 			}
 		}
@@ -488,75 +488,75 @@ class Broadlink{
 
 	    if (!$cs) {
 			return array();
-	    }
+		}
 
-	    socket_set_option($cs, SOL_SOCKET, SO_REUSEADDR, 1);
-	    socket_set_option($cs, SOL_SOCKET, SO_BROADCAST, 1);
-	    socket_bind($cs, 0, 0);
+		socket_set_option($cs, SOL_SOCKET, SO_REUSEADDR, 1);
+		socket_set_option($cs, SOL_SOCKET, SO_BROADCAST, 1);
+		socket_bind($cs, 0, 0);
 
-	    $this->count = ($this->count + 1) & 0xffff;
+		$this->count = ($this->count + 1) & 0xffff;
 
-	    $packet = $this->bytearray(0x38);
-	    $packet[0x00] = 0x5a;
-	    $packet[0x01] = 0xa5;
-	    $packet[0x02] = 0xaa;
-	    $packet[0x03] = 0x55;
-	    $packet[0x04] = 0x5a;
-	    $packet[0x05] = 0xa5;
-	    $packet[0x06] = 0xaa;
-	    $packet[0x07] = 0x55;
-	    $packet[0x24] = 0x2a;
-	    $packet[0x25] = 0x27;
-	    $packet[0x26] = $command;
-	    $packet[0x28] = $this->count & 0xff;
-	    $packet[0x29] = $this->count >> 8;
-	    $packet[0x2a] = $this->mac[0];
-	    $packet[0x2b] = $this->mac[1];
-	    $packet[0x2c] = $this->mac[2];
-	    $packet[0x2d] = $this->mac[3];
-	    $packet[0x2e] = $this->mac[4];
-	    $packet[0x2f] = $this->mac[5];
-	    $packet[0x30] = $this->id[0];
-	    $packet[0x31] = $this->id[1];
-	    $packet[0x32] = $this->id[2];
-	    $packet[0x33] = $this->id[3];
+		$packet = $this->bytearray(0x38);
+		$packet[0x00] = 0x5a;
+		$packet[0x01] = 0xa5;
+		$packet[0x02] = 0xaa;
+		$packet[0x03] = 0x55;
+		$packet[0x04] = 0x5a;
+		$packet[0x05] = 0xa5;
+		$packet[0x06] = 0xaa;
+		$packet[0x07] = 0x55;
+		$packet[0x24] = 0x2a;
+		$packet[0x25] = 0x27;
+		$packet[0x26] = $command;
+		$packet[0x28] = $this->count & 0xff;
+		$packet[0x29] = $this->count >> 8;
+		$packet[0x2a] = $this->mac[0];
+		$packet[0x2b] = $this->mac[1];
+		$packet[0x2c] = $this->mac[2];
+		$packet[0x2d] = $this->mac[3];
+		$packet[0x2e] = $this->mac[4];
+		$packet[0x2f] = $this->mac[5];
+		$packet[0x30] = $this->id[0];
+		$packet[0x31] = $this->id[1];
+		$packet[0x32] = $this->id[2];
+		$packet[0x33] = $this->id[3];
 
-	    $checksum = 0xbeaf;
-	    for($i = 0 ; $i < sizeof($payload) ; $i++){
-	      $checksum += $payload[$i];
-	      $checksum = $checksum & 0xffff;  
-	    }	    
+		$checksum = 0xbeaf;
+		for($i = 0 ; $i < sizeof($payload) ; $i++){
+			$checksum += $payload[$i];
+			$checksum = $checksum & 0xffff;  
+		}
 
-	    $aes = $this->byte2array(aes128_cbc_encrypt($this->key(), $this->byte($payload), $this->iv()));
+		$aes = $this->byte2array(aes128_cbc_encrypt($this->key(), $this->byte($payload), $this->iv()));
 
-	    $packet[0x34] = $checksum & 0xff;
-	    $packet[0x35] = $checksum >> 8;
+		$packet[0x34] = $checksum & 0xff;
+		$packet[0x35] = $checksum >> 8;
 
-	    for($i = 0 ; $i < sizeof($aes) ; $i++){
-	      array_push($packet, $aes[$i]);
-	    }
+		for($i = 0 ; $i < sizeof($aes) ; $i++){
+		array_push($packet, $aes[$i]);
+		}
 
-	    $checksum = 0xbeaf;
-	    for($i = 0 ; $i < sizeof($packet) ; $i++){
-	      $checksum += $packet[$i];
-	      $checksum = $checksum & 0xffff;
-	    }	    
+		$checksum = 0xbeaf;
+		for($i = 0 ; $i < sizeof($packet) ; $i++){
+			$checksum += $packet[$i];
+			$checksum = $checksum & 0xffff;
+		}
 
-	    $packet[0x20] = $checksum & 0xff;
-	    $packet[0x21] = $checksum >> 8;
+		$packet[0x20] = $checksum & 0xff;
+		$packet[0x21] = $checksum >> 8;
 
-	    $starttime = time();
-	    $from = '';
-	    socket_sendto($cs, $this->byte($packet), sizeof($packet), 0, $this->host, $this->port);
-	    socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>$this->timeout, 'usec'=>0));
+		$starttime = time();
+		$from = '';
+		socket_sendto($cs, $this->byte($packet), sizeof($packet), 0, $this->host, $this->port);
+		socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>$this->timeout, 'usec'=>0));
 
-	    $ret = socket_recvfrom($cs, $response, 2048, 0, $from, $port);
+				$ret = socket_recvfrom($cs, $response, 2048, 0, $from, $port);
 
- 	    @socket_shutdown($cs, 2);
- 	    socket_close($cs);
+		@socket_shutdown($cs, 2);
+		socket_close($cs);
 		
-	    return $this->byte2array($response);
-    }
+		return $this->byte2array($response);
+	}
 
     public function Auth($id_authorized = null, $key_authorized = null){
 		if (!isset($id_authorized) || !isset($key_authorized)) {
@@ -635,13 +635,13 @@ class Broadlink{
 		switch (self::model($this->devtype)) {
 			case 1:	//SP2
 			case 4:	//MP1
-                $ping_type = 'ICMP';
+				$ping_type = 'ICMP';
 				$retries = 1;
-                break;
+				break;
             default:
 				$ping_type = 'UDP';
 				$retries = 3;
-        }
+		}
 		
 		if (!$this->host) {
 			$this->ping_response = 'Destination address not specified';
@@ -788,119 +788,113 @@ class Broadlink{
 
 class SP1 extends Broadlink{
 
-    function __construct($h = "", $m = "", $p = 80, $d = 0x2712) {
+	function __construct($h = "", $m = "", $p = 80, $d = 0x2712) {
 
-         parent::__construct($h, $m, $p, $d);
+		parent::__construct($h, $m, $p, $d);
 
-    }
+	}
 
-    public function Set_Power($state){
+	public function Set_Power($state){
 
-        $packet = self::bytearray(4);
-        $packet[0] = $state;
+		$packet = self::bytearray(4);
+		$packet[0] = $state;
 
-        $this->send_packet(0x66, $packet);
-    }   
+		$this->send_packet(0x66, $packet);
+	}
 
 }
 
 class SP2 extends Broadlink{
 
-    function __construct($h = "", $m = "", $p = 80, $d = 0x2712) {
+	function __construct($h = "", $m = "", $p = 80, $d = 0x2712) {
 
-         parent::__construct($h, $m, $p, $d);
+		parent::__construct($h, $m, $p, $d);
 
     }
 
-    public function Set_Power($state){
+	public function Set_Power($state){
 
-        $packet = self::bytearray(16);
-        $packet[0] = 0x02;
-        $packet[4] = (int)$state;
+		$packet = self::bytearray(16);
+		$packet[0] = 0x02;
+		$packet[4] = (int)$state;
 
-        $this->send_packet(0x6a, $packet);
-    }
+		$this->send_packet(0x6a, $packet);
+	}
 
-    public function Check_Power(){
+	public function Check_Power(){
 
-        $packet = self::bytearray(16);
-        $packet[0] = 0x01;
+		$packet = self::bytearray(16);
+		$packet[0] = 0x01;
 
-        $response = $this->send_packet(0x6a, $packet);
-        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+		$response = $this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
         
 
-        if($err == 0){
-            $enc_payload = array_slice($response, 0x38);
+		if($err == 0){
+			$enc_payload = array_slice($response, 0x38);
 
-            if(count($enc_payload) > 0){
-
-                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+			if(count($enc_payload) > 0){
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				if ($payload[0x4] & 0x01) $data['power_state'] = 1; else $data['power_state'] = 0;
 				if ($payload[0x4] & 0x02) $data['light_state'] = 1; else $data['light_state'] = 0;	//for sp3		
 				return $data;
-            }
+			}
 
-        }
+		}
 
-        return false;
+		return false;
 
-        
-    }   
+	}
 	
-    public function Check_Energy(){
+	public function Check_Energy(){
 
-        $packet = self::bytearray(16);
+		$packet = self::bytearray(16);
 			$packet[0x00] = 0x08;
 			$packet[0x02] = 0xFE;
 			$packet[0x03] = 0x01;
 			$packet[0x04] = 0x05;
 			$packet[0x05] = 0x01;
 			$packet[0x09] = 0x2D;
-        $response = $this->send_packet(0x6a, $packet);
-        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
+		$response = $this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
-        if($err == 0){
-            $enc_payload = array_slice($response, 0x38);
+		if($err == 0){
+			$enc_payload = array_slice($response, 0x38);
 
-            if(count($enc_payload) > 0){
-                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+			if(count($enc_payload) > 0){
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				$data= (dechex($payload[0x7])*10000+dechex($payload[0x6])*100+dechex($payload[0x5]))/100; 
 				return $data;
-            }
+			}
 
-        }
+		}
 
-        return false;
+		return false;
 
-        
-    }
+	}
 	public function Check_Energy_SP2(){
 
-        $packet = self::bytearray(16);
+		$packet = self::bytearray(16);
 			$packet[0x00] = 0x04;
 			$packet[0x04] = 0xF2;
 			$packet[0x05] = 0x20;
 			$packet[0x06] = 0x02;
-        $response = $this->send_packet(0x6a, $packet);
-        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
+		$response = $this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
-        if($err == 0){
-            $enc_payload = array_slice($response, 0x38);
+		if($err == 0){
+			$enc_payload = array_slice($response, 0x38);
 
-            if(count($enc_payload) > 0){
-                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+			if(count($enc_payload) > 0){
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				$data= (dechex($payload[0x4])*10000+dechex($payload[0x5])*100+dechex($payload[0x6]))/100; 
 				return $data;
-            }
+			}
 
-        }
+		}
 
-        return false;
+		return false;
 
-        
     }
 }
 
@@ -1038,98 +1032,97 @@ class RM extends Broadlink{
 		$code = array();
 
 		$packet = self::bytearray(16);
-  
-    	$packet[0] = 0x04;
-    	$response = $this->send_packet(0x6a, $packet);
-    	$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-    	
+
+		$packet[0] = 0x04;
+		$response = $this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
     	if($err == 0){
 	   		$enc_payload = array_slice($response, 0x38);
 
 	   		if(count($enc_payload) > 0){
 
-	    		$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-		    	
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				
 				$code = array_slice($payload, 0x04);
-    		}
-    	}
+			}
+		}
 
-    	return $code;
+		return $code;
 	}
 
 	public function Check_temperature(){
 
-    	$temp = 0;
+		$temp = 0;
 
-    	$packet = $this->bytearray(16);
+		$packet = $this->bytearray(16);
 
-	    $packet[0] = 0x01;
-    	$response = $this->send_packet(0x6a, $packet);
-    	$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+		$packet[0] = 0x01;
+		$response = $this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
-    	if($err == 0){
-	   		$enc_payload = array_slice($response, 0x38);
+		if($err == 0){
+			$enc_payload = array_slice($response, 0x38);
 
-	   		if(count($enc_payload) > 0){
+			if(count($enc_payload) > 0){
 
-	    		$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-		    	
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				
 				$temp = ($payload[0x4] * 10 + $payload[0x5]) / 10.0;
 
-    		}
-    	}
-      
-      	return $temp;
+			}
+		}
 
-    }
+		return $temp;
+
+	}
 
 }
 
 class MP1 extends Broadlink{
 
-    function __construct($h = "", $m = "", $p = 80, $d = 0x4EB5) {
+	function __construct($h = "", $m = "", $p = 80, $d = 0x4EB5) {
 
-         parent::__construct($h, $m, $p, $d);
+		parent::__construct($h, $m, $p, $d);
 
-    }
+	}
 
-    public function Set_Power_Mask($sid_mask, $state){
+	public function Set_Power_Mask($sid_mask, $state){
 
-        $packet = self::bytearray(16);
-        $packet[0x00] = 0x0d;
-        $packet[0x02] = 0xa5;
-        $packet[0x03] = 0xa5;
-        $packet[0x04] = 0x5a;
-        $packet[0x05] = 0x5a;
-        $packet[0x06] = 0xb2 + ($state ? ($sid_mask<<1) : $sid_mask);
-        $packet[0x07] = 0xc0;
-        $packet[0x08] = 0x02;
-        $packet[0x0a] = 0x03;
-        $packet[0x0d] = $sid_mask;
-        $packet[0x0e] = $state ? $sid_mask : 0;
+		$packet = self::bytearray(16);
+		$packet[0x00] = 0x0d;
+		$packet[0x02] = 0xa5;
+		$packet[0x03] = 0xa5;
+		$packet[0x04] = 0x5a;
+		$packet[0x05] = 0x5a;
+		$packet[0x06] = 0xb2 + ($state ? ($sid_mask<<1) : $sid_mask);
+		$packet[0x07] = 0xc0;
+		$packet[0x08] = 0x02;
+		$packet[0x0a] = 0x03;
+		$packet[0x0d] = $sid_mask;
+		$packet[0x0e] = $state ? $sid_mask : 0;
 
-        $this->send_packet(0x6a, $packet);
-    }
+		$this->send_packet(0x6a, $packet);
+	}
 
-    public function Set_Power($sid, $state){
+	public function Set_Power($sid, $state){
 
-        $sid_mask = 0x01 << ($sid - 1);
+		$sid_mask = 0x01 << ($sid - 1);
 
-        $this->Set_Power_Mask($sid_mask, $state);
-    }
+		$this->Set_Power_Mask($sid_mask, $state);
+	}
 
-    public function Check_Power_Raw(){
+	public function Check_Power_Raw(){
 
-        $packet = self::bytearray(16);
-        $packet[0x00] = 0x0a;
-        $packet[0x02] = 0xa5;
-        $packet[0x03] = 0xa5;
-        $packet[0x04] = 0x5a;
-        $packet[0x05] = 0x5a;
-        $packet[0x06] = 0xae;
-        $packet[0x07] = 0xc0;
-        $packet[0x08] = 0x01;
+		$packet = self::bytearray(16);
+		$packet[0x00] = 0x0a;
+		$packet[0x02] = 0xa5;
+		$packet[0x03] = 0xa5;
+		$packet[0x04] = 0x5a;
+		$packet[0x05] = 0x5a;
+		$packet[0x06] = 0xae;
+		$packet[0x07] = 0xc0;
+		$packet[0x08] = 0x01;
 		
         $response = $this->send_packet(0x6a, $packet);
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
@@ -1169,16 +1162,16 @@ class MP1 extends Broadlink{
 
 class MS1 extends Broadlink{
 
-    function __construct($h = "", $m = "", $p = 80, $d = 0x271F) {
+	function __construct($h = "", $m = "", $p = 80, $d = 0x271F) {
 
-         parent::__construct($h, $m, $p, $d);
+		parent::__construct($h, $m, $p, $d);
 
-    }
+	}
 	public function send_str($ascii){
 		
-        $packet = self::bytearray(16);
+		$packet = self::bytearray(16);
 		$ascii='LEN:'.strlen($ascii).chr(10).$ascii;
-        $hex = '';
+		$hex = '';
 		for ($i = 0; $i < strlen($ascii); $i++) {
 			$byte = strtoupper(dechex(ord($ascii{$i})));
 			$byte = str_repeat('0', 2 - strlen($byte)).$byte;
@@ -1191,14 +1184,14 @@ class MS1 extends Broadlink{
 			$i++;
 		}
 		
-        $response = $this->send_packet(0x6a, $packet);
-        $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
-        if($err == 0){
-            $enc_payload = array_slice($response, 0x38);
+		$response = $this->send_packet(0x6a, $packet);
+		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
-            if(count($enc_payload) > 0){
-                $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+		if($err == 0){
+			$enc_payload = array_slice($response, 0x38);
+
+			if(count($enc_payload) > 0){
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
 				for($i=0; $i<count($payload); $i++) {
 					$payload[$i]=dechex($payload[$i]);
 					if (strlen($payload[$i])==1) $payload[$i]='0'.$payload[$i];
@@ -1207,13 +1200,13 @@ class MS1 extends Broadlink{
 				$hex=implode('', $payload);
 				for($i=14;$i<strlen($hex);$i+=2) $str .= chr(hexdec(substr($hex,$i,2)));
 				return $str;
-            }
+			}
 
-        }
+		}
 		
-        return false;
+		return false;
 		
-    }  
+	}
 
 }
 
@@ -1727,11 +1720,11 @@ class S1 extends Broadlink{
 
 class DOOYA extends Broadlink{
 
-    function __construct($h = "", $m = "", $p = 80, $d = 0x2d) {
+	function __construct($h = "", $m = "", $p = 80, $d = 0x2d) {
 
-         parent::__construct($h, $m, $p, $d);
+		parent::__construct($h, $m, $p, $d);
 
-    }
+	}
 	public function send_req($magic1=0x06, $magic2=0x5d){
 		$packet = self::bytearray(16);
 		$packet[0] = 0x09;
@@ -1754,16 +1747,16 @@ class DOOYA extends Broadlink{
 	public function get_level(){
 		return $this->send_req();
 	}
-    public function set_level($level){
-		if ($level==0) {
-			$response=$this->send_req(0x02, 0x00); //закрыть
-			return;
-		} elseif ($level==100) {
-			$response=$this->send_req(0x01, 0x00); //открыть
-			return;
-		}
+	public function set_level($level){
 		$now_lvl=$this->get_level();
 		if ($level!=$now_lvl) {
+			if ($level==0) {
+				$response=$this->send_req(0x02, 0x00); //закрыть
+				return;
+			} elseif ($level==100) {
+				$response=$this->send_req(0x01, 0x00); //открыть
+				return;
+			}
 			if ($now_lvl>$level) {
 				$response=$this->send_req(0x02, 0x00);
 				$action='close';

@@ -441,11 +441,13 @@ function usual(&$out) {
  function refrash_ip() {
 	$devices = Broadlink::Discover();
 	foreach ($devices as $device) {
-		$mac=$device->mac();
-		$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE MAC='$mac'");
-		$rec['IP']=$device->host();
-		$rec['UPDATED']=date('Y-m-d H:i:s');
-		SQLUpdate('dev_httpbrige_devices', $rec);
+		if($device->mac()!='0.0.0.0') {
+			$mac=$device->mac();
+			$rec=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE MAC='$mac'");
+			$rec['IP']=$device->host();
+			$rec['UPDATED']=date('Y-m-d H:i:s');
+			SQLUpdate('dev_httpbrige_devices', $rec);
+		}
 	}
  } 
 /**

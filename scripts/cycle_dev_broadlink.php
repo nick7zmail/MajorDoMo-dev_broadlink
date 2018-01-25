@@ -68,7 +68,7 @@ while (1)
 
 	   if ($h != $old_hour)
 	   {
-			if($br->config['IP_UPDATE']=='need') $br->refrash_ip();
+			$br->refrash_ip();
 			$br->check_params('1h');
 			$old_hour = $h;
 	   }
