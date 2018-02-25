@@ -1,11 +1,11 @@
 <?php
 
 function aes128_cbc_encrypt($key, $data, $iv) {
-  return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
+  return openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 }
 
 function aes128_cbc_decrypt($key, $data, $iv) {
-  return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
+  return openssl_decrypt ($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 }
 
 function generateCsv($data) {
@@ -538,7 +538,7 @@ class Broadlink{
 
 		$checksum = 0xbeaf;
 		for($i = 0 ; $i < sizeof($packet) ; $i++){
-			$checksum += $packet[$i];
+			$checksum += (int) $packet[$i];
 			$checksum = $checksum & 0xffff;
 		}
 
