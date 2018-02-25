@@ -538,7 +538,7 @@ class Broadlink{
 
 		$checksum = 0xbeaf;
 		for($i = 0 ; $i < sizeof($packet) ; $i++){
-			$checksum += $packet[$i];
+			$checksum += (int) $packet[$i];
 			$checksum = $checksum & 0xffff;
 		}
 
