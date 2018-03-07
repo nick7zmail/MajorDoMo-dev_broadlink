@@ -1,11 +1,12 @@
 <?php
 
 function aes128_cbc_encrypt($key, $data, $iv) {
+  $data = str_pad($data, ceil(strlen($data) / 16) * 16, chr(0), STR_PAD_RIGHT);	
   return openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
 }
 
 function aes128_cbc_decrypt($key, $data, $iv) {
-  return openssl_decrypt ($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+  return rtrim(openssl_decrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv), chr(0));
 }
 
 function generateCsv($data) {
