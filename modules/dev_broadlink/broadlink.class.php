@@ -1963,7 +1963,7 @@ class Cloud extends Broadlink{
 		}
 		
 		$timestamp = round(microtime(true) * 1000);
-		$post = "/rest/1.0/backup?method=list&user=".$this->nickname."&id=".$this->userid."&timestamp=".$timestamp."&token=".$this->get_token($timestamp);
+		$post = "/rest/1.0/backup?method=list&user=".$this->nickname."&id=".$this->userid."&amp;timestamp=".$timestamp."&token=".$this->get_token($timestamp);
 		$host = "ebackup.ibroadlink.com";
 		$headers = array(
 			"GET ".$post." HTTP/1.1",
@@ -1993,7 +1993,7 @@ class Cloud extends Broadlink{
 		
 		$BLbackupFolderName = "SharedData";
 		$timestamp = round(microtime(true) * 1000);
-		$post = "/rest/1.0/backup?method=download&pathname=".$pathname."&timestamp=".$timestamp."&token=".$this->get_token($timestamp);
+		$post = "/rest/1.0/backup?method=download&pathname=".$pathname."&amp;timestamp=".$timestamp."&token=".$this->get_token($timestamp);
 		$host = "ebackup.ibroadlink.com";
 		$timestamp = $timestamp + 56;
 		$headers = array(
