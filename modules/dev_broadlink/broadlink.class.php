@@ -614,7 +614,7 @@ class Broadlink{
 	protected static function str2hex_array($str){
 		
 		$str_arr = str_split(strToUpper($str), 2);
-		$str_hex='';
+		$str_hex = array();
 		for ($i=0; $i < count($str_arr); $i++){
 			$ord1 = ord($str_arr[$i][0])-48;
 			$ord2 = ord($str_arr[$i][1])-48;
