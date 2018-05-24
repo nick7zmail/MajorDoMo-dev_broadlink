@@ -58,9 +58,9 @@
 	}
   }  
   if($this->mode=='get_one') {
-	global $pathname;
+	global $id;
 	$cloud = Broadlink::Cloud($this->config['username'], $this->config['userid'], $this->config['loginsession']);
-	$response = $cloud->GetBackup($pathname);
+	$response = $cloud->GetBackup($properties[$id]['PATH']);
 	if($response['error']==0) {
 		$out['OK']='<#LANG_UNPACKED#> '.$response['msg'];
 	} else {

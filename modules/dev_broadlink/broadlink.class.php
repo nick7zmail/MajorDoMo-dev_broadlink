@@ -1,12 +1,11 @@
 <?php
 
 function aes128_cbc_encrypt($key, $data, $iv) {
-  $data = str_pad($data, ceil(strlen($data) / 16) * 16, chr(0), STR_PAD_RIGHT);	
-  return openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
+  return mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
 }
 
 function aes128_cbc_decrypt($key, $data, $iv) {
-  return rtrim(openssl_decrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv), chr(0));
+  return mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $data, MCRYPT_MODE_CBC, $iv);
 }
 
 function generateCsv($data) {
@@ -539,7 +538,7 @@ class Broadlink{
 
 		$checksum = 0xbeaf;
 		for($i = 0 ; $i < sizeof($packet) ; $i++){
-			$checksum += (int) $packet[$i];
+			$checksum += $packet[$i];
 			$checksum = $checksum & 0xffff;
 		}
 
@@ -1963,7 +1962,7 @@ class Cloud extends Broadlink{
 		}
 		
 		$timestamp = round(microtime(true) * 1000);
-		$post = "/rest/1.0/backup?method=list&user=".$this->nickname."&id=".$this->userid."&amp;timestamp=".$timestamp."&token=".$this->get_token($timestamp);
+		$post = "/rest/1.0/backup?method=list&user=".$this->nickname."&id=".$this->userid."&timestamp=".$timestamp."&token=".$this->get_token($timestamp);
 		$host = "ebackup.ibroadlink.com";
 		$headers = array(
 			"GET ".$post." HTTP/1.1",
@@ -1993,7 +1992,7 @@ class Cloud extends Broadlink{
 		
 		$BLbackupFolderName = "SharedData";
 		$timestamp = round(microtime(true) * 1000);
-		$post = "/rest/1.0/backup?method=download&pathname=".$pathname."&amp;timestamp=".$timestamp."&token=".$this->get_token($timestamp);
+		$post = "/rest/1.0/backup?method=download&pathname=".$pathname."&timestamp=".$timestamp."&token=".$this->get_token($timestamp);
 		$host = "ebackup.ibroadlink.com";
 		$timestamp = $timestamp + 56;
 		$headers = array(
