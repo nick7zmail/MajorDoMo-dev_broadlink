@@ -40,18 +40,6 @@ while (1)
 	   if ($s != $old_second)
 	   {
 			$br->check_params('1s');
-			if($s2>=2) {
-				$br->check_params('2s');
-				$s2=1;
-			} else {
-				$s2++;
-			}
-			if($s3>=3) {
-				$br->check_params('3s');
-				$s3=1;
-			} else {
-				$s3++;
-			}
 			if($s5>=5) {
 				$br->check_params('5s');
 				$s5=1;
@@ -70,12 +58,6 @@ while (1)
 	   {
 			$br->check_params('1m');
 			$old_minute = $m;
-			if($m5>=5) {
-				$br->check_params('5m');
-				$m5=1;
-			} else {
-				$m5++;
-			}
 			if($m10>=10) {
 				$br->check_params('10m');
 				$m10=1;
@@ -86,7 +68,7 @@ while (1)
 
 	   if ($h != $old_hour)
 	   {
-			if($br->config['IP_UPDATE']=='need') $br->refrash_ip();
+			$br->refrash_ip();
 			$br->check_params('1h');
 			$old_hour = $h;
 	   }
