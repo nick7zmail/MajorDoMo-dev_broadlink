@@ -384,6 +384,175 @@ function usual(&$out) {
 					SQLUpdate('dev_broadlink_commands', $properties[$i]);
 			}
 		}
+		} elseif ($rec['TYPE']=='hysen') {
+                        if($properties[$i]['TITLE']=='remote_lock') {
+					$power=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='power' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_power($value,$power['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='power') {
+					$remote_lock=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='remote_lock' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_power($remote_lock['VALUE'],$value);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='loop_mode') {
+					$auto_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='auto_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$mode_byte = ( $value << 4) + $auto_mode['VALUE'];
+					$rm->set_mode($mode_byte,$sensor['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='auto_mode') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$mode_byte = ( $loop_mode['VALUE'] << 4) + $value;
+					$rm->set_mode($mode_byte,$sensor['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='thermostat_temp') {
+					$rm->set_temp($value);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+/*                        if($properties[$i]['TITLE']=='hour') {
+					$min=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='min' AND DEVICE_ID='".$rec['ID']."'");
+					$second=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='second' AND DEVICE_ID='".$rec['ID']."'");
+					$dayofweek=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dayofweek' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_time($value,$min['VALUE'],$second['VALUE'],$dayofweek['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='min') {
+					$hour=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='hour' AND DEVICE_ID='".$rec['ID']."'");
+					$second=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='second' AND DEVICE_ID='".$rec['ID']."'");
+					$dayofweek=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dayofweek' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_time($hour['VALUE'],$value,$second['VALUE'],$dayofweek['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+
+                        if($properties[$i]['TITLE']=='dayofweek') {
+					$min=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='min' AND DEVICE_ID='".$rec['ID']."'");
+					$second=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='second' AND DEVICE_ID='".$rec['ID']."'");
+					$hour=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='hour' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_time($hour['VALUE'],$min['VALUE'],$second['VALUE'],$value);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+*/                        if($properties[$i]['TITLE']=='sensor') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$value,$osv['VALUE'],$dif['VALUE'],$svh['VALUE'],$svl['VALUE'],((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$fre['VALUE'],$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='osv') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$value,$dif['VALUE'],$svh['VALUE'],$svl['VALUE'],((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$fre['VALUE'],$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='dif') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$osv['VALUE'],$value,$svh['VALUE'],$svl['VALUE'],((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$fre['VALUE'],$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='svh') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$osv['VALUE'],$dif['VALUE'],$value,$svl['VALUE'],((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$fre['VALUE'],$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='svl') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$osv['VALUE'],$dif['VALUE'],$svh['VALUE'],$value,((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$fre['VALUE'],$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='room_temp_adj') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$osv['VALUE'],$dif['VALUE'],$svh['VALUE'],$svl['VALUE'],((int)($value*2)>>8 & 0xff),((int)($value*2) & 0xff),$fre['VALUE'],$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='fre') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$poweron=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='poweron' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$osv['VALUE'],$dif['VALUE'],$svh['VALUE'],$svl['VALUE'],((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$value,$poweron['VALUE']);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='poweron') {
+					$loop_mode=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='loop_mode' AND DEVICE_ID='".$rec['ID']."'");
+					$sensor=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='sensor' AND DEVICE_ID='".$rec['ID']."'");
+					$osv=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='osv' AND DEVICE_ID='".$rec['ID']."'");
+					$dif=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='dif' AND DEVICE_ID='".$rec['ID']."'");
+					$svh=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svh' AND DEVICE_ID='".$rec['ID']."'");
+					$svl=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='svl' AND DEVICE_ID='".$rec['ID']."'");
+					$room_temp_adj=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='room_temp_adj' AND DEVICE_ID='".$rec['ID']."'");
+					$fre=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='fre' AND DEVICE_ID='".$rec['ID']."'");
+					$rm->set_advanced($loop_mode['VALUE'],$sensor['VALUE'],$osv['VALUE'],$dif['VALUE'],$svh['VALUE'],$svl['VALUE'],((int)($room_temp_adj['VALUE']*2)>>8 & 0xff),((int)($room_temp_adj['VALUE']*2) & 0xff),$fre['VALUE'],$value);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+                        if($properties[$i]['TITLE']=='schedule') {
+					$rm->set_schedule($value);
+                                        $properties[$i]['VALUE']=$value;
+                                        SQLUpdate('dev_broadlink_commands', $properties[$i]);
+                        }
+		}		
     }
    }
   }

@@ -100,6 +100,9 @@ class Broadlink{
 			case 7:
 				return new DOOYA($h, $m, $p, $d);
 				break;
+			case 8:
+				return new HYSEN($h, $m, $p, $d);
+				break;
 			case 100:
 				return new UNK($h, $m, $p, $d);
 				break;
@@ -355,6 +358,10 @@ class Broadlink{
 			case 0x4e69:
 				$model = "LIGHTMATES";
 				$type = 100;
+				break;
+			case 0x4ead:
+				$model = "HYSEN";
+				$type = 8;
 				break;
 			default:
 				break;
@@ -1780,6 +1787,174 @@ class DOOYA extends Broadlink{
 			}
 		}
     }
+}
+
+class HYSEN extends Broadlink{
+
+	function __construct($h = "", $m = "", $p = 80, $d = 0x4ead) {
+
+		parent::__construct($h, $m, $p, $d);
+
+	}
+
+	protected static function CRC16($data){
+            $crc = 0xFFFF;
+            for ($i = 0; $i < strlen($data); $i++){
+                $crc ^=ord($data[$i]);
+                for ($j = 8; $j !=0; $j--){
+                    if (($crc & 0x0001) !=0){
+                        $crc >>= 1;
+                        $crc ^= 0xA001;
+                    }
+                    else
+                        $crc >>= 1;
+                    }
+            }
+        return $crc;
+        }
+
+	protected static function prepare_request($payload){
+            $crc = self::CRC16(implode(array_map("chr",$payload)));
+            $packet = self::bytearray(2);
+            $packet[0] = (int)(sizeof($payload) + 2);
+            $packet = array_merge($packet,$payload);
+            $crc1 = (int)$crc & 255;
+            $crc2 = (int)($crc >> 8) & 255;
+            $packet[] = $crc1; 
+            $packet[] = $crc2; 
+	    return $packet;
+	}
+	
+	public function get_status(){
+	    $payload = self::prepare_request(array(0x01,0x03,0x00,0x00,0x00,0x16));
+	    $response=$this->send_packet(0x6a, $payload);
+	    $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+	    if($err == 0){
+	        $data = array();
+	        $enc_payload = array_slice($response, 0x38);
+	        if(count($enc_payload) > 0){
+		    $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+		    $payload = array_slice($payload, 2);
+		    $data['remote_lock'] =  $payload[3] & 1;
+		    $data['power'] =  $payload[4] & 1;
+		    $data['active'] =  ($payload[4] >> 4) & 1;
+		    $data['temp_manual'] =  ($payload[4] >> 6) & 1;
+		    $data['room_temp'] =  ($payload[5] & 255) / 2.0;
+		    $data['thermostat_temp'] =  ($payload[6] & 255)/2.0;
+		    $data['auto_mode'] =  $payload[7] & 15;
+		    $data['loop_mode'] =  ($payload[7] >> 4) & 15;
+		    $data['sensor'] = $payload[8];
+		    $data['osv'] = $payload[9];
+		    $data['dif'] = $payload[10];
+		    $data['svh'] = $payload[11];
+		    $data['svl'] = $payload[12];
+		    $data['room_temp_adj'] = (($payload[13] << 8) + $payload[14])/2.0;
+		    if ($data['room_temp_adj'] > 32767) {
+		        $data['room_temp_adj'] = 32767 - $data['room_temp_adj'];
+		    }
+		    $data['fre'] = $payload[15];
+		    $data['poweron'] = $payload[16];
+		    $data['external_temp'] = ($payload[18] & 255)/2.0;
+		    $data['hour'] =  $payload[19];
+		    $data['min'] =  $payload[20];
+//		    $data['sec'] =  $payload[21];
+		    $data['dayofweek'] =  $payload[22];
+		    $timeH = date("G", time());
+		    $timeM = (int)date("i", time());
+		    $timeS = (int)date("s", time());
+		    $timeD = date("N", time());
+		    if (($timeH == 0) && ($timeM == 0)){
+		        if (($data['hour'] != $timeH) || ($data['min'] != $timeM) || ($data['dayofweek'] != $timeD)) {
+			    self::set_time($timeH,$timeM,$timeS,$timeD);
+			}
+		    }
+		}
+	    }
+	    return $data;
+	}
+
+	public function get_schedule(){
+	    $payload = self::prepare_request(array(0x01,0x03,0x00,0x00,0x00,0x16));
+	    $response=$this->send_packet(0x6a, $payload);
+	    $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+	    if($err == 0){
+	        $data = array();
+	        $enc_payload = array_slice($response, 0x38);
+	        if(count($enc_payload) > 0){
+		    $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+		    $payload = array_slice($payload, 2);
+
+		    for ($i = 0; $i < 6; $i++){
+		        $data[0][$i]['start_hour'] = $payload[2*$i + 23];
+		        $data[0][$i]['start_minute'] = $payload[2*$i + 24];
+		        $data[0][$i]['temp'] = $payload[$i + 39]/2.0;
+		    }
+		
+		    for ($i = 0; $i < 2; $i++){
+		        $data[1][$i]['start_hour'] = $payload[2*($i+6) + 23];
+		        $data[1][$i]['start_minute'] = $payload[2*($i+6) + 24];
+		        $data[1][$i]['temp'] = $payload[($i+6) + 39]/2.0;
+		    }
+		}
+	    }
+	    return $data;
+	}
+
+	public function get_temp(){
+	    $payload = self::prepare_request(array(0x01,0x03,0x00,0x00,0x00,0x08));
+	    $response=$this->send_packet(0x6a, $payload);
+	    $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+	    if($err == 0){
+		    $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+	    }
+	    return ($payload[0x05] / 2.0);
+	}
+	
+	public function set_power($remote_lock,$power){
+	    $payload = self::prepare_request(array(0x01,0x06,0x00,0x00,$remote_lock,$power));
+	    $response=$this->send_packet(0x6a, $payload);
+	}
+
+	public function set_mode($mode_byte,$sensor){
+	    $payload = self::prepare_request(array(0x01,0x06,0x00,0x02,$mode_byte,$sensor));
+	    $response=$this->send_packet(0x6a, $payload);
+	}
+
+	public function set_temp($param){
+	    $payload = self::prepare_request(array(0x01,0x06,0x00,0x01,0x00,(int)($param * 2)));
+	    $response=$this->send_packet(0x6a, $payload);
+	}
+	
+        public function set_time($hour,$minute,$second,$day){
+            $payload = self::prepare_request(array(0x01,0x10,0x00,0x08,0x00,0x02,0x04,$hour,$minute,$second,$day));
+            $response=$this->send_packet(0x6a, $payload);
+        }
+
+        public function set_advanced($loop_mode,$sensor,$osv,$dif,$svh,$svl,$adj1,$adj2,$fre,$poweron){
+            $payload = self::prepare_request(array(0x01,0x10,0x00,0x02,0x00,0x05,0x0a,$loop_mode,$sensor,$osv,$dif,$svh,$svl,$adj1,$adj2,$fre,$poweron));
+            $response=$this->send_packet(0x6a, $payload);
+        }
+
+	public function set_schedule($param){
+	    $pararr = json_decode($param,true);
+	    $input_payload = array(0x01,0x10,0x00,0x0a,0x00,0x0c,0x18);
+	    for ($i = 0; $i < 6; $i++){
+		$input_payload = array_push($input_payload,$pararr[0][$i]['start_hour'],$pararr[0][$i]['start_minute']);
+	    }
+	    for ($i = 0; $i < 2; $i++){
+		$input_payload = array_push($input_payload,$pararr[1][$i]['start_hour'],$pararr[1][$i]['start_minute']);
+	    }
+	    for ($i = 0; $i < 6; $i++){
+		$input_payload = array_push($input_payload,((int)$pararr[0][$i]['temp'] * 2));
+	    }
+	    for ($i = 0; $i < 2; $i++){
+		$input_payload = array_push($input_payload,((int)$pararr[1][$i]['temp'] * 2));
+	    }
+	    $input_payload = array_merge(array(0x01,0x10,0x00,0x0a,0x00,0x0c,0x18),$input_payload);
+	    $payload = self::prepare_request($input_payload);
+	    $response=$this->send_packet(0x6a, $payload);
+	}
+
 }
 
 class UNK extends Broadlink{
