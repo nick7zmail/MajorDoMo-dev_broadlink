@@ -383,7 +383,6 @@ function usual(&$out) {
 					$properties[$i]['VALUE']=$value;
 					SQLUpdate('dev_broadlink_commands', $properties[$i]);
 			}
-		}
 		} elseif ($rec['TYPE']=='hysen') {
                         if($properties[$i]['TITLE']=='remote_lock') {
 					$power=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='power' AND DEVICE_ID='".$rec['ID']."'");
