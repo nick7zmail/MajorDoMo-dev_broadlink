@@ -1,0 +1,159 @@
+
+<head>
+    <script src="/templates/dev_broadlink/code_gen/hex.js"></script>
+    <script src="/templates/dev_broadlink/code_gen/generator.js"></script>
+    <script src="/templates/dev_broadlink/code_gen/index.js"></script>
+	<script src="/templates/dev_broadlink/code_gen/rolcode.js"></script>
+    <style>
+        td {
+            word-break: break-all;
+            min-width: 90px;
+        }
+    </style>
+</head>
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item [#if TAB=="" || TAB=="gen_rand"#]active[#endif#]">
+            <a class="nav-link" href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&tab=gen_rand">Generate Random Code</a>
+        </li>
+        <li class="nav-item [#if TAB=="gen_liv"#]active[#endif#]">
+            <a class="nav-link" href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&tab=gen_liv">Generate Random Livolo Code</a>
+        </li>
+        <li class="nav-item [#if TAB=="gen_rep"#]active[#endif#]">
+            <a class="nav-link" href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&tab=gen_rep">Change Repeats</a>
+        </li>
+    </ul>
+[#if TAB=="" || TAB=="gen_rand"#]
+    <div id="random-code-section">
+        <div class="card">
+            <div class="card-body" style="width: 90rem;">
+                <h3>Generate Random Code</h3>
+                <div class="row">
+                    <label for="signal_type" class="badge-pill col col-2">type:</label>
+                    <select id="signal_type" class="custom-select col col-2">
+                        <option value="RF433">RF433</option>
+                        <option value="RF315">RF315</option>
+
+                    </select>
+                </div>
+                <button type="button" class="btn btn-success" onclick="startGenerate()">Generate</button>
+            </div>
+        </div>
+
+        <br><br><br><br>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Regular code</th>
+                    <th scope="col">same code with long repeat (for learning)</th>
+                </tr>
+                </thead>
+                <tbody id="restable">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+[#endif#]
+[#if TAB=="gen_liv"#]
+<div id="livolo-section">
+    <div class="card">
+        <div class="card-body" style="width: 90rem;">
+            <h3>Generate Random Livolo Code</h3>
+            <br><br>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="remoteId">Remote ID:</label>
+                    <input type="text" class="form-control" id="remoteId"
+                           placeholder="7400" style="width: 13rem;" >
+                    <label>Working sample eg. 7400, 6550, 10550. Range 1 - 65500. Usually divisible by 4</label>
+                    <br>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="liv_btn" class="badge-pill col">Button:</label>
+                    <select id="liv_btn" class="custom-select">
+                        <option value='90'  >On Only(scn1)</option>
+                        <option value='40'  >On/Off (toggle/button10)</option>
+                        <option value='106' >Off Only</option>
+                        <option value='0'   >Button 1</option>
+                        <option value='96'	>Button 2</option>
+                        <option value='120'	>Button 3</option>
+                        <option value='24'  >Button 4</option>
+                        <option value='108' >Button 5</option>
+                        <option value='80'  >Button 6</option>
+                        <option value='48'  >Button 7</option>
+                        <option value='12'  >Button 8</option>
+                        <option value='72'  >Button 9</option>
+                        <option value='40'  >Button 10</option>
+                        <option value='90'  >Scene 1</option>
+                        <option value='114' >Scene 2</option>
+                        <option value='10'  >Scene 3</option>
+                        <option value='18'  >Scene 4</option>
+
+                    </select>
+                    <br>
+                </div>
+
+                <button type="button" class="btn btn-success" onclick="startGenerateLivolo()">Generate</button>
+
+            </form>
+
+
+            <br><br><br><br>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" style="width: 70%">
+                    <thead>
+                    <tr>
+                        <th scope="col">Type</th>
+                        <th scope="col">Code</th>
+                    </tr>
+                    </thead>
+                    <tbody id="livtable">
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+[#endif#]
+[#if TAB=="gen_rep"#]
+    <div class="card" id="repeats-section">
+        <div class="card-body" style="width: 90rem;">
+            <h3>Change number of repeats in existing code (also works for IR codes)</h3>
+            <br><br>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="usercode">Your code:</label>
+                    <input type="text" class="form-control" id="usercode"
+                           placeholder="sgw0AA0kDSQkDQ0kJA0NJA0kDSQNJCQNJA0NJCQNDSQNJA0kDSQkDSQNDSQNJA0kDSQkDQwAAW8AAAAA" style="width: 65rem;"
+                           onchange="calcRepeats()">
+
+                    <br><label for="repeats">Current Repeats:</label>
+                    <b>
+                        <div id="repeats" placeholder="14 (max 255)" style="width: 10rem;">0</div>
+                    </b>
+                </div>
+
+                <input type="text" class="form-control" id="newrepeat" placeholder="New Repeats (max 255)" style="width: 13rem;">
+                <br>
+                <button type="button" class="btn btn-success" onclick="generateNewRepeat()">Generate</button>
+
+                <div class="form-group">
+                    <br>
+                    <input type="text" class="form-control" id="newcode" placeholder="New Code" style="width: 65rem;">
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+[#endif#]
+</div>
+

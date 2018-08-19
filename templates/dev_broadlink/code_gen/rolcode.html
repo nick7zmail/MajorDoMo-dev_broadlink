@@ -1,0 +1,112 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Rolling code rev eng test</title>
+
+    <script src="hex.js"></script>
+    <script src="generator.js"></script>
+    <script src="rolcode.js"></script>
+
+    <style>
+        td {
+            word-break: break-all;
+            min-width: 90px;
+        }
+    </style>
+
+</head>
+
+
+<div class="container">
+
+
+
+    <div class="card">
+        <div class="card-body" style="width: 90rem;">
+            <h3>Rolling code rev eng</h3>
+            <br><br>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="usercode">Your code (base64 of hex):</label>
+                    <input type="text" class="form-control" id="usercode" placeholder="sgw0AA0kDSQkDQ0kJA0NJA0kDSQNJCQNJA0NJCQNDSQNJA0kDSQkDSQNDSQNJA0kDSQkDQwAAW8AAAAA" style="width: 65rem;">
+
+                </div>
+
+                <button type="button" class="btn btn-success" onclick="startDecode()">Generate</button>
+
+                <div class="form-group">
+                    <br>
+                    <label for="hex">Decoded Full Hex:</label>
+                    <textarea type="text" class="form-control" id="hex" style="width: 65rem;"> </textarea>
+
+                    <br>
+                    <label for="singlehex">Single code normilized hex stream:</label>
+                    <textarea type="text" class="form-control" id="singlehex" style="width: 65rem;"> </textarea>
+
+                    <br>
+                    <label for="fullbits">Full bit stream:</label>
+                    <input type="text" class="form-control" id="fullbits" style="width: 40rem;"> </input>
+
+
+                    <br>
+
+                    <div class = "row">
+
+
+                        <div class="col col-md-4" style="display: none">
+                             <label for="fixedpart">Fixed part:</label>
+                             <input type="text" class="form-control" id="fixedpart" style="width: 24rem;"> </input>
+                        </div>
+
+
+                        <div class="col"></div>
+                        <div class="col"></div>
+
+                    </div>
+                    <br>
+
+
+                    <div class = "row col-md-9">
+
+                        <div class="col">
+                    <label for="rv">Repeat, Vlow:</label>
+                    <input type="text" class="form-control" id="rv" style="width: 3rem;"> </input>
+                        </div>
+
+                        <div class="col">
+                    <label for="buttons">Button status:</label>
+                    <input type="text" class="form-control" id="buttons" style="width: 4rem;"> </input>
+                        </div>
+                        <div class="col">
+                    <label for="sn">Serial Number:</label>
+                    <input type="text" class="form-control" id="sn" style="width: 20rem;"> </input>
+                        </div>
+                        <div class="col">
+                            <label for="encpart">Encrypted part (or seed):</label>
+                            <input type="text" class="form-control" id="encpart" style="width: 20rem;"> </input>
+                        </div>
+
+
+                    </div>
+
+                    <br><br>
+                    <div class="row">
+                        <div class="col">
+                            Protocol:
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <img src="protocol.png" class="img-responsive">
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+
+</div>
+
