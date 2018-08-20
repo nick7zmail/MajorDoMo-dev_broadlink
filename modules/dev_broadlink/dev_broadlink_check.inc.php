@@ -185,6 +185,18 @@
 					$response = $rm->get_level();
 					$this->table_data_set('level', $rec['ID'], $response);
 				}
+				if ($rec['TYPE']=='hysen') {
+					$response = $rm->get_status();
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							foreach ($response as $key => $value) {
+								$this->table_data_set($key, $rec['ID'], $value);
+							}							
+						}
+					$response = $rm->get_schedule();
+						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+							$this->table_data_set('schedule', $rec['ID'], json_encode($response));
+					}
+				}
 				if(isset($response) && $response!='' && $response!=false && !empty($response)) {
 					$rec['UPDATED']=date('Y-m-d H:i:s');
 					SQLUpdate('dev_httpbrige_devices', $rec);
