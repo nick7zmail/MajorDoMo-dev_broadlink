@@ -137,7 +137,60 @@ function generateLivolo(remoteId, btn){
 
 
 
+function generate_bin2rm(bin_str, min_l, prot, repeats, pause){
+	hex_out="";
+	var out_prot;
+	var prev = "1";
+	var tek;
+	var sum=0;
+    for (var i=0; i<=bin_str.length; i++) {
+		tek=bin_str.charAt(i);
+		if (tek!=prev) {
+			prev=tek;
+			hex_out=hex_out+convertValue(sum*min_l);
+			sum=0;
+		}
+		sum++;
+	}
+	hex_out=hex_out+convertValue(pause*min_l);
+	switch(prot) {
+		case "433":
+			out_prot="B2";
+			break;
+		case "315":
+			out_prot="D7";
+			break;
+		case "IR":
+			out_prot="26";
+			break;	
+	}
+	var len_data=hex_out.length/2;
 
+	len_data = len_data.toString(16).toUpperCase();
+	if (len_data.length < 2) {
+		len_data="0"+len_data
+	}
+	len_data="00"+len_data;
+	len_data=len_data[2] + len_data[3] + len_data[0] + len_data[1];
+	
+	var repeat=Math.round(repeats).toString(16).toUpperCase();
+	if (repeat.length < 2) repeat="0"+repeat;
+	hex_out=out_prot+repeat+len_data+hex_out;
+	return hex_out;
+}
+
+function convertValue(valueDec) {
+	var tmpValue= Math.round(valueDec*269/8192);
+	if(tmpValue>255) {
+		tmpValue = "00"+tmpValue.toString(16).toUpperCase();
+	} else {
+		tmpValue = tmpValue.toString(16).toUpperCase();
+		if (tmpValue.length < 2) {
+			tmpValue="0"+tmpValue
+		}
+	}
+	return tmpValue;
+}
 
 
 

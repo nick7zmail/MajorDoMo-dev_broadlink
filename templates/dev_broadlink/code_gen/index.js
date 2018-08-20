@@ -36,3 +36,14 @@ function startGenerateLivolo(){
 
     $('#livtable').append(html);
 }
+function start_bin2gen() {
+	var bin_str=$('#bin_str').val();
+	var min_l=$('#min_l').val();
+	var prot=$('#prot').val();
+	var repeats=$('#repeats').val();
+	var pause=$('#pause').val();
+	var code=generate_bin2rm(bin_str, min_l, prot, repeats, pause);
+	var code64=hexToBase64(code);
+	var html = '<tr scope="row">'+ '<td>' + 'Code string' + '</td>' +'<td>' + code + '</td>'+'<td>' + code64 + '</td>';
+	$('#livtable').append(html);
+}
