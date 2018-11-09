@@ -595,6 +595,9 @@ class Broadlink{
 			$payload[0x36] = ord('1');
 
 			$response = $this->send_packet(0x65, $payload);
+			if (empty($response))
+				return false;
+
 			$enc_payload = array_slice($response, 0x38);
 
 			$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
@@ -835,8 +838,10 @@ class SP2 extends Broadlink{
 		$packet[0] = 0x01;
 
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
 
 		if($err == 0){
 			$enc_payload = array_slice($response, 0x38);
@@ -864,6 +869,9 @@ class SP2 extends Broadlink{
 			$packet[0x05] = 0x01;
 			$packet[0x09] = 0x2D;
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
 		if($err == 0){
@@ -888,6 +896,9 @@ class SP2 extends Broadlink{
 			$packet[0x05] = 0x20;
 			$packet[0x06] = 0x02;
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
 		if($err == 0){
@@ -922,8 +933,10 @@ class A1 extends Broadlink{
         $packet[0] = 0x01;
 
         $response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
 
         if($err == 0){
             $enc_payload = array_slice($response, 0x38);
@@ -1043,6 +1056,9 @@ class RM extends Broadlink{
 
 		$packet[0] = 0x04;
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
     	if($err == 0){
@@ -1067,6 +1083,9 @@ class RM extends Broadlink{
 
 		$packet[0] = 0x01;
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
 		if($err == 0){
@@ -1133,8 +1152,10 @@ class MP1 extends Broadlink{
 		$packet[0x08] = 0x01;
 		
         $response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return null;
+
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
 
         if($err == 0){
             $enc_payload = array_slice($response, 0x38);
@@ -1193,6 +1214,9 @@ class MS1 extends Broadlink{
 		}
 		
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 
 		if($err == 0){
@@ -1416,6 +1440,9 @@ class S1 extends Broadlink{
 		$packet[0] = 0x06;
 		
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return $data;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 		
 		if($err == 0){
@@ -1436,6 +1463,9 @@ class S1 extends Broadlink{
 		$packet[0] = 0x12;
 		
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return $data;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 		
 		if($err == 0){
@@ -1483,6 +1513,9 @@ class S1 extends Broadlink{
 		$packet[0x28] = $params['alarm_detector'];
 		
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return $data;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 		
 		if($err == 0){
@@ -1711,6 +1744,9 @@ class S1 extends Broadlink{
 		//0x54..0x5f:	zeros
 		
 		$response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return $data;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 		
 		if($err == 0){
@@ -1734,6 +1770,7 @@ class DOOYA extends Broadlink{
 
 	}
 	public function send_req($magic1=0x06, $magic2=0x5d){
+		$data = array();
 		$packet = self::bytearray(16);
 		$packet[0] = 0x09;
 		$packet[2] = 0xbb;
@@ -1742,6 +1779,9 @@ class DOOYA extends Broadlink{
 		$packet[9] = 0xfa;
 		$packet[10] = 0x44;
 		$response=$this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return $data;
+
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 		if($err == 0){
 			$enc_payload = array_slice($response, 0x38);
@@ -1826,8 +1866,12 @@ class HYSEN extends Broadlink{
 	}
 	
 	public function get_status(){
+		$data = array();
 	    $payload = self::prepare_request(array(0x01,0x03,0x00,0x00,0x00,0x16));
 	    $response=$this->send_packet(0x6a, $payload);
+		if (empty($response))
+			return $data;
+
 	    $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 	    if($err == 0){
 	        $data = array();
@@ -1874,28 +1918,32 @@ class HYSEN extends Broadlink{
 	}
 
 	public function get_schedule(){
+		$data = array();
 	    $payload = self::prepare_request(array(0x01,0x03,0x00,0x00,0x00,0x16));
 	    $response=$this->send_packet(0x6a, $payload);
 	    $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
+		if (empty($response))
+			return $data;
+
 	    if($err == 0){
 	        $data = array();
 	        $enc_payload = array_slice($response, 0x38);
 	        if(count($enc_payload) > 0){
-		    $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-		    $payload = array_slice($payload, 2);
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				$payload = array_slice($payload, 2);
 
-		    for ($i = 0; $i < 6; $i++){
-		        $data[0][$i]['start_hour'] = $payload[2*$i + 23];
-		        $data[0][$i]['start_minute'] = $payload[2*$i + 24];
-		        $data[0][$i]['temp'] = $payload[$i + 39]/2.0;
-		    }
-		
-		    for ($i = 0; $i < 2; $i++){
-		        $data[1][$i]['start_hour'] = $payload[2*($i+6) + 23];
-		        $data[1][$i]['start_minute'] = $payload[2*($i+6) + 24];
-		        $data[1][$i]['temp'] = $payload[($i+6) + 39]/2.0;
-		    }
-		}
+				for ($i = 0; $i < 6; $i++){
+				    $data[0][$i]['start_hour'] = $payload[2*$i + 23];
+				    $data[0][$i]['start_minute'] = $payload[2*$i + 24];
+				    $data[0][$i]['temp'] = $payload[$i + 39]/2.0;
+				}
+
+				for ($i = 0; $i < 2; $i++){
+				    $data[1][$i]['start_hour'] = $payload[2*($i+6) + 23];
+				    $data[1][$i]['start_minute'] = $payload[2*($i+6) + 24];
+				    $data[1][$i]['temp'] = $payload[($i+6) + 39]/2.0;
+				}
+			}
 	    }
 	    return $data;
 	}
@@ -1903,6 +1951,9 @@ class HYSEN extends Broadlink{
 	public function get_temp(){
 	    $payload = self::prepare_request(array(0x01,0x03,0x00,0x00,0x00,0x08));
 	    $response=$this->send_packet(0x6a, $payload);
+		if (empty($response))
+			return false;
+
 	    $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 	    if($err == 0){
 		    $payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
@@ -1939,20 +1990,20 @@ class HYSEN extends Broadlink{
 	    $pararr = json_decode($param,true);
 	    $input_payload = array(0x01,0x10,0x00,0x0a,0x00,0x0c,0x18);
 	    for ($i = 0; $i < 6; $i++){
-		$input_payload = array_push($input_payload,$pararr[0][$i]['start_hour'],$pararr[0][$i]['start_minute']);
+			$input_payload = array_push($input_payload,$pararr[0][$i]['start_hour'],$pararr[0][$i]['start_minute']);
 	    }
 	    for ($i = 0; $i < 2; $i++){
-		$input_payload = array_push($input_payload,$pararr[1][$i]['start_hour'],$pararr[1][$i]['start_minute']);
+			$input_payload = array_push($input_payload,$pararr[1][$i]['start_hour'],$pararr[1][$i]['start_minute']);
 	    }
 	    for ($i = 0; $i < 6; $i++){
-		$input_payload = array_push($input_payload,((int)$pararr[0][$i]['temp'] * 2));
+			$input_payload = array_push($input_payload,((int)$pararr[0][$i]['temp'] * 2));
 	    }
 	    for ($i = 0; $i < 2; $i++){
-		$input_payload = array_push($input_payload,((int)$pararr[1][$i]['temp'] * 2));
+			$input_payload = array_push($input_payload,((int)$pararr[1][$i]['temp'] * 2));
 	    }
 	    $input_payload = array_merge(array(0x01,0x10,0x00,0x0a,0x00,0x0c,0x18),$input_payload);
 	    $payload = self::prepare_request($input_payload);
-	    $response=$this->send_packet(0x6a, $payload);
+	    $this->send_packet(0x6a, $payload);
 	}
 
 }
@@ -1978,8 +2029,10 @@ class UNK extends Broadlink{
         $packet = self::bytearray(16); //размер массива может быть другой...но как правило 16 или 48 байт
         $packet[0] = 0x01; //стартовый байт, определяющий действие (запрос)
         $response = $this->send_packet(0x6a, $packet);
+		if (empty($response))
+			return false;
+
         $err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
-        
 
         if($err == 0){
             $enc_payload = array_slice($response, 0x38);
