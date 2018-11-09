@@ -558,11 +558,14 @@ class Broadlink{
 		socket_sendto($cs, $this->byte($packet), sizeof($packet), 0, $this->host, $this->port);
 		socket_set_option($cs, SOL_SOCKET, SO_RCVTIMEO, array('sec'=>$this->timeout, 'usec'=>0));
 
-				$ret = socket_recvfrom($cs, $response, 2048, 0, $from, $port);
+		$ret = socket_recvfrom($cs, $response, 2048, 0, $from, $port);
 
 		@socket_shutdown($cs, 2);
 		socket_close($cs);
-		
+
+		if($ret === FALSE)
+			return array();
+					
 		return $this->byte2array($response);
 	}
 
