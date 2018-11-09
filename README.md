@@ -1,4 +1,4 @@
-Broadlink module for MajorDoMo
+﻿Broadlink module for MajorDoMo
 ==============================
 
-Модуль поддержки устройств Broadlink для MajorDoMo
+Модуль поддержки устройств Broadlink для MajorDoMo с поддержкой термостатов 

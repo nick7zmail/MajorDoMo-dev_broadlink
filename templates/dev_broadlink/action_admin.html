@@ -4,6 +4,7 @@
 <div>
 <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><i class="glyphicon glyphicon-cog"></i> <#LANG_SETUP#></a>
 <div class="float-right">
+<a href="?data_source=<#DATA_SOURCE#>&view_mode=gen" class="btn btn-primary"><span class="glyphicon glyphicon-compressed"></span> RMTools</a>
 <a href="?data_source=<#DATA_SOURCE#>&view_mode=cloud" class="btn btn-primary"><span class="glyphicon glyphicon-cloud"></span> BLCloud</a>
 </div>
 </div>
@@ -91,4 +92,6 @@
  [#if VIEW_MODE="cloud"#]
    [#inc cloud.html#]
  [#endif VIEW_MODE#]
-
+ [#if VIEW_MODE="gen"#]
+   [#inc code_gen/gen.html#]
+ [#endif VIEW_MODE#]
