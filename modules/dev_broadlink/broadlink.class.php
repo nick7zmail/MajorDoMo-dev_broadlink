@@ -1080,7 +1080,7 @@ class RM extends Broadlink{
 
 	public function Check_temperature(){
 
-		$temp = 0;
+		$temp = false;
 
 		$packet = $this->bytearray(16);
 
