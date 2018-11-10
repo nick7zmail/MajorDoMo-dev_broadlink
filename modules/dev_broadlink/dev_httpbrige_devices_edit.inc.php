@@ -24,7 +24,7 @@
 		do {
 			sleep(1);
 			$json['hex'] = $rm->Check_data();
-		} while((count($json[hex]) == 0) && ($i++ < 10));
+		} while((count($json['hex']) == 0) && ($i++ < 10));
 		$json['hex_number'] = '';
 		foreach ($json['hex'] as $value) {
 			$json['hex_number'] .= sprintf("%02x", $value);

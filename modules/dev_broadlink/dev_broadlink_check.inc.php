@@ -20,7 +20,7 @@
 			if ($rec['TYPE']=='rm') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.temperature', (float)$response);
 					}
 			}
@@ -41,30 +41,30 @@
 			if ($rec['TYPE']=='sp2') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
 					}
 					
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=power ', 0, $ctx);
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.power', $response);
 					}
 			}
 			if ($rec['TYPE']=='spmini') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
 					}
 			}
 			if ($rec['TYPE']=='sp3') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
 					}
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=lightstatus', 0, $ctx);
-					if(isset($response) && $response!='') {
+					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.lightstatus', $response);
 					}
 			}
@@ -94,7 +94,7 @@
 				
 				if ($rec['TYPE']=='rm') {
 						$response = $rm->Check_temperature();
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && $response!==false) {
 							if((int)$response!=249) $this->table_data_set('temperature', $rec['ID'], (float)$response);
 						}
 				}
@@ -102,7 +102,7 @@
 				}
 				if ($rec['TYPE']=='a1') {
 						$response = $rm->Check_sensors();
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && !empty($response)) {
 							foreach ($response as $key => $value) {
 								$this->table_data_set($key, $rec['ID'], $value);
 							}							
@@ -110,7 +110,7 @@
 				}
 				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE']=='sp3s' || $rec['TYPE'] == 'sc1') {
 					$response = $rm->Check_Power();	
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && !empty($response)) {
 							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);						
 							if ($rec['TYPE'] == 'sp3') {
 								$this->table_data_set('lightstatus', $rec['ID'], (int)$response['light_state']);
@@ -120,21 +120,21 @@
 				}
 				if ($rec['TYPE']=='sp2') {
 					$response = $rm->Check_Energy_SP2();	
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && $response!==false) {
 							$this->table_data_set('power', $rec['ID'], (float)$response);						
 						}
 						
 				}
 				if ($rec['TYPE']=='sp3s') {
 					$response = $rm->Check_Energy();	
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && $response!==false) {
 							$this->table_data_set('power', $rec['ID'], (float)$response);						
 						}
-						
+
 				}				
 				if ($rec['TYPE']=='mp1') {
 					$response = $rm->Check_Power();	
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && !empty($response)) {
 							for($i=0;$i<4;$i++) {
 								$this->table_data_set('status'.($i+1), $rec['ID'], (int)$response[$i]);
 							}
@@ -152,7 +152,7 @@
 						$this->table_data_set('ButtonVolDown', $rec['ID'], $response);
 						$this->table_data_set('ButtonAux', $rec['ID'], $response);
 					$response = $rm->send_str('{"command":"request-pb"}');
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && !empty($response)) {
 							//$this->table_data_set('info-pb', $rec['ID'], $response);
 							$decoded=json_decode($response);
 							$this->table_data_set('status', $rec['ID'], $decoded->status);
@@ -160,7 +160,7 @@
 							$this->table_data_set('status', $rec['ID'], 'Offline');
 						}
 					$response = $rm->send_str('{"command":"request-dev"}');
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+						if(isset($response) && !empty($response)) {
 							//$this->table_data_set('info-dev', $rec['ID'], $response);
 							$decoded=json_decode($response);
 							$this->table_data_set('volume', $rec['ID'], $decoded->vol);
@@ -169,7 +169,7 @@
 				}
 				if ($rec['TYPE']=='s1') {
 					$response = $rm->Check_Sensors();
-					if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+					if(isset($response) && !empty($response)) {
 						for($sn=0;$sn<$response['col_sensors'];$sn++) {
 							$sens_arr=$response[$sn];
 							$sens_name='['.$sens_arr['sensor_number'].'] '.$sens_arr['product_type'];
@@ -177,27 +177,29 @@
 						}
 					}
 					$response = $rm->Check_Status();
-					if(isset($response) && $response!='' && $response!=false && !empty($response)) {	
+					if(isset($response) && !empty($response)) {
 							$this->table_data_set('status', $rec['ID'], json_encode($response), $response['status']);
 					}
 				}
 				if ($rec['TYPE']=='dooya') {
 					$response = $rm->get_level();
-					$this->table_data_set('level', $rec['ID'], $response);
+					if(isset($response) && $response!==false) {
+						$this->table_data_set('level', $rec['ID'], $response);
+					}
 				}
 				if ($rec['TYPE']=='hysen') {
 					$response = $rm->get_status();
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
-							foreach ($response as $key => $value) {
-								$this->table_data_set($key, $rec['ID'], $value);
-							}							
-						}
+					if(isset($response) && !empty($response)) {
+						foreach ($response as $key => $value) {
+							$this->table_data_set($key, $rec['ID'], $value);
+						}							
+					}
 					$response = $rm->get_schedule();
-						if(isset($response) && $response!='' && $response!=false && !empty($response)) {
-							$this->table_data_set('schedule', $rec['ID'], json_encode($response));
+					if(isset($response) && !empty($response)) {
+						$this->table_data_set('schedule', $rec['ID'], json_encode($response));
 					}
 				}
-				if(isset($response) && $response!='' && $response!=false && !empty($response)) {
+				if(isset($response) && $response!==false) {
 					$rec['UPDATED']=date('Y-m-d H:i:s');
 					SQLUpdate('dev_httpbrige_devices', $rec);
 				}
