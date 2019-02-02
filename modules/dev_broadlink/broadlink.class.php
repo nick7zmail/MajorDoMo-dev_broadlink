@@ -265,12 +265,17 @@ class Broadlink{
 				$model = "RM2 Pro Plus BL";
 				$type = 2;
 				break;	
-			case 0x27a1: 
+			case 0x27a1:
+			case 0x27a9:
 				$model = "RM2 Pro Plus R1";
 				$type = 2;
 				break;				
 			case 0x278f: 
 				$model = "RM Mini Shate";
+				$type = 2;
+				break;
+			case 0x27c2: 
+				$model = "RM3 mini";
 				$type = 2;
 				break;
 			case 0x2714:
