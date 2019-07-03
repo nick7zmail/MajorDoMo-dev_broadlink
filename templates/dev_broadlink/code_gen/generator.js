@@ -56,20 +56,20 @@ function generate(type){
   var resWithRepeat = typePrefix + LONG_REPEAT  + DATA_LENGTH + code + FOOTER;
 
   return {
-          regular: hexToBase64(res),
-          long:    hexToBase64(resWithRepeat)
+          regular: res,
+          long:    resWithRepeat
   }
 }
 
 function getRepeats(b64){
-  var hex = base64ToHex(b64).replace(/ /g,'');
+  var hex = b64.replace(/ /g,'');
   var repeats = hex.substr(2, 2);
   var decimal = parseInt(repeats, 16);
   return decimal;
 }
 
 function getNewCode(b64, repeats){
-  var hex = base64ToHex(b64).replace(/ /g,'');
+  var hex = b64.replace(/ /g,'');
   var start = hex.substr(0, 2);
   var end = hex.substr(4);
 
@@ -80,7 +80,7 @@ function getNewCode(b64, repeats){
   }
 
   var res = (start + hexrepeats + end);
-  return hexToBase64(res);
+  return res;
 
 }
 
@@ -108,7 +108,7 @@ function generateLivolo(remoteId, btn){
     hex_out = hex_out + ('').leftJustify(pad_len,0);
     //alert(hex_out);
 
-    return hexToBase64(hex_out);
+    return hex_out;
 
 
     /*
