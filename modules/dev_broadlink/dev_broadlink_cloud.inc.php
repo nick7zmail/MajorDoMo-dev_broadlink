@@ -68,7 +68,7 @@
 	}
   }
   if($this->mode=='cloud_export') {
-	$sharedDataDir = ROOT.'cached'.DIRECTORY_SEPARATOR.'broadlink'.DIRECTORY_SEPARATOR.'SharedData';
+	$sharedDataDir = ROOT. 'cms' . DIRECTORY_SEPARATOR . 'cached' . DIRECTORY_SEPARATOR . 'broadlink' . DIRECTORY_SEPARATOR . 'SharedData';
 	$arrayDevice = json_decode(file_get_contents($sharedDataDir.'/jsonDevice'), true);
 	$arraySubIr  = json_decode(file_get_contents($sharedDataDir.'/jsonSubIr'), true);
 	$arrayButton = json_decode(file_get_contents($sharedDataDir.'/jsonButton'), true);
