@@ -2065,7 +2065,7 @@ class Cloud extends Broadlink{
 	protected $loginsession;
 	protected $userid;
 	protected $nickname;
-	protected $workdir = 'cms' . DIRECTORY_SEPARATOR . 'cached' . DIRECTORY_SEPARATOR . 'broadlink';
+	protected $workdir;
 	protected static $file = 'bl_buckup.zip';
 	
 	function __construct($nickname = "", $userid = "", $loginsession = "") {
@@ -2073,7 +2073,7 @@ class Cloud extends Broadlink{
 		$this->loginsession = $loginsession;
 		$this->userid = $userid;
 		$this->nickname = $nickname;
-		$this->workdir = ROOT.$this->workdir.DIRECTORY_SEPARATOR;
+		$this->workdir = ROOT.'cms' . DIRECTORY_SEPARATOR . 'cached' . DIRECTORY_SEPARATOR . 'broadlink'.DIRECTORY_SEPARATOR;
 		if (($nickname === "") || ($userid === "") || ($loginsession === "")) {
 			$this->authorized = false;
 		} else {
