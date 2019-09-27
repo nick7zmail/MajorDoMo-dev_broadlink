@@ -221,6 +221,37 @@ function admin(&$out) {
   }
  }
 }
+
+function api($params) {
+    if($_REQUEST['ACTION']=='learn') {
+        $did=$_REQUEST['ID'];
+        $dname = $_REQUEST['CMD_NAME'];
+        $info=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$did'");
+        $rm = Broadlink::CreateDevice($info['IP'], $info['MAC'], 80, $info['DEVTYPE']);	
+        $decoded_keys=json_decode($info['KEYS']);
+		$rm->Auth($decoded_keys->id, $decoded_keys->key);	
+		$rm->Enter_learning();
+        do {
+        	sleep(1);
+        	$json['hex'] = $rm->Check_data();
+        } while((count($json['hex']) == 0) && ($i++ < 10));
+        
+        $json['hex_number'] = '';
+        foreach ($json['hex'] as $value) {
+        	$json['hex_number'] .= sprintf("%02x", $value);
+        }
+        
+		if(count($json['hex']) > 0){
+			$prop=array('TITLE'=>($dname ? $dname : 'new_command'),'VALUE'=>$json['hex_number'],'DEVICE_ID'=>$info['ID']);
+			$new_id=SQLInsert('dev_broadlink_commands',$prop);
+			//занесена
+			addToOperationsQueue('br_learn', 'ok', $prop['TITLE']);
+		} else {
+			//ошибка
+			addToOperationsQueue('br_learn', 'error', 'Ошибка чтения команды');
+		} 
+    }
+}
 /**
 * FrontEnd
 *
@@ -229,7 +260,38 @@ function admin(&$out) {
 * @access public
 */
 function usual(&$out) {
- $this->admin($out);
+    $this->admin($out);
+    if ($this->ajax) {
+        global $op;
+        if ($op == 'api_learn_start') {
+            header("HTTP/1.0: 200 OK\n");
+            header('Content-Type: text/html; charset=utf-8');
+            $did = $_GET['did'];
+            $dname = $_GET['dname'];
+            echo '{"result":"ok"}'.PHP_EOL;
+            callAPI('/api/module/dev_broadlink','GET',array('ACTION'=>'learn', 'ID'=>$did, 'CMD_NAME'=>$dname));
+            setTimeOut('broad_learn_wait', '', 10);
+        } elseif ($op == 'api_learn_check') {
+            header("HTTP/1.0: 200 OK\n");
+            header('Content-Type: text/html; charset=utf-8');
+            
+            $result=checkOperationsQueue('br_learn');
+            if($result[0]['TOPIC']) {
+                if($result[0]['DATANAME']=='ok') {
+                    echo '{"result":"ok", "command":"'.$result[0]['DATAVALUE'].'"}'.PHP_EOL;
+                } elseif($result[0]['DATANAME']=='error') {
+                    echo '{"error":"'.$result[0]['DATAVALUE'].'"}'.PHP_EOL; 
+                }
+            } else {
+                if(timeOutExists('broad_learn_wait')) {
+                  echo '{"result":"wait"}'.PHP_EOL;  
+                } else {
+                  echo '{"error":"Истекло время записи команды"}'.PHP_EOL;    
+                }            
+            }
+        
+        }
+    }
 }
 /**
 * dev_httpbrige_devices search

@@ -13,30 +13,6 @@
 	   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=study';
 	   getUrl($api_command);
 	   $out['MESSAGE']='Режим обучения';
-	} else {
-		$out['MESSAGE']='Режим обучения';
-		$json = array();
-		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-		$decoded_keys=json_decode($rec['KEYS']);
-		$rm->Auth($decoded_keys->id, $decoded_keys->key);	
-		$rm->Enter_learning();
-		$i = 0;
-		do {
-			sleep(1);
-			$json['hex'] = $rm->Check_data();
-		} while((count($json['hex']) == 0) && ($i++ < 10));
-		$json['hex_number'] = '';
-		foreach ($json['hex'] as $value) {
-			$json['hex_number'] .= sprintf("%02x", $value);
-		}
-		if(count($json['hex']) > 0){
-			$prop=array('TITLE'=>($this->title_new ? $this->title_new : 'new_command'),'VALUE'=>$json['hex_number'],'DEVICE_ID'=>$rec['ID'],);
-			$new_id=SQLInsert('dev_broadlink_commands',$prop);
-			$out['OK']=1;
-		} else {
-			$out['MESSAGE']='Команда не сохранена';
-		}
-		$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
 	}
   }
 

@@ -74,10 +74,12 @@
 Управление:
  </label>
  <div class="col-lg-4">
-	<a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=learn" class="btn btn-success">Обучить коду</a>
+	<!--a href="?data_source=<#DATA_SOURCE#>&id=<#ID#>&view_mode=<#VIEW_MODE#>&mode=learn" class="btn btn-success">Обучить коду</a-->
+	<a  data-toggle="modal" data-target="#ir_learn" class="btn btn-success">Обучить коду</a>
 	<a href="?data_source=<#DATA_SOURCE#>&view_mode=<#VIEW_MODE#>&id=<#ID#>&tab=data_usage" class="btn btn-default">Использование команд</a>
  </div>
 </div>
+
 [#endif#]
 
 <div class="form-group">
@@ -149,3 +151,133 @@
 </div>
 </fieldset>
 </form>
+
+[#if TYPE=="rm" || TYPE=="rm3"#]
+<div class="modal fade" id="ir_learn" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Закрыть</span></button>
+            <b>Обучение коду</b>
+         </div>
+         <div class="modal-body">
+            <div class="row">
+               <div class="float-right">
+
+                     <img src="/templates/dev_broadlink/php/rm_learn.png" class="img-rounded">
+
+               </div>
+               <p class="float-left">
+                    Введите имя команды и нажмите "Старт". <br>После нажатия кнопки "Старт" на устройстве должен загореться <b>желтый</b> диод. После этого необходимо направить обучающий пульт на устройство (в случае с RF пультом - поднести ближе к устройству), и нажать на кнопку, команду которой вы хотите записать. Для RF пультов рекомендуется подержать кнопку 2-3 секунды. Команда после этого будет записана в базу с соответствующим именем. Если имя не было введено - то с именем new_command. 
+               </p>
+               <br><br>
+               <div class="input-group">
+                   
+                  <input type="text" class="form-control" placeholder="Имя команды" id="command_name">
+                   <span class="input-group-btn">
+                      <button class="btn btn-success" onclick="startLearnIR();" type="button">Старт</button>
+                   </span>
+               </div>
+            </div>
+            <div class="row">
+               <br>
+               <div>
+                  <pre class="pre-scrollable" id="ir_learn_log" style="word-wrap: break-word;"></pre>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<script>
+
+function learnMasterTV() {
+    var btns = ["1", "2", "3"];
+    var cmd_name=document.getElementById("command_name").value;
+    btns.forEach(function(element) {
+        startLearnIR(cmd_name+element);
+    });
+}
+
+function startLearnIR(command = '') {
+        var cmd_name=document.getElementById("command_name").value;
+        if(!cmd_name) cmd_name='new_command';
+        if(command) cmd_name=command;
+        var url="/ajax/dev_broadlink.html?op=api_learn_start&did=[#ID#]&dname="+cmd_name;
+        if(!command) $("#ir_learn_log").html('');
+        
+        $.ajax({
+            url: url,
+            cache: false,
+            success: function(html){
+                         Data = new Date();
+                         Hour = ('0' + Data.getHours()).slice(-2);
+                         Minutes = ('0' + Data.getMinutes()).slice(-2);
+                         Seconds = ('0' + Data.getSeconds()).slice(-2);
+                $('#ir_learn_log').append(Hour+":"+Minutes+":"+Seconds+' Перевод в режим обучения...');
+                var value = html.split(/\n+/g);
+                var resp = tryParseJSON(value[0]);
+               if (resp !== false) {
+                  if(typeof resp.error === 'undefined') {
+                     if ((typeof resp.result !== 'undefined') && (resp.result === 0 || resp.result == 'ok')) {
+                        $('#ir_learn_log').append('<font color=green>OK</font><br>');
+                        setTimeout(learnTimer, 1000);
+                        $('#ir_learn_log').append(Hour+":"+Minutes+":"+Seconds+' Ожидание команды...');
+                     } else {
+                        $('#ir_learn_log').append('<font color=red>ERR</font> - bad response.<br>');
+                     }
+                  } else {
+                     $('#ir_learn_log').append('<font color=red>ERR</font> - '+resp.error+'<br>');
+                  }
+               } else {
+                  $('#ir_learn_log').append('<font color=red>ERR</font> Неизвестная ошибка.<br>');
+               }
+            }
+        });
+}
+
+function learnTimer() {
+    
+    $.ajax({
+        url: "/ajax/dev_broadlink.html?op=api_learn_check&did=[#ID#]",
+        cache: false,
+        success: function(html){
+                     Data = new Date();
+                     Hour = ('0' + Data.getHours()).slice(-2);
+                     Minutes = ('0' + Data.getMinutes()).slice(-2);
+                     Seconds = ('0' + Data.getSeconds()).slice(-2);
+            var value = html.split(/\n+/g);
+            var resp = tryParseJSON(value[0]);
+           if (resp !== false) {
+              if(typeof resp.error === 'undefined') {
+                 if (typeof resp.result !== 'undefined') {
+                    if(resp.result == 'ok') {
+                        $('#ir_learn_log').append('<font color=green>OK</font><br>');
+                        $('#ir_learn_log').append(Hour+":"+Minutes+":"+Seconds+' Сохранение команды '+resp.command+' в базе...<font color=green>OK</font><br>');
+                    } else if (resp.result == 'wait') {
+                        setTimeout(learnTimer, 1000);
+                    }
+                    
+                 } else {
+                    $('#ir_learn_log').append('<font color=red>ERR</font> - bad response.<br>');
+                 }
+              } else {
+                 $('#ir_learn_log').append('<font color=red>ERR</font> - '+resp.error+'<br>');
+              }
+           } else {
+              $('#ir_learn_log').append('<font color=red>ERR</font> Неизвестная ошибка.<br>');
+           }
+        }
+    });
+}
+
+function tryParseJSON (jsonString){
+  try {
+     var o = JSON.parse(jsonString);
+     if (o && typeof o === "object") return o;
+  }
+  catch (e) { }
+  return false;
+};
+</script>
+[#endif#]  
