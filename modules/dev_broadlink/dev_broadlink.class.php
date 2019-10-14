@@ -335,6 +335,7 @@ function usual(&$out) {
 	removeLinkedProperty($rec['LINKED_OBJECT'], 'lightstatus', $this->name);
   }
   SQLExec("DELETE FROM dev_httpbrige_devices WHERE ID='".$rec['ID']."'");
+  SQLExec("DELETE FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."'");
  }
 /**
 * dev_broadlink_commands search
