@@ -18,24 +18,26 @@
  <label class="col-lg-3 control-label"[#if ERR_TYPE#] style="color:red;font-weight:bold"[#endif#]>
 	Тип устройства:
  </label>
- <div class="col-lg-4">
-	 <select class="form-control" name="type">
-	   <option value="">Выберите устройство
-	   <option value="rm"[#if TYPE=="rm"#] selected[#endif#]>RM(1,2,Pro)
-	   <option value="rm3"[#if TYPE=="rm3"#] selected[#endif#]>RM3 mini 
-	   <option value="a1"[#if TYPE=="a1"#] selected[#endif#]>A1 e-Air
-	   <option value="sp2"[#if TYPE=="sp2"#] selected[#endif#]>SP2
-	   <option value="spmini"[#if TYPE=="spmini"#] selected[#endif#]>SP mini/MP2
-	   <option value="sp3"[#if TYPE=="sp3"#] selected[#endif#]>SP3 (SP CC)
-	   <option value="sp3s"[#if TYPE=="sp3s"#] selected[#endif#]>SP3S
-	   <option value="mp1"[#if TYPE=="mp1"#] selected[#endif#]>MP1
-	   <option value="ms1"[#if TYPE=="ms1"#] selected[#endif#]>Колонка MS1 
-	   <option value="sc1"[#if TYPE=="sc1"#] selected[#endif#]>Выключатель SC1
-	   <option value="s1"[#if TYPE=="s1"#] selected[#endif#]>S1/S1c
-	   <option value="dooya"[#if TYPE=="dooya"#] selected[#endif#]>Карнизы Dooya
-	   <option value="hysen"[#if TYPE=="hysen"#] selected[#endif#]>Термостаты	   
-	 </select>
- </div>
+  <div class="col-lg-4">
+    <select class="form-control" name="type">
+      <option value="">Выберите устройство
+      <option value="rm"[#if TYPE=="rm"#] selected[#endif#]>RM(1,2,Pro)
+      <option value="rm3"[#if TYPE=="rm3"#] selected[#endif#]>RM3 mini
+      <option value="rm4"[#if TYPE=="rm4"#] selected[#endif#]>RM4 mini/RM4c
+      <option value="rm4pro"[#if TYPE=="rm4pro"#] selected[#endif#]>RM4 pro
+      <option value="a1"[#if TYPE=="a1"#] selected[#endif#]>A1 e-Air
+      <option value="sp2"[#if TYPE=="sp2"#] selected[#endif#]>SP2
+      <option value="spmini"[#if TYPE=="spmini"#] selected[#endif#]>SP mini/MP2
+      <option value="sp3"[#if TYPE=="sp3"#] selected[#endif#]>SP3 (SP CC)
+      <option value="sp3s"[#if TYPE=="sp3s"#] selected[#endif#]>SP3S
+      <option value="mp1"[#if TYPE=="mp1"#] selected[#endif#]>MP1
+      <option value="ms1"[#if TYPE=="ms1"#] selected[#endif#]>Колонка MS1
+      <option value="sc1"[#if TYPE=="sc1"#] selected[#endif#]>Выключатель SC1
+      <option value="s1"[#if TYPE=="s1"#] selected[#endif#]>S1/S1c
+      <option value="dooya"[#if TYPE=="dooya"#] selected[#endif#]>Карнизы Dooya
+      <option value="hysen"[#if TYPE=="hysen"#] selected[#endif#]>Термостаты
+    </select>
+  </div>
 </div>
 <div class="form-group">
  <label class="col-lg-3 control-label"[#if ERR_TITLE#] style="color:red;font-weight:bold"[#endif#]>
@@ -68,7 +70,7 @@
  </label>
  <div class="col-lg-4"><input type="text" class="form-control" name="mac" value="[#MAC#]" id="mac"></div>
 </div>
-[#if TYPE=="rm" || TYPE=="rm3"#]
+[#if TYPE=="rm" || TYPE=="rm3" || TYPE=="rm4" || TYPE=="rm4pro"#]
 <div class="form-group">
  <label class="col-lg-3 control-label">
 Управление:
@@ -86,9 +88,9 @@
  <label class="col-lg-3 control-label">
 Обновлять каждые:
  </label>
- 
- 
- 
+
+
+
 	<div class="btn-group col-lg-4" data-toggle="buttons">
 		<label class="btn [#if CHTIME=="none"#]btn-primary[#else#]btn-default[#endif#]">
 			<input type="radio" name="chtime" value="none" [#if CHTIME=="none"#] checked[#endif#]>None
@@ -152,7 +154,7 @@
 </fieldset>
 </form>
 
-[#if TYPE=="rm" || TYPE=="rm3"#]
+[#if TYPE=="rm" || TYPE=="rm3" || TYPE=="rm4" || TYPE=="rm4pro"#]
 <div class="modal fade" id="ir_learn" tabindex="-1" role="dialog" aria-labelledby="about1" aria-hidden="true">
    <div class="modal-dialog">
       <div class="modal-content">
@@ -168,11 +170,11 @@
 
                </div>
                <p class="float-left">
-                    Введите имя команды и нажмите "Старт". <br>После нажатия кнопки "Старт" на устройстве должен загореться <b>желтый</b> диод. После этого необходимо направить обучающий пульт на устройство (в случае с RF пультом - поднести ближе к устройству), и нажать на кнопку, команду которой вы хотите записать. Для RF пультов рекомендуется подержать кнопку 2-3 секунды. Команда после этого будет записана в базу с соответствующим именем. Если имя не было введено - то с именем new_command. 
+                    Введите имя команды и нажмите "Старт". <br>После нажатия кнопки "Старт" на устройстве должен загореться <b>желтый</b> диод. После этого необходимо направить обучающий пульт на устройство (в случае с RF пультом - поднести ближе к устройству), и нажать на кнопку, команду которой вы хотите записать. Для RF пультов рекомендуется подержать кнопку 2-3 секунды. Команда после этого будет записана в базу с соответствующим именем. Если имя не было введено - то с именем new_command.
                </p>
                <br><br>
                <div class="input-group">
-                   
+
                   <input type="text" class="form-control" placeholder="Имя команды" id="command_name">
                    <span class="input-group-btn">
                       <button class="btn btn-success" onclick="startLearnIR();" type="button">Старт</button>
@@ -205,7 +207,7 @@ function startLearnIR(command = '') {
         if(command) cmd_name=command;
         var url="/ajax/dev_broadlink.html?op=api_learn_start&did=[#ID#]&dname="+cmd_name;
         if(!command) $("#ir_learn_log").html('');
-        
+
         $.ajax({
             url: url,
             cache: false,
@@ -237,7 +239,7 @@ function startLearnIR(command = '') {
 }
 
 function learnTimer() {
-    
+
     $.ajax({
         url: "/ajax/dev_broadlink.html?op=api_learn_check&did=[#ID#]",
         cache: false,
@@ -257,7 +259,7 @@ function learnTimer() {
                     } else if (resp.result == 'wait') {
                         setTimeout(learnTimer, 1000);
                     }
-                    
+
                  } else {
                     $('#ir_learn_log').append('<font color=red>ERR</font> - bad response.<br>');
                  }
@@ -280,4 +282,4 @@ function tryParseJSON (jsonString){
   return false;
 };
 </script>
-[#endif#]  
+[#endif#]

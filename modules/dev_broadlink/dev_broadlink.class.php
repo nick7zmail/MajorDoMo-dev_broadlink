@@ -1,6 +1,6 @@
 <?php
 /**
-* BroadlinkHTTPBrige 
+* BroadlinkHTTPBrige
 * @package project
 * @author Wizard <sergejey@gmail.com>
 * @copyright http://majordomo.smartliving.ru/ (c)
@@ -186,8 +186,8 @@ function admin(&$out) {
  if ($this->mode=='check_params') {
 	 $this->check_params();
  }
- 
- 
+
+
  if (isset($this->data_source) && !$_GET['data_source'] && !$_POST['data_source']) {
   $out['SET_DATASOURCE']=1;
  }
@@ -227,20 +227,20 @@ function api($params) {
         $did=$_REQUEST['ID'];
         $dname = $_REQUEST['CMD_NAME'];
         $info=SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='$did'");
-        $rm = Broadlink::CreateDevice($info['IP'], $info['MAC'], 80, $info['DEVTYPE']);	
+        $rm = Broadlink::CreateDevice($info['IP'], $info['MAC'], 80, $info['DEVTYPE']);
         $decoded_keys=json_decode($info['KEYS']);
-		$rm->Auth($decoded_keys->id, $decoded_keys->key);	
+		$rm->Auth($decoded_keys->id, $decoded_keys->key);
 		$rm->Enter_learning();
         do {
         	sleep(1);
         	$json['hex'] = $rm->Check_data();
         } while((count($json['hex']) == 0) && ($i++ < 10));
-        
+
         $json['hex_number'] = '';
         foreach ($json['hex'] as $value) {
         	$json['hex_number'] .= sprintf("%02x", $value);
         }
-        
+
 		if(count($json['hex']) > 0){
 			$prop=array('TITLE'=>($dname ? $dname : 'new_command'),'VALUE'=>$json['hex_number'],'DEVICE_ID'=>$info['ID']);
 			$new_id=SQLInsert('dev_broadlink_commands',$prop);
@@ -249,7 +249,7 @@ function api($params) {
 		} else {
 			//ошибка
 			addToOperationsQueue('br_learn', 'error', 'Ошибка чтения команды');
-		} 
+		}
     }
 }
 /**
@@ -274,22 +274,22 @@ function usual(&$out) {
         } elseif ($op == 'api_learn_check') {
             header("HTTP/1.0: 200 OK\n");
             header('Content-Type: text/html; charset=utf-8');
-            
+
             $result=checkOperationsQueue('br_learn');
             if($result[0]['TOPIC']) {
                 if($result[0]['DATANAME']=='ok') {
                     echo '{"result":"ok", "command":"'.$result[0]['DATAVALUE'].'"}'.PHP_EOL;
                 } elseif($result[0]['DATANAME']=='error') {
-                    echo '{"error":"'.$result[0]['DATAVALUE'].'"}'.PHP_EOL; 
+                    echo '{"error":"'.$result[0]['DATAVALUE'].'"}'.PHP_EOL;
                 }
             } else {
                 if(timeOutExists('broad_learn_wait')) {
-                  echo '{"result":"wait"}'.PHP_EOL;  
+                  echo '{"result":"wait"}'.PHP_EOL;
                 } else {
-                  echo '{"error":"Истекло время записи команды"}'.PHP_EOL;    
-                }            
+                  echo '{"error":"Истекло время записи команды"}'.PHP_EOL;
+                }
             }
-        
+
         }
     }
 }
@@ -396,7 +396,7 @@ function usual(&$out) {
 		$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
 		$decoded_keys=json_decode($rec['KEYS']);
 		$rm->Auth($decoded_keys->id, $decoded_keys->key);
-		if ($rec['TYPE']=='rm' || $rec['TYPE']=='rm3') {
+		if ($rec['TYPE']=='rm' || $rec['TYPE']=='rm3' || $rec['TYPE']=='rm4' || $rec['TYPE']=='rm4pro') {
 			 if ($value==1) {
 					$data=$properties[$i]['VALUE'];
 					$rm->Send_data($data);
@@ -427,10 +427,10 @@ function usual(&$out) {
 					if($properties[$i]['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
 					if($properties[$i]['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":1}');
 					if($properties[$i]['TITLE']=='ButtonNext') $rm->send_str('{"command":"key","value":7}');
-					if($properties[$i]['TITLE']=='ButtonPrev') $rm->send_str('{"command":"key","value":8}');					
+					if($properties[$i]['TITLE']=='ButtonPrev') $rm->send_str('{"command":"key","value":8}');
 					if($properties[$i]['TITLE']=='ButtonVolUp') $rm->send_str('{"command":"key","value":4}');
 					if($properties[$i]['TITLE']=='ButtonVolDown') $rm->send_str('{"command":"key","value":5}');
-					if($properties[$i]['TITLE']=='ButtonAux') $rm->send_str('{"command":"key","value":6}');					
+					if($properties[$i]['TITLE']=='ButtonAux') $rm->send_str('{"command":"key","value":6}');
 				}
 		} elseif ($rec['TYPE']=='s1') {
 			if($properties[$i]['TITLE']=='status') {
@@ -439,7 +439,7 @@ function usual(&$out) {
 				$rm->Set_Arm($arm_pack);
 				$properties[$i]['VALUE']=json_encode($arm_pack);
 				SQLUpdate('dev_broadlink_commands', $properties[$i]);
-			} 
+			}
 		} elseif ($rec['TYPE']=='dooya') {
 			if($properties[$i]['TITLE']=='level') {
 					$rm->set_level($value);
@@ -614,16 +614,16 @@ function usual(&$out) {
                                         $properties[$i]['VALUE']=$value;
                                         SQLUpdate('dev_broadlink_commands', $properties[$i]);
                         }
-		}		
+		}
     }
    }
   }
  }
- 
+
  function check_params($chtime = '') {
 	require(DIR_MODULES.$this->name.'/dev_broadlink_check.inc.php');
  }
- 
+
  function table_data_set($prop, $dev_id, $val, $sg_val = NULL, $batt = false) {
 	$table='dev_broadlink_commands';
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$prop' AND DEVICE_ID='$dev_id'");
@@ -650,11 +650,11 @@ function usual(&$out) {
 					if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
 						sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
 						sg($properties['LINKED_OBJECT'].'.tamper', $decoded->tamper);
-					}					
+					}
 				}
 			}
-			
-		} else if($batt) { 
+
+		} else if($batt) {
 			$decoded=json_decode($val);
 			if(!empty($decoded->batterylow) || !empty($decoded->tamper)){
 				if(gg($properties['LINKED_OBJECT'].'.batterylow')!=$decoded->batterylow) sg($properties['LINKED_OBJECT'].'.batterylow', $decoded->batterylow);
@@ -665,10 +665,10 @@ function usual(&$out) {
 		$properties['VALUE']=$val;
 		$properties['DEVICE_ID']=$dev_id;
 		$properties['TITLE']=$prop;
-		SQLInsert($table, $properties);								
+		SQLInsert($table, $properties);
 	}
  }
- 
+
  function refrash_ip() {
 	$devices = Broadlink::Discover();
 	foreach ($devices as $device) {
@@ -680,7 +680,7 @@ function usual(&$out) {
 			SQLUpdate('dev_httpbrige_devices', $rec);
 		}
 	}
- } 
+ }
 /**
 * Install
 *
@@ -712,7 +712,7 @@ function usual(&$out) {
 */
  function dbInstall($data='') {
 /*
-dev_httpbrige_devices - 
+dev_httpbrige_devices -
 */
   $data = <<<EOD
  dev_httpbrige_devices: ID int(10) unsigned NOT NULL auto_increment

@@ -56,7 +56,7 @@
 	  if ($this->config['API_URL']=='httpbrige') {
 		   $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=off';
 		   getUrl($api_command);
-      } 
+      }
   }
   if ($this->mode=='sp_light_on') {
    $api_command=$this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=&action=lighton';
@@ -69,7 +69,7 @@
 
   if ($this->mode=='update') {
    $ok=1;
-   
+
    if ($this->tab=='') {
   //updating 'LANG_TITLE' (varchar, required)
    //updating 'TYPE' (varchar)
@@ -104,7 +104,7 @@
    global $updated_hours;
    $rec['UPDATED']=toDBDate($updated_date)." $updated_hours:$updated_minutes:00";
    }
-   
+
   //UPDATING RECORD
    if ($ok) {
     if ($rec['ID']) {
@@ -156,12 +156,12 @@
    }
   }
   }
-  
+
     if ($this->tab=='data'||$this->tab=='data_usage') {
 		$this->getConfig();
    $new_id=0;
-   
-   
+
+
    global $relearn_id;
    if ($relearn_id) {
     $data=SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE ID='$relearn_id'");
@@ -184,9 +184,9 @@
 		$out['OK']=1;
 	} else {
 		$out['MESSAGE']='Команда не сохранена';
-	}	
-	
-	
+	}
+
+
    }
    global $delete_id;
    if ($delete_id) {
@@ -204,15 +204,15 @@
 		if($data['VALUE']==1){
 			$data['VALUE']=0;
 		} else {
-			$data['VALUE']=1;		
+			$data['VALUE']=1;
 		}
-		SQLUpdate('dev_broadlink_commands', $data);	
+		SQLUpdate('dev_broadlink_commands', $data);
 		$rm->Set_Power($data['VALUE']);
 	} elseif($rec['TYPE'] == 'sp3') {
 		if($data['VALUE']==1){
 			$data['VALUE']=0;
 		} else {
-			$data['VALUE']=1;		
+			$data['VALUE']=1;
 		}
 		SQLUpdate('dev_broadlink_commands', $data);
 		$powerstat=SQLSelectOne("SELECT VALUE FROM dev_broadlink_commands WHERE TITLE='status' AND DEVICE_ID='".$rec['ID']."'");
@@ -232,22 +232,22 @@
 		if($data['TITLE']=='ButtonPause') $rm->send_str('{"command":"key","value":9}');
 		if($data['TITLE']=='ButtonPlay') $rm->send_str('{"command":"key","value":1}');
 		if($data['TITLE']=='ButtonNext') $rm->send_str('{"command":"key","value":7}');
-		if($data['TITLE']=='ButtonPrev') $rm->send_str('{"command":"key","value":8}');					
+		if($data['TITLE']=='ButtonPrev') $rm->send_str('{"command":"key","value":8}');
 		if($data['TITLE']=='ButtonVolUp') $rm->send_str('{"command":"key","value":4}');
 		if($data['TITLE']=='ButtonVolDown') $rm->send_str('{"command":"key","value":5}');
-		if($data['TITLE']=='ButtonAux') $rm->send_str('{"command":"key","value":6}');	
+		if($data['TITLE']=='ButtonAux') $rm->send_str('{"command":"key","value":6}');
 	} elseif($rec['TYPE'] == 's1') {
 		$arm_pack=json_decode($data['VALUE'], true);
 		if($arm_pack['status']==1) {
 			$arm_pack['status']=2;
 		} elseif($arm_pack['status']==2) {
-			$arm_pack['status']=0;		
+			$arm_pack['status']=0;
 		} else {
-			$arm_pack['status']=1;		
+			$arm_pack['status']=1;
 		}
 		$rm->Set_Arm($arm_pack);
 		$data['VALUE']=json_encode($arm_pack);
-		SQLUpdate('dev_broadlink_commands', $data);	
+		SQLUpdate('dev_broadlink_commands', $data);
 	}
 	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
    }
@@ -297,7 +297,7 @@
 		$properties[$i]['VOL']=$devinfo->beep_mute;
 		$properties[$i]['BATT']=$devinfo->batterylow;
 		$properties[$i]['TAMPER']=$devinfo->tamper;
-	}	
+	}
 	if ($properties[$i]['TITLE']=='temperature') {
 		$properties[$i]['SDEVICE_TYPE']='sensor_temp';
 	} elseif ($properties[$i]['TITLE']=='humidity') {
@@ -351,7 +351,7 @@
 	}
 	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
   }
- 
+
   if (is_array($rec)) {
    foreach($rec as $k=>$v) {
     if (!is_array($v)) {

@@ -35,24 +35,24 @@
   <td>&nbsp;</td>
  </tr>
  [#begin PROPERTIES#]
- <tr [#if 	TITLE=="temperature" || 
-			TITLE=="humidity" || 
-			TITLE=="noise" || 
-			TITLE=="light" || 
-			TITLE=="air_quality" || 
-			TITLE=="light_word" || 
-			TITLE=="noise_word" || 
-			TITLE=="air_quality_word" || 
-			TITLE=="status" || 
-			TITLE=="lightstatus" || 
-			TITLE=="status1" || 
-			TITLE=="status2" || 
-			TITLE=="status3" || 
+ <tr [#if 	TITLE=="temperature" ||
+			TITLE=="humidity" ||
+			TITLE=="noise" ||
+			TITLE=="light" ||
+			TITLE=="air_quality" ||
+			TITLE=="light_word" ||
+			TITLE=="noise_word" ||
+			TITLE=="air_quality_word" ||
+			TITLE=="status" ||
+			TITLE=="lightstatus" ||
+			TITLE=="status1" ||
+			TITLE=="status2" ||
+			TITLE=="status3" ||
 			TITLE=="status4" ||
 			DEVTYPE=="s1"
 			#]class="success">
   <td valign="top"><input type="hidden" class="form-control" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]">
-  <input type="text" class="form-control" value="[#TITLE#]" disabled>[#if DEVTYPE=="s1"#]<br><small><#LANG_BRS1_ZONE#>[#ZONE#]</small>[#endif#]</td> 
+  <input type="text" class="form-control" value="[#TITLE#]" disabled>[#if DEVTYPE=="s1"#]<br><small><#LANG_BRS1_ZONE#>[#ZONE#]</small>[#endif#]</td>
   <td valign="top"><input type="hidden" class="form-control" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]">
   [#if DEVTYPE=="s1"#]<input type="text" class="form-control" value="[#VAL#]" disabled><br>
   [#if PARM=="1"#]<span class="label label-primary"><#LANG_BRS1_PART_U#></span>&nbsp;[#endif#]
@@ -75,21 +75,21 @@
   [#module name="linkedobject" object_field="linked_object<#PROPERTIES.ID#>" property_field="linked_property<#PROPERTIES.ID#>" method_field="linked_method<#PROPERTIES.ID#>" width="200"#]
   <td><div class="btn-group float-right">
   [#if DEVTYPE=="s1" && TITLE=="status"#]<a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&mutes1=[#ID#]" class="btn btn-default"><i class="glyphicon [#if VOL==0#]glyphicon-volume-up[#else#]glyphicon-volume-off[#endif#]"></i></a>[#endif#]
-  [#if 	TITLE=="temperature" || 
-			TITLE=="humidity" || 
-			TITLE=="noise" || 
-			TITLE=="light" || 
-			TITLE=="air_quality" || 
-			TITLE=="light_word" || 
-			TITLE=="noise_word" || 
+  [#if 	TITLE=="temperature" ||
+			TITLE=="humidity" ||
+			TITLE=="noise" ||
+			TITLE=="light" ||
+			TITLE=="air_quality" ||
+			TITLE=="light_word" ||
+			TITLE=="noise_word" ||
 			TITLE=="air_quality_word"
 			#][#else#]
-	[#if DEVTYPE=="rm" || DEVTYPE=="rm3"#]<a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&page=[#NUM#]&relearn_id=[#ID#]" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Переобучить данную команду" id="relearn_btn[#ID#]" onmouseover="$('#relearn_btn[#ID#]').tooltip('show')" data-container="body"><i class="glyphicon glyphicon-retweet"></i></a>[#endif DEVTYPE#]
+	[#if DEVTYPE=="rm" || DEVTYPE=="rm3" || DEVTYPE=="rm4" || DEVTYPE=="rm4pro"#]<a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&page=[#NUM#]&relearn_id=[#ID#]" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Переобучить данную команду" id="relearn_btn[#ID#]" onmouseover="$('#relearn_btn[#ID#]').tooltip('show')" data-container="body"><i class="glyphicon glyphicon-retweet"></i></a>[#endif DEVTYPE#]
 	<a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&page=[#NUM#]&test_id=[#ID#]" class="btn [#if VALUE==1#]btn-success[#else#][#if VALUE=='0'#]btn-danger[#else#]btn-default[#endif#][#endif#]"  data-toggle="tooltip" data-placement="top" title="Тест" id="test_btn[#ID#]" onmouseover="$('#test_btn[#ID#]').tooltip('show')" data-container="body"><i class="glyphicon glyphicon-flash"></i></a>[#endif#]
 	<a href="?id=<#ID#>&tab=<#TAB#>&view_mode=<#VIEW_MODE#>&page=[#NUM#]&delete_id=[#ID#]" onClick="return confirm('<#LANG_ARE_YOU_SURE#>');"  class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Удалить" id="del_btn[#ID#]" onmouseover="$('#del_btn[#ID#]').tooltip('show')" data-container="body" ><i class="glyphicon glyphicon-remove"></i></a></div></td>
  </tr>
  [#end PROPERTIES#]
-</table> 
+</table>
 </div>
 </div>
 <div class="form-group">

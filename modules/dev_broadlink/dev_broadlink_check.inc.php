@@ -17,7 +17,7 @@
 		for ($i = 1; $i <= count($db_rec); $i++) {
 			$response ='';
 			$rec=$db_rec[$i-1];
-			if ($rec['TYPE']=='rm') {
+			if ($rec['TYPE']=='rm' || $rec['TYPE']=='rm4pro') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
 					if(isset($response) && $response!=='') {
@@ -29,13 +29,13 @@
 			if ($rec['TYPE']=='a1') {
 					$ctx = stream_context_create(array('http' => array('timeout'=>2)));
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'], 0, $ctx);
-					if(isset($response) && $response!='') { 
-						$json = json_decode($response);	
+					if(isset($response) && $response!='') {
+						$json = json_decode($response);
 						sg($rec['LINKED_OBJECT'].'.temperature', (float)$json->{'temperature'});
 						sg($rec['LINKED_OBJECT'].'.humidity', (float)$json->{'humidity'});
 						sg($rec['LINKED_OBJECT'].'.noise', (int)$json->{'noisy'});
 						sg($rec['LINKED_OBJECT'].'.luminosity', (int)$json->{'light'});
-						sg($rec['LINKED_OBJECT'].'.air', (int)$json->{'air'});	
+						sg($rec['LINKED_OBJECT'].'.air', (int)$json->{'air'});
 					}
 			}
 			if ($rec['TYPE']=='sp2') {
@@ -44,7 +44,7 @@
 					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.status', (int)$response);
 					}
-					
+
 					$response = file_get_contents($this->config['API_URL'].'/?devMAC='.$rec['MAC'].'&action=power ', 0, $ctx);
 					if(isset($response) && $response!=='') {
 						sg($rec['LINKED_OBJECT'].'.power', $response);
@@ -91,7 +91,7 @@
 					$keys=$rm->Auth();
 					$rec['KEYS']=json_encode($keys);
 				}
-				
+
 				if ($rec['TYPE']=='rm') {
 						$response = $rm->Check_temperature();
 						if(isset($response) && $response!==false) {
@@ -105,35 +105,35 @@
 						if(isset($response) && !empty($response)) {
 							foreach ($response as $key => $value) {
 								$this->table_data_set($key, $rec['ID'], $value);
-							}							
+							}
 						}
 				}
 				if ($rec['TYPE']=='sp2' || $rec['TYPE'] == 'spmini' || $rec['TYPE'] == 'sp3' || $rec['TYPE']=='sp3s' || $rec['TYPE'] == 'sc1') {
-					$response = $rm->Check_Power();	
+					$response = $rm->Check_Power();
 						if(isset($response) && !empty($response)) {
-							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);						
+							$this->table_data_set('status', $rec['ID'], (int)$response['power_state']);
 							if ($rec['TYPE'] == 'sp3') {
 								$this->table_data_set('lightstatus', $rec['ID'], (int)$response['light_state']);
 							}
 						}
-						
+
 				}
 				if ($rec['TYPE']=='sp2') {
-					$response = $rm->Check_Energy_SP2();	
+					$response = $rm->Check_Energy_SP2();
 						if(isset($response) && $response!==false) {
-							$this->table_data_set('power', $rec['ID'], (float)$response);						
-						}
-						
-				}
-				if ($rec['TYPE']=='sp3s') {
-					$response = $rm->Check_Energy();	
-						if(isset($response) && $response!==false) {
-							$this->table_data_set('power', $rec['ID'], (float)$response);						
+							$this->table_data_set('power', $rec['ID'], (float)$response);
 						}
 
-				}				
+				}
+				if ($rec['TYPE']=='sp3s') {
+					$response = $rm->Check_Energy();
+						if(isset($response) && $response!==false) {
+							$this->table_data_set('power', $rec['ID'], (float)$response);
+						}
+
+				}
 				if ($rec['TYPE']=='mp1') {
-					$response = $rm->Check_Power();	
+					$response = $rm->Check_Power();
 						if(isset($response) && !empty($response)) {
 							for($i=0;$i<4;$i++) {
 								$this->table_data_set('status'.($i+1), $rec['ID'], (int)$response[$i]);
@@ -141,7 +141,7 @@
 						}
 				}
 				if ($rec['TYPE']=='ms1') {
-					$response = 'add_val';	
+					$response = 'add_val';
 						$this->table_data_set('ButtonPower', $rec['ID'], $response);
 						$this->table_data_set('ButtonMute', $rec['ID'], $response);
 						$this->table_data_set('ButtonPause', $rec['ID'], $response);
@@ -192,7 +192,7 @@
 					if(isset($response) && !empty($response)) {
 						foreach ($response as $key => $value) {
 							$this->table_data_set($key, $rec['ID'], $value);
-						}							
+						}
 					}
 					$response = $rm->get_schedule();
 					if(isset($response) && !empty($response)) {
