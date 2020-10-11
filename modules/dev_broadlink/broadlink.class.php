@@ -1994,45 +1994,51 @@ class HYSEN extends Broadlink{
 
 		$err = hexdec(sprintf("%x%x", $response[0x23], $response[0x22]));
 		if($err == 0){
-			$data = array();
 			$enc_payload = array_slice($response, 0x38);
-			if(count($enc_payload) > 0){
-			$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
-			$payload = array_slice($payload, 2);
-			$data['remote_lock'] =  $payload[3] & 1;
-			$data['power'] =  $payload[4] & 1;
-			$data['active'] =  ($payload[4] >> 4) & 1;
-			$data['temp_manual'] =  ($payload[4] >> 6) & 1;
-			$data['room_temp'] =  ($payload[5] & 255) / 2.0;
-			$data['thermostat_temp'] =  ($payload[6] & 255)/2.0;
-			$data['auto_mode'] =  $payload[7] & 15;
-			$data['loop_mode'] =  ($payload[7] >> 4) & 15;
-			$data['sensor'] = $payload[8];
-			$data['osv'] = $payload[9];
-			$data['dif'] = $payload[10];
-			$data['svh'] = $payload[11];
-			$data['svl'] = $payload[12];
-			$data['room_temp_adj'] = (($payload[13] << 8) + $payload[14])/2.0;
-			if ($data['room_temp_adj'] > 32767) {
-				$data['room_temp_adj'] = 32767 - $data['room_temp_adj'];
+			if(count($enc_payload) > 0 ){
+				$payload = $this->byte2array(aes128_cbc_decrypt($this->key(), $this->byte($enc_payload), $this->iv()));
+				$payload = array_slice($payload, 2);
+				// Quick validate data received:
+				if( (count($payload) > 22) // have at least 23 bytes
+				    && ($payload[11]>$payload[12]) // temperature range is valid
+				    && ($payload[22]>0) && ($payload[22]<8) // Week day is in range
+				    && ($payload[19]<24) && ($payload[20]<60) // Hours and minutes are in range
+				  ) {
+					$data['remote_lock'] =  $payload[3] & 1;
+					$data['power'] =  $payload[4] & 1;
+					$data['active'] =  ($payload[4] >> 4) & 1;
+					$data['temp_manual'] =  ($payload[4] >> 6) & 1;
+					$data['room_temp'] =  ($payload[5] & 255) / 2.0;
+					$data['thermostat_temp'] =  ($payload[6] & 255)/2.0;
+					$data['auto_mode'] =  $payload[7] & 15;
+					$data['loop_mode'] =  ($payload[7] >> 4) & 15;
+					$data['sensor'] = $payload[8];
+					$data['osv'] = $payload[9];
+					$data['dif'] = $payload[10];
+					$data['svh'] = $payload[11];
+					$data['svl'] = $payload[12];
+					$data['room_temp_adj'] = (($payload[13] << 8) + $payload[14])/2.0;
+					if ($data['room_temp_adj'] > 32767) {
+						$data['room_temp_adj'] = 32767 - $data['room_temp_adj'];
+					}
+					$data['fre'] = $payload[15];
+					$data['poweron'] = $payload[16];
+					$data['external_temp'] = ($payload[18] & 255)/2.0;
+					$data['hour'] =  $payload[19];
+					$data['min'] =  $payload[20];
+//					$data['sec'] =  $payload[21];
+					$data['dayofweek'] =  $payload[22];
+					$timeH = date("G", time());
+					$timeM = (int)date("i", time());
+					$timeS = (int)date("s", time());
+					$timeD = date("N", time());
+					if (($timeH == 0) && ($timeM == 0)){
+						if (($data['hour'] != $timeH) || ($data['min'] != $timeM) || ($data['dayofweek'] != $timeD)) {
+							self::set_time($timeH,$timeM,$timeS,$timeD);
+						}
+					}
+				}
 			}
-			$data['fre'] = $payload[15];
-			$data['poweron'] = $payload[16];
-			$data['external_temp'] = ($payload[18] & 255)/2.0;
-			$data['hour'] =  $payload[19];
-			$data['min'] =  $payload[20];
-//		    $data['sec'] =  $payload[21];
-			$data['dayofweek'] =  $payload[22];
-			$timeH = date("G", time());
-			$timeM = (int)date("i", time());
-			$timeS = (int)date("s", time());
-			$timeD = date("N", time());
-			if (($timeH == 0) && ($timeM == 0)){
-				if (($data['hour'] != $timeH) || ($data['min'] != $timeM) || ($data['dayofweek'] != $timeD)) {
-				self::set_time($timeH,$timeM,$timeS,$timeD);
-			}
-			}
-		}
 		}
 		return $data;
 	}
