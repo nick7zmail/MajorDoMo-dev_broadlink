@@ -2028,14 +2028,28 @@ class HYSEN extends Broadlink{
 					$data['min'] =  $payload[20];
 //					$data['sec'] =  $payload[21];
 					$data['dayofweek'] =  $payload[22];
-					$timeH = date("G", time());
+
+					//*** Thermostat time validation
+					$timeH = (int)date("G", time());
 					$timeM = (int)date("i", time());
 					$timeS = (int)date("s", time());
-					$timeD = date("N", time());
-					if (($timeH == 0) && ($timeM == 0)){
-						if (($data['hour'] != $timeH) || ($data['min'] != $timeM) || ($data['dayofweek'] != $timeD)) {
-							self::set_time($timeH,$timeM,$timeS,$timeD);
-						}
+					$timeD = (int)date("N", time());
+
+                                        // Get current time in week seconds
+					$timeCurrent = ( (($timeD-1)*24 + $timeH) * 60 + $timeM ) * 60 + $timeS;
+
+                                        // Get thermostat time in week seconds
+					$timeTherm = ( (($data['dayofweek']-1)*24 + $data['hour']) * 60 + $data['min'] ) * 60 + $payload[21];
+
+					// Delta time, seconds
+					$timeDelta = abs( $timeCurrent - $timeTherm);
+
+					// Compensate overflow with 2 minutes confidence
+					if( $timeDelta >= 7*24*60*60 - 60 ) $timeDelta = abs(7*24*60*60 - $timeDelta);
+
+					// Check if thermostat time differs more than 30seconds
+					if ( $timeDelta > 30 ) {
+						self::set_time($timeH,$timeM,$timeS,$timeD);
 					}
 				}
 			}
