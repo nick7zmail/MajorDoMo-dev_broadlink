@@ -671,14 +671,13 @@ class Broadlink{
 		$request   = 'broadlink-monitoring-system';
 
 		switch (self::model($this->devtype)) {
-			case 1:	//SP2
-			case 4:	//MP1
-				$ping_type = 'ICMP';
-				$retries = 1;
-				break;
-			default:
+			case 999: //???
 				$ping_type = 'UDP';
 				$retries = 3;
+				break;
+			default: // 1:SP2, 4:MP1 and other
+				$ping_type = 'ICMP';
+				$retries = 1;
 		}
 
 		if (!$this->host) {
