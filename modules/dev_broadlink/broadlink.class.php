@@ -2044,7 +2044,7 @@ class HYSEN extends Broadlink{
 					// Delta time, seconds
 					$timeDelta = abs( $timeCurrent - $timeTherm);
 
-					// Compensate overflow with 2 minutes confidence
+					// Compensate overflow with 1 minute confidence
 					if( $timeDelta >= 7*24*60*60 - 60 ) $timeDelta = abs(7*24*60*60 - $timeDelta);
 
 					// Check if thermostat time differs more than 30seconds
