@@ -78,7 +78,7 @@
 		foreach ($db_rec as $rec) {
 			$response = '';
 			$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
-			if(!is_null($rm)) {
+			if( !is_null($rm) && ( ($this->config['VAL_PING']!='true') || $rm->ping()) ) {
 				if(isset($rec['KEYS']) && $rec['KEYS']!='') {
 					$decoded_keys=json_decode($rec['KEYS']);
 					if (time()-$decoded_keys->time > 604800) {

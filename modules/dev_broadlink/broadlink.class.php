@@ -671,14 +671,13 @@ class Broadlink{
 		$request   = 'broadlink-monitoring-system';
 
 		switch (self::model($this->devtype)) {
-			case 1:	//SP2
-			case 4:	//MP1
-				$ping_type = 'ICMP';
-				$retries = 1;
-				break;
-			default:
+			case 999: //???
 				$ping_type = 'UDP';
 				$retries = 3;
+				break;
+			default: // 1:SP2, 4:MP1 and other
+				$ping_type = 'ICMP';
+				$retries = 1;
 		}
 
 		if (!$this->host) {
@@ -2044,7 +2043,7 @@ class HYSEN extends Broadlink{
 					// Delta time, seconds
 					$timeDelta = abs( $timeCurrent - $timeTherm);
 
-					// Compensate overflow with 2 minutes confidence
+					// Compensate overflow with 1 minute confidence
 					if( $timeDelta >= 7*24*60*60 - 60 ) $timeDelta = abs(7*24*60*60 - $timeDelta);
 
 					// Check if thermostat time differs more than 30seconds
