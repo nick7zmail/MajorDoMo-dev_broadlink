@@ -1,8 +1,8 @@
 <?php
-include_once(DIR_MODULES.'/dev_broadlink/broadlink.class.php');
 
 function brLinkRawCommand($devid, $data)
 {
+	include_once(DIR_MODULES.'/dev_broadlink/broadlink.class.php');
 	$info = SQLSelectOne("SELECT * FROM dev_httpbrige_devices WHERE ID='".DbSafe($devid)."'");
 	$rm = Broadlink::CreateDevice($info['IP'], $info['MAC'], 80, $info['DEVTYPE']);
 	$decoded_keys = json_decode($info['KEYS']);
@@ -12,6 +12,7 @@ function brLinkRawCommand($devid, $data)
 
 function brLinkCommand($command)
 {
+	include_once(DIR_MODULES.'/dev_broadlink/broadlink.class.php');
 	$command_arr = SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE TITLE='".DbSafe($command)."'");
 	$devid = $command_arr['DEVICE_ID'];
 	$data = $command_arr['VALUE'];

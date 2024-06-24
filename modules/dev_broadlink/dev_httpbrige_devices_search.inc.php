@@ -7,7 +7,7 @@
    $out['CONTROLPANEL']=1;
   }
   $qry="1";
-	if ((time() - intval (gg('cycle_dev_broadlinkRun'))) < 15 ) {
+	if ((time() - intval (gg('cycle_dev_broadlinkRun'))) < 20 ) {
 		$out['CYCLERUN'] = 1;
 	} else {
 		$out['CYCLERUN'] = 0;
@@ -31,7 +31,7 @@
    for($i=0;$i<$total;$i++) {
     // some action for every record if required
     $tmp=explode(' ', $res[$i]['UPDATED']);
-    $res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];
+    $res[$i]['UPDATED']=$tmp[0]." ".$tmp[1];
    }
    $out['RESULT']=$res;
   }
