@@ -150,7 +150,7 @@ class Broadlink{
 		return self::model($this->devtype, 'model');
 	}
 
-	public function model($devtype, $needle='type'){
+	public static function model($devtype, $needle='type'){
 
 		$type = "Unknown";
 		$model = "Unknown";
@@ -415,7 +415,7 @@ class Broadlink{
 	}
 
 	protected static function byte($array){
-
+		$array  = array_map('intval', $array);
 		return implode(array_map("chr", $array));
 	}
 
@@ -1321,7 +1321,7 @@ class MS1 extends Broadlink{
 		$ascii='LEN:'.strlen($ascii).chr(10).$ascii;
 		$hex = '';
 		for ($i = 0; $i < strlen($ascii); $i++) {
-			$byte = strtoupper(dechex(ord($ascii{$i})));
+			$byte = strtoupper(dechex(ord($ascii[$i])));
 			$byte = str_repeat('0', 2 - strlen($byte)).$byte;
 			$hex.=$byte.' ';
 		}

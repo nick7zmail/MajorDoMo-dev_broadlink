@@ -38,7 +38,7 @@
    global $updated_date;
    global $updated_minutes;
    global $updated_hours;
-   $rec['UPDATED']=toDBDate($updated_date)." $updated_hours:$updated_minutes:00";
+   $rec['UPDATED']=date('Y-m-d H:i:s');
 
    }
   if ($this->mode=='save_code') {
@@ -102,7 +102,7 @@
    global $updated_date;
    global $updated_minutes;
    global $updated_hours;
-   $rec['UPDATED']=toDBDate($updated_date)." $updated_hours:$updated_minutes:00";
+   $rec['UPDATED']=date('Y-m-d H:i:s');
    }
 
   //UPDATING RECORD
@@ -132,7 +132,7 @@
   if ($this->tab=='') {
   if ($rec['UPDATED']!='') {
    $tmp=explode(' ', $rec['UPDATED']);
-   $out['UPDATED_DATE']=fromDBDate($tmp[0]);
+   $out['UPDATED_DATE']=$tmp[0];
    $tmp2=explode(':', $tmp[1]);
    $updated_hours=$tmp2[0];
    $updated_minutes=$tmp2[1];
