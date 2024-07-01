@@ -8,6 +8,7 @@
 */
 //
 //
+include_once(DIR_MODULES.'dev_broadlink/broadlink.class.php');
 class dev_broadlink extends module {
 /**
 * dev_httpbrige
@@ -234,10 +235,11 @@ function api($params) {
         $decoded_keys=json_decode($info['KEYS']);
 		$rm->Auth($decoded_keys->id, $decoded_keys->key);
 		$rm->Enter_learning();
+		$i = 0;
         do {
         	sleep(1);
         	$json['hex'] = $rm->Check_data();
-        } while((count($json['hex']) == 0) && ($i++ < 10));
+        } while((count($json['hex']) == 0) && ($i++ < 15));
 
         $json['hex_number'] = '';
         foreach ($json['hex'] as $value) {
@@ -245,7 +247,7 @@ function api($params) {
         }
 
 		if(count($json['hex']) > 0){
-			$prop=array('TITLE'=>($dname ? $dname : 'new_command'),'VALUE'=>$json['hex_number'],'DEVICE_ID'=>$info['ID']);
+			$prop=array('TITLE'=>(isset($dname) ? $dname : 'new_command'),'VALUE'=>$json['hex_number'],'DEVICE_ID'=>$info['ID']);
 			$new_id=SQLInsert('dev_broadlink_commands',$prop);
 			//занесена
 			addToOperationsQueue('br_learn', 'ok', $prop['TITLE']);
@@ -279,7 +281,7 @@ function usual(&$out) {
             header('Content-Type: text/html; charset=utf-8');
 
             $result=checkOperationsQueue('br_learn');
-            if($result[0]['TOPIC']) {
+            if(isset($result[0]['TOPIC'])) {
                 if($result[0]['DATANAME']=='ok') {
                     echo '{"result":"ok", "command":"'.$result[0]['DATAVALUE'].'"}'.PHP_EOL;
                 } elseif($result[0]['DATANAME']=='error') {
@@ -388,7 +390,6 @@ function usual(&$out) {
     }
    }
   } else {
-	include_once(DIR_MODULES.$this->name.'/broadlink.class.php');
 	$table='dev_broadlink_commands';
 	$properties=SQLSelect("SELECT * FROM $table WHERE LINKED_OBJECT LIKE '".DBSafe($object)."' AND LINKED_PROPERTY LIKE '".DBSafe($property)."'");
 	$total=count($properties);
