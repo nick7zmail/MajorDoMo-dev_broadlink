@@ -17,27 +17,17 @@
   }
 
   if ($this->mode=='add_from_scan') {
-   global $type;
-   $rec['TYPE']=$type;
-   global $title;
-   $rec['TITLE']=$title;
+   $rec['TYPE']=gr('type');
+   $rec['TITLE']=gr('title');
    if ($rec['TITLE']=='') {
     $out['ERR_TITLE']=1;
     $ok=0;
    }
-   global $ip;
-   $rec['IP']=$ip;
-   global $devtype;
-   $rec['DEVTYPE']=$devtype;
-   global $mac;
-   $rec['MAC']=$mac;
-   global $linked_object;
-   $rec['LINKED_OBJECT']=$linked_object;
-   global $linked_property;
-   $rec['LINKED_PROPERTY']=$linked_property;
-   global $updated_date;
-   global $updated_minutes;
-   global $updated_hours;
+   $rec['IP']=gr('ip');
+   $rec['DEVTYPE']=gr('devtype');
+   $rec['MAC']=gr('mac');
+   $rec['LINKED_OBJECT']=gr('linked_object');
+   $rec['LINKED_PROPERTY']=gr('linked_property');
    $rec['UPDATED']=date('Y-m-d H:i:s');
 
    }
@@ -73,35 +63,25 @@
    if ($this->tab=='') {
   //updating 'LANG_TITLE' (varchar, required)
    //updating 'TYPE' (varchar)
-   global $type;
-   $rec['TYPE']=$type;
-   global $title;
-   $rec['TITLE']=$title;
+   $rec['TYPE']=gr('type');
+   $rec['TITLE']=gr('title');
    if ($rec['TITLE']=='') {
     $out['ERR_TITLE']=1;
     $ok=0;
    }
   //updating 'IP' (varchar)
-   global $ip;
-   $rec['IP']=$ip;
+   $rec['IP']=gr('ip');
   //updating 'DEVTYPE' (varchar)
-   global $devtype;
-   $rec['DEVTYPE']=$devtype;
+   $rec['DEVTYPE']=gr('devtype');
   //updating 'MAC' (varchar)
-   global $mac;
-   $rec['MAC']=$mac;
-   global $chtime;
-   $rec['CHTIME']=$chtime;
+   $rec['MAC']=gr('mac');
+   $chtime = gr('chtime');
+   $rec['CHTIME']=isset($chtime) ? $chtime : 'none';
   //updating 'LANG_LINKED_OBJECT' (varchar)
-   global $linked_object;
-   $rec['LINKED_OBJECT']=$linked_object;
+   $rec['LINKED_OBJECT']=gr('linked_object');
   //updating 'LANG_LINKED_PROPERTY' (varchar)
-   global $linked_property;
-   $rec['LINKED_PROPERTY']=$linked_property;
+   $rec['LINKED_PROPERTY']=gr('linked_property');
   //updating 'LANG_UPDATED' (datetime)
-   global $updated_date;
-   global $updated_minutes;
-   global $updated_hours;
    $rec['UPDATED']=date('Y-m-d H:i:s');
    }
 
@@ -188,11 +168,11 @@
 
 
    }
-   global $delete_id;
+   $delete_id = gr('delete_id');
    if ($delete_id) {
     SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
    }
-   global $test_id;
+   $test_id = gr('test_id');
    if ($test_id) {
 	$data=SQLSelectOne("SELECT * FROM dev_broadlink_commands WHERE ID='$test_id'");
 	$rm = Broadlink::CreateDevice($rec['IP'], $rec['MAC'], 80, $rec['DEVTYPE']);
@@ -251,7 +231,7 @@
 	}
 	$this->redirect("?data_source=&view_mode=edit_dev_httpbrige_devices&id=".$rec['ID']."&tab=data");
    }
-   global $sort_by_name;
+   $sort_by_name = gr('sort_by_name'); 
    if ($sort_by_name) {
 	   $properties=SQLSelect("SELECT * FROM dev_broadlink_commands WHERE DEVICE_ID='".$rec['ID']."' ORDER BY TITLE");
    } else {
@@ -263,7 +243,7 @@
     if ($properties[$i]['ID']==$new_id) continue;
     if ($this->mode=='update') {
 		//print_r($_REQUEST);exit;
-		global $title_new;
+		$title_new = gr('title_new');
 		if ($title_new) {
 		 $prop=array('TITLE'=>$title_new,'DEVICE_ID'=>$rec['ID']);
 		 $new_id=SQLInsert('dev_broadlink_commands',$prop);
